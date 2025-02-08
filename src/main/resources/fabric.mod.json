@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "dominatus",
+  "version": "${version}",
+  "name": "Dominatus",
+  "description": "RIF stands for 'Reduced Invincibility Frames.' The purpose of this mod is to reduce iFrame duration or disable it.",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/dominatus/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "sypztep.dominatus.client.DominatusClient"
+    ],
+    "main": [
+      "sypztep.dominatus.Dominatus"
+    ]
+  },
+  "mixins": [
+    "dominatus.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
