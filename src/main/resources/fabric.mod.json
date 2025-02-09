@@ -15,6 +15,12 @@
     ],
     "main": [
       "sypztep.dominatus.Dominatus"
+    ],
+    "modmenu": [
+      "sypztep.dominatus.common.compat.ModMenuIntegration"
+    ],
+    "cardinal-components-entity": [
+      "sypztep.dominatus.common.init.ModEntityComponents"
     ]
   },
   "mixins": [
