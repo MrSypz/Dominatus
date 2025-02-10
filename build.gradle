@@ -46,7 +46,7 @@ dependencies {
     modImplementation include("org.ladysnake.cardinal-components-api:cardinal-components-base:${cardinal_components_version}")
     modImplementation include("org.ladysnake.cardinal-components-api:cardinal-components-entity:${cardinal_components_version}")
 
-    modImplementation('com.github.MrSypz:Knumber:1.0.2')
+    modImplementation("com.github.MrSypz:Knumber:${knumber_version}")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         exclude(group: "net.fabricmc.fabric-api")
