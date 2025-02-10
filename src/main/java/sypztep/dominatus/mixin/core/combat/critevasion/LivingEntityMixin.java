@@ -1,4 +1,4 @@
-package sypztep.dominatus.mixin.core.combat.crit;
+package sypztep.dominatus.mixin.core.combat.critevasion;
 
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.entity.Entity;
@@ -25,6 +25,7 @@ import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.common.api.combat.CriticalOverhaul;
 import sypztep.dominatus.common.attributes.EntityCombatAttributes;
 import sypztep.dominatus.common.init.ModEntityAttributes;
+import sypztep.dominatus.common.api.combat.MissingAccessor;
 import sypztep.knumber.client.particle.util.TextParticleProvider;
 import sypztep.knumber.client.payload.AddTextParticlesPayload;
 
@@ -32,7 +33,7 @@ import java.awt.*;
 import java.util.Random;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements CriticalOverhaul {
+public abstract class LivingEntityMixin extends Entity implements CriticalOverhaul, MissingAccessor {
     @Unique
     private static final float SOUND_VOLUME = 1.0F;
     @Unique
@@ -42,11 +43,11 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
     @Unique
     private boolean isCrit;
     @Unique
+    private boolean isHit;
+    @Unique
     public boolean mobisCrit;
     @Unique
     protected LivingEntity target = (LivingEntity) (Object) this;
-    @Unique
-    protected boolean isHit;
 
     @Unique
     protected TextParticleProvider CRITICAL = TextParticleProvider.register(Text.translatable("dominatus.text.critical"), new Color(ModConfig.critDamageColor), -0.055f, -0.045F, () -> ModConfig.damageCritIndicator);
@@ -58,6 +59,11 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
+    }
+
+    @Override
+    public boolean isMissing() {
+        return !isHit;
     }
 
     @ModifyVariable(method = "applyDamage", at = @At("HEAD"), ordinal = 0, argsOnly = true)
