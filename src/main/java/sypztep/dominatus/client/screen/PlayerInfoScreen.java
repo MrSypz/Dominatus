@@ -91,11 +91,11 @@ public final class PlayerInfoScreen extends Screen {
         );
         stats.put(
                 Text.literal("Crit Chance").formatted(Formatting.RED),
-                player.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_CHANCE)
+                player.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_CHANCE) * 100
         );
         stats.put(
                 Text.literal("Crit Damage").formatted(Formatting.DARK_RED),
-                player.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_DAMAGE)
+                player.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_DAMAGE) * 100
         );
 
         renderStats(drawContext, stats);
