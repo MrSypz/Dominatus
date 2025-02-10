@@ -1,4 +1,4 @@
-package sypztep.dominatus.mixin.core.combat.crit;
+package sypztep.dominatus.mixin.core.combat.critevasion;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.entity.Entity;
