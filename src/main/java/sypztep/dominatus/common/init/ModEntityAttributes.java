@@ -20,8 +20,8 @@ public class ModEntityAttributes {
         GENERIC_DP = register("generic.dp", new ClampedEntityAttribute("attribute.name.generic.dp", 0, 0.0, 1024.0D));
         GENERIC_ACCURACY = register("generic.accuracy", new ClampedEntityAttribute("attribute.name.generic.accuracy", 50, 0.0, 2048.0D).setTracked(true));
         GENERIC_EVASION = register("generic.evasion", new ClampedEntityAttribute("attribute.name.generic.evasion", 20, 0.0, 2048.0D).setTracked(true));
-        GENERIC_CRIT_CHANCE = register("generic.crit_chance", new ClampedEntityAttribute("attribute.name.generic.crit_chance", 5, 0.0, 200.0D).setTracked(true));
-        GENERIC_CRIT_DAMAGE = register("generic.crit_damage", new ClampedEntityAttribute("attribute.name.generic.crit_damage", 50, -100, 1024.0D).setTracked(true));
+        GENERIC_CRIT_CHANCE = register("generic.crit_chance", new ClampedEntityAttribute("attribute.name.generic.crit_chance", 0.05, 0.0, 2.0D).setTracked(true));
+        GENERIC_CRIT_DAMAGE = register("generic.crit_damage", new ClampedEntityAttribute("attribute.name.generic.crit_damage", 0.5, 0.0, 10.24D).setTracked(true));
     }
 
     private static RegistryEntry<EntityAttribute> register(String id, EntityAttribute attribute) {
