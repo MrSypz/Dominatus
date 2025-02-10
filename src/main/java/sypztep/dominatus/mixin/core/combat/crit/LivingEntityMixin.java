@@ -20,10 +20,10 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.common.api.combat.CriticalOverhaul;
+import sypztep.dominatus.common.attributes.EntityCombatAttributes;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.knumber.client.particle.util.TextParticleProvider;
 import sypztep.knumber.client.payload.AddTextParticlesPayload;
@@ -43,9 +43,15 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
     private boolean isCrit;
     @Unique
     public boolean mobisCrit;
+    @Unique
+    protected LivingEntity target = (LivingEntity) (Object) this;
+    @Unique
+    protected boolean isHit;
 
     @Unique
-    protected TextParticleProvider CRITICAL = TextParticleProvider.register(Text.translatable("dominatus.text.critical"), new Color(ModConfig.critDamageColor), -0.055f, -0.045F,()-> ModConfig.damageCritIndicator);
+    protected TextParticleProvider CRITICAL = TextParticleProvider.register(Text.translatable("dominatus.text.critical"), new Color(ModConfig.critDamageColor), -0.055f, -0.045F, () -> ModConfig.damageCritIndicator);
+    @Unique
+    private final TextParticleProvider MISSING = TextParticleProvider.register(Text.translatable("dominatus.text.missing"), new Color(255, 255, 255), -0.045f, -1);
 
     @Shadow
     public abstract double getAttributeValue(RegistryEntry<EntityAttribute> attribute);
@@ -77,7 +83,7 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
             float criticalDamage = criticalAttacker.calCritDamage(amount);
             mobisCrit = criticalDamage != amount;
             if (mobisCrit) {
-                applyParticle(this);
+                applyCriticalParticle(this);
                 playCriticalSound(attacker);
             }
             return criticalDamage;
@@ -85,20 +91,35 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
         return amount;
     }
 
-    @Inject(method = "damage", at = @At("HEAD"))
-    private void damageFirst(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    private void handleDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        Entity attacker = source.getAttacker();
+        if (attacker instanceof LivingEntity livingAttacker) {
+            isHit = calculateHit(livingAttacker);
+            if (!isHit) {
+                sendMissingParticles(livingAttacker);
+                if (attacker instanceof PlayerEntity player && player instanceof CriticalOverhaul criticalAttacker) {
+                    criticalAttacker.setCritical(false);
+                }
+                cir.setReturnValue(false);
+                return;
+            }
+        }
+
         if (source.getAttacker() instanceof CriticalOverhaul criticalOverhaul && source.getSource() instanceof PersistentProjectileEntity projectile) {
-            applyParticle(source.getSource());
+            applyCriticalParticle(source.getSource());
             criticalOverhaul.setCritical(projectile.isCritical());
+        } else if (attacker instanceof PlayerEntity) {
+            applyCriticalParticle(this);
         }
     }
-
 
     @Inject(method = "damage", at = @At("RETURN"))
     private void handleCrit(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (source.getAttacker() instanceof CriticalOverhaul criticalOverhaul) {
-            if (!this.getWorld().isClient() && this.isCritical())
-                applyParticle(this);
+            if (!this.getWorld().isClient() && this.isCritical()) {
+                applyCriticalParticle(this);
+            }
             criticalOverhaul.setCritical(false);
         }
     }
@@ -142,7 +163,10 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
     }
 
     @Unique
-    public void applyParticle(Entity target) {
+    public void applyCriticalParticle(Entity target) {
+        if (!isHit) {
+            return;
+        }
         if (target != null) {
             PlayerLookup.tracking((ServerWorld) target.getWorld(), target.getChunkPos())
                     .forEach(foundPlayer -> AddTextParticlesPayload.send(
@@ -150,5 +174,18 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
                             CRITICAL
                     ));
         }
+    }
+
+    @Unique
+    private boolean calculateHit(LivingEntity attacker) {
+        EntityCombatAttributes attackerAttributes = new EntityCombatAttributes(attacker);
+        EntityCombatAttributes defenderAttributes = new EntityCombatAttributes(target);
+        return attackerAttributes.calculateHit(defenderAttributes);
+    }
+
+    @Unique
+    private void sendMissingParticles(LivingEntity attacker) {
+        PlayerLookup.tracking((ServerWorld) target.getWorld(), target.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayload.send(foundPlayer, this.getId(), MISSING));
+        PlayerLookup.tracking((ServerWorld) attacker.getWorld(), attacker.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayload.send(foundPlayer, this.getId(), MISSING));
     }
 }
