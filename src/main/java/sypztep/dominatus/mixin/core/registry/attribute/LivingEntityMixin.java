@@ -14,8 +14,10 @@ public class LivingEntityMixin {
     private static void registryExtraStats(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         DefaultAttributeContainer.Builder builder = cir.getReturnValue();
         builder
-                .add(ModEntityAttributes.GENERIC_ACCURACY, 50.0D)
-                .add(ModEntityAttributes.GENERIC_EVASION, 20.0D);
+                .add(ModEntityAttributes.GENERIC_ACCURACY)
+                .add(ModEntityAttributes.GENERIC_EVASION)
+                .add(ModEntityAttributes.GENERIC_CRIT_CHANCE)
+                .add(ModEntityAttributes.GENERIC_CRIT_DAMAGE);
         cir.setReturnValue(builder);
     }
 }
