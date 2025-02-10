@@ -1,4 +1,4 @@
-package sypztep.dominatus.mixin.attribute;
+package sypztep.dominatus.mixin.core.registry.attribute;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -13,8 +13,9 @@ public class LivingEntityMixin {
     @Inject(method = "createLivingAttributes", at = @At("RETURN"), cancellable = true)
     private static void registryExtraStats(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         DefaultAttributeContainer.Builder builder = cir.getReturnValue();
-        builder.add(ModEntityAttributes.GENERIC_ACCURACY,50);
-        builder.add(ModEntityAttributes.GENERIC_EVASION,20);
+        builder
+                .add(ModEntityAttributes.GENERIC_ACCURACY, 50.0D)
+                .add(ModEntityAttributes.GENERIC_EVASION, 20.0D);
         cir.setReturnValue(builder);
     }
 }
