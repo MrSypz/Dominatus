@@ -4,6 +4,7 @@
   "package": "sypztep.dominatus.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "core.evasion.LivingEntityMixin",
     "core.registry.attribute.LivingEntityMixin"
   ],
   "client": [

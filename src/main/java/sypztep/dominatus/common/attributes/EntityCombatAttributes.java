@@ -3,6 +3,7 @@ package sypztep.dominatus.common.attributes;
 import net.minecraft.entity.LivingEntity;
 import sypztep.dominatus.common.attributes.element.Accuracy;
 import sypztep.dominatus.common.attributes.element.Evasion;
+import sypztep.dominatus.common.init.ModEntityAttributes;
 
 /**
  * Container class to manage combat attributes for an entity
@@ -12,10 +13,10 @@ public class EntityCombatAttributes {
     private final Accuracy accuracy;
     private final Evasion evasion;
 
-    public EntityCombatAttributes(LivingEntity entity, double baseAccuracy, double baseEvasion) {
+    public EntityCombatAttributes(LivingEntity entity) {
         this.entity = entity;
-        this.accuracy = new Accuracy(baseAccuracy);
-        this.evasion = new Evasion(baseEvasion);
+        this.accuracy = new Accuracy(entity.getAttributeValue(ModEntityAttributes.GENERIC_ACCURACY));
+        this.evasion = new Evasion(entity.getAttributeValue(ModEntityAttributes.GENERIC_EVASION));
     }
 
     public Accuracy getAccuracy() {
@@ -34,5 +35,13 @@ public class EntityCombatAttributes {
     public boolean calculateHit(EntityCombatAttributes defender) {
         double hitChance = this.accuracy.calculateHitChance(defender.getEvasion());
         return Math.random() < hitChance;
+    }
+
+    /**
+     * Get the entity associated with these combat attributes
+     * @return The LivingEntity
+     */
+    public LivingEntity getEntity() {
+        return entity;
     }
 }
