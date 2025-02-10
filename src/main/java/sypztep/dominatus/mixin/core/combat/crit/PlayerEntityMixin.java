@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
+
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntityMixin {
     @Unique
@@ -19,44 +20,24 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
-
-    @ModifyVariable(
-            method = "attack",
-            at = @At(value = "STORE", ordinal = 1),
-            ordinal = 0
-    )
+    @ModifyVariable(method = "attack", at = @At(value = "STORE", ordinal = 1), ordinal = 0)
     private float storedamage(float original) {
-        if (!isHit()) {
-            return original;
-        }
         float modifiedDamage = this.calCritDamage(original);
         this.alreadyCalculated = original != modifiedDamage;
         return modifiedDamage;
     }
 
-    @ModifyExpressionValue(
-            method = "attack",
-            at = @At(value = "CONSTANT", args = "floatValue=1.5")
-    )
+    @ModifyExpressionValue(method = "attack", at = @At(value = "CONSTANT", args = "floatValue=1.5"))
     private float applyCritDmg(float original) {
-        if (!isHit()) {
-            return original;
-        }
-        float modifiedCritDamage = this.alreadyCalculated ? 1.0F :
-                (this.storeCrit().isCritical() ? (1.0F + this.getTotalCritDamage()) : original);
+        float modifiedCritDamage = this.alreadyCalculated ? 1.0F : (this.storeCrit().isCritical() ? (1.0F + this.getTotalCritDamage()) : original);
         this.alreadyCalculated = false;
         return modifiedCritDamage;
     }
 
-    @ModifyVariable(
-            method = "attack",
-            at = @At("STORE"),
-            ordinal = 2
-    )
+    @ModifyVariable(method = "attack", at = @At("STORE"), ordinal = 2)
     private boolean doCrit(boolean original, Entity target) {
         if (!this.getWorld().isClient()) {
-            System.out.println("isHit PlayerEntityMixin: " + isHit());
-            if (this.isCritical() && isHit()) {
+            if (this.isCritical()) {
                 this.setCritical(true);
                 applyParticle(target);
                 return true;

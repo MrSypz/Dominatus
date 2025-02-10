@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.common.api.combat.CriticalOverhaul;
-import sypztep.dominatus.common.api.combat.MissingAccessor;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.knumber.client.particle.util.TextParticleProvider;
 import sypztep.knumber.client.payload.AddTextParticlesPayload;
@@ -33,7 +32,7 @@ import java.awt.*;
 import java.util.Random;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements CriticalOverhaul, MissingAccessor {
+public abstract class LivingEntityMixin extends Entity implements CriticalOverhaul {
     @Unique
     private static final float SOUND_VOLUME = 1.0F;
     @Unique
@@ -44,9 +43,6 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
     private boolean isCrit;
     @Unique
     public boolean mobisCrit;
-    @Unique
-    protected volatile boolean isHit = true; // Initialize to true
-
 
     @Unique
     protected TextParticleProvider CRITICAL = TextParticleProvider.register(Text.translatable("dominatus.text.critical"), new Color(ModConfig.critDamageColor), -0.055f, -0.045F,()-> ModConfig.damageCritIndicator);
@@ -56,15 +52,6 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
-    }
-    @Override
-    public boolean isHit() {
-        return isHit;
-    }
-
-    @Override
-    public void setHit(boolean hit) {
-        isHit = hit;
     }
 
     @ModifyVariable(method = "applyDamage", at = @At("HEAD"), ordinal = 0, argsOnly = true)
@@ -89,14 +76,12 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
         if (!(attacker instanceof PlayerEntity)) {
             float criticalDamage = criticalAttacker.calCritDamage(amount);
             mobisCrit = criticalDamage != amount;
-
             if (mobisCrit) {
                 applyParticle(this);
                 playCriticalSound(attacker);
             }
             return criticalDamage;
         }
-
         return amount;
     }
 
