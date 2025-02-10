@@ -10,6 +10,8 @@
     "core.registry.attribute.LivingEntityMixin"
   ],
   "client": [
+    "feature.LivingEntityRendererMixin",
+    "feature.LivingEntityRenderStateAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
