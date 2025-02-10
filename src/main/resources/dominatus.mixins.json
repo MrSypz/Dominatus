@@ -6,7 +6,6 @@
   "mixins": [
     "core.combat.crit.LivingEntityMixin",
     "core.combat.crit.PlayerEntityMixin",
-    "core.combat.evasion.LivingEntityMixin",
     "core.registry.attribute.LivingEntityMixin"
   ],
   "client": [
