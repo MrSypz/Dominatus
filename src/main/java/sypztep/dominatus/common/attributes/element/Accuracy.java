@@ -1,5 +1,6 @@
 package sypztep.dominatus.common.attributes.element;
 
+import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.common.attributes.CombatAttribute;
 
 /**
@@ -27,8 +28,7 @@ public class Accuracy extends CombatAttribute {
         double accuracyEffect = calculateEffect();
         double evasionEffect = targetEvasion.calculateEffect();
         double hitChance = accuracyEffect * (1.0 - evasionEffect);
-
         // Ensure hit chance stays between 0.05 (5%) and 0.95 (95%)
-        return Math.min(0.95, Math.max(0.05, hitChance));
+        return MathHelper.clamp(hitChance, 0.05, 0.95);
     }
 }
