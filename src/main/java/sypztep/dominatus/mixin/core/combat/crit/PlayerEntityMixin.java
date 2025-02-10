@@ -39,7 +39,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
         if (!this.getWorld().isClient()) {
             if (this.isCritical()) {
                 this.setCritical(true);
-                applyParticle(target);
+                applyCriticalParticle(target);
                 return true;
             }
         }
