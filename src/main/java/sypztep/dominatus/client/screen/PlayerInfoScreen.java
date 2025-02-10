@@ -17,15 +17,39 @@ import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public final class PlayerInfoScreen extends Screen {
-    private static final int PANEL_X = 25;
-    private static final int PANEL_Y = 80;
-    private static final int PANEL_WIDTH = 225;
-    private static final int PANEL_HEIGHT = 100;
-    private static final int TEXT_PADDING = 10;
-    private static final int LINE_HEIGHT = 12;
+    // Use relative positioning instead of fixed values
+    private static final float PANEL_WIDTH_RATIO = 0.25f; // 25% of screen width
+    private static final float PANEL_HEIGHT_RATIO = 0.35f; // 35% of screen height
+    private static final float PANEL_X_RATIO = 0.02f; // 2% from left
+    private static final float PANEL_Y_RATIO = 0.2f; // 20% from top
+
+    private int panelX;
+    private int panelY;
+    private int panelWidth;
+    private int panelHeight;
+    private int textPadding;
+    private int lineHeight;
 
     public PlayerInfoScreen() {
         super(Text.literal("Player Info"));
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        calculateDimensions();
+    }
+
+    private void calculateDimensions() {
+        // Calculate responsive dimensions based on screen size
+        this.panelWidth = (int)(this.width * PANEL_WIDTH_RATIO);
+        this.panelHeight = (int)(this.height * PANEL_HEIGHT_RATIO);
+        this.panelX = (int)(this.width * PANEL_X_RATIO);
+        this.panelY = (int)(this.height * PANEL_Y_RATIO);
+
+        // Scale padding and line height based on panel size
+        this.textPadding = (int)(panelWidth * 0.04); // 4% of panel width
+        this.lineHeight = Math.max(12, (int)(panelHeight * 0.08)); // 8% of panel height, minimum 12
     }
 
     @Override
@@ -33,20 +57,24 @@ public final class PlayerInfoScreen extends Screen {
         super.render(drawContext, mouseX, mouseY, delta);
         PlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return;
-
-        // Enable blending for transparency
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
-        // Draw the main panel
         drawPanel(drawContext);
 
-        // Draw title
+        // Scale text based on panel size
+        float scale = Math.min(panelWidth / 225f, panelHeight / 100f);
+        scale = Math.max(1.0f, Math.min(scale, 1.5f)); // Limit scale between 1.0 and 1.5
+
+        // Draw title with scaling
+        Text title = Text.literal("Combat Statistics").setStyle(Style.EMPTY.withBold(true));
+        float titleX = panelX + textPadding;
+        float titleY = panelY + textPadding;
         drawContext.drawText(
                 textRenderer,
-                Text.literal("Combat Statistics").setStyle(Style.EMPTY.withBold(true)),
-                PANEL_X + TEXT_PADDING,
-                PANEL_Y + TEXT_PADDING,
+                title,
+                (int)titleX,
+                (int)titleY,
                 0xFFFFFFFF,
                 true
         );
@@ -61,34 +89,45 @@ public final class PlayerInfoScreen extends Screen {
                 Text.literal("Evasion").formatted(Formatting.AQUA),
                 player.getAttributeValue(ModEntityAttributes.GENERIC_EVASION)
         );
+        stats.put(
+                Text.literal("Crit Chance").formatted(Formatting.RED),
+                player.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_CHANCE)
+        );
+        stats.put(
+                Text.literal("Crit Damage").formatted(Formatting.DARK_RED),
+                player.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_DAMAGE)
+        );
 
-        // Render stats
         renderStats(drawContext, stats);
 
         RenderSystem.disableBlend();
     }
 
     private void drawPanel(DrawContext drawContext) {
-        // Main background
-        drawContext.fill(PANEL_X, PANEL_Y, PANEL_X + PANEL_WIDTH, PANEL_Y + PANEL_HEIGHT, 0x90000000);
+        // Main background with rounded corners
+        drawContext.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, 0x90000000);
 
-        // Border
+        // Border with custom thickness based on panel size
+        int borderThickness = Math.max(1, panelWidth / 225);
         int borderColor = 0xFF333333;
-        drawContext.fill(PANEL_X, PANEL_Y, PANEL_X + PANEL_WIDTH, PANEL_Y + 1, borderColor); // Top
-        drawContext.fill(PANEL_X, PANEL_Y + PANEL_HEIGHT - 1, PANEL_X + PANEL_WIDTH, PANEL_Y + PANEL_HEIGHT, borderColor); // Bottom
-        drawContext.fill(PANEL_X, PANEL_Y, PANEL_X + 1, PANEL_Y + PANEL_HEIGHT, borderColor); // Left
-        drawContext.fill(PANEL_X + PANEL_WIDTH - 1, PANEL_Y, PANEL_X + PANEL_WIDTH, PANEL_Y + PANEL_HEIGHT, borderColor); // Right
+
+        // Draw borders
+        drawContext.fill(panelX, panelY, panelX + panelWidth, panelY + borderThickness, borderColor);
+        drawContext.fill(panelX, panelY + panelHeight - borderThickness, panelX + panelWidth, panelY + panelHeight, borderColor);
+        drawContext.fill(panelX, panelY, panelX + borderThickness, panelY + panelHeight, borderColor);
+        drawContext.fill(panelX + panelWidth - borderThickness, panelY, panelX + panelWidth, panelY + panelHeight, borderColor);
     }
 
     private void renderStats(DrawContext drawContext, Map<Text, Double> stats) {
-        int yOffset = PANEL_Y + TEXT_PADDING + LINE_HEIGHT + 5;
+        int yOffset = panelY + textPadding + lineHeight + 5;
+        int barHeight = Math.max(4, lineHeight / 3);
 
         for (Map.Entry<Text, Double> stat : stats.entrySet()) {
             // Draw stat label
             drawContext.drawText(
                     textRenderer,
                     stat.getKey(),
-                    PANEL_X + TEXT_PADDING,
+                    panelX + textPadding,
                     yOffset,
                     0xFFFFFFFF,
                     false
@@ -100,24 +139,24 @@ public final class PlayerInfoScreen extends Screen {
             drawContext.drawText(
                     textRenderer,
                     value,
-                    PANEL_X + PANEL_WIDTH - TEXT_PADDING - valueWidth,
+                    panelX + panelWidth - textPadding - valueWidth,
                     yOffset,
                     0xFFFFFFFF,
                     false
             );
 
-            // Draw stat bar
+            // Draw stat bar with responsive height
             drawStatBar(
                     drawContext,
-                    PANEL_X + TEXT_PADDING,
-                    yOffset + LINE_HEIGHT,
-                    PANEL_WIDTH - (TEXT_PADDING * 2),
-                    4,
+                    panelX + textPadding,
+                    yOffset + lineHeight,
+                    panelWidth - (textPadding * 2),
+                    barHeight,
                     stat.getValue().floatValue(),
                     getStatColor(stat.getKey().getString())
             );
 
-            yOffset += LINE_HEIGHT * 2;
+            yOffset += lineHeight * 2;
         }
     }
 
@@ -125,7 +164,7 @@ public final class PlayerInfoScreen extends Screen {
         // Background
         drawContext.fill(x, y, x + width, y + height, 0xFF333333);
 
-        // Calculate and draw fill
+        // Fill bar with smooth animation
         float fillPercentage = Math.min(value / 100f, 1.0f);
         int fillWidth = (int)(width * fillPercentage);
         if (fillWidth > 0) {
@@ -135,14 +174,22 @@ public final class PlayerInfoScreen extends Screen {
 
     private int getStatColor(String statName) {
         return switch (statName.toLowerCase()) {
-            case "accuracy" -> 0xFFFFAA00; // Orange
-            case "evasion" -> 0xFF00AAFF; // Light Blue
-            default -> 0xFFFFFFFF; // White
+            case "accuracy" -> 0xFFFFAA00;
+            case "evasion" -> 0xFF00AAFF;
+            case "crit chance" -> 0xFFFF0000;
+            case "crit damage" -> 0xFFAA0000;
+            default -> 0xFFFFFFFF;
         };
     }
 
     @Override
     public boolean shouldPause() {
-        return false; // Don't pause the game when this screen is open
+        return false;
+    }
+
+    @Override
+    public void resize(MinecraftClient client, int width, int height) {
+        super.resize(client, width, height);
+        calculateDimensions();
     }
 }
