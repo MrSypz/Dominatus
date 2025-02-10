@@ -1,4 +1,4 @@
-package sypztep.dominatus.mixin.core.evasion;
+package sypztep.dominatus.mixin.core.combat.evasion;
 
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.entity.Entity;
