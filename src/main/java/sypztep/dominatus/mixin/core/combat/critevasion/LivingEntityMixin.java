@@ -6,13 +6,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,15 +19,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import sypztep.dominatus.ModConfig;
+import sypztep.dominatus.Dominatus;
+import sypztep.dominatus.client.init.ModParticle;
+import sypztep.dominatus.client.payload.AddTextParticlesPayload;
 import sypztep.dominatus.common.api.combat.CriticalOverhaul;
 import sypztep.dominatus.common.attributes.EntityCombatAttributes;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.api.combat.MissingAccessor;
-import sypztep.knumber.client.particle.util.TextParticleProvider;
-import sypztep.knumber.client.payload.AddTextParticlesPayload;
 
-import java.awt.*;
 import java.util.Random;
 
 @Mixin(LivingEntity.class)
@@ -48,11 +45,6 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
     public boolean mobisCrit;
     @Unique
     protected LivingEntity target = (LivingEntity) (Object) this;
-
-    @Unique
-    protected TextParticleProvider CRITICAL = TextParticleProvider.register(Text.translatable("dominatus.text.critical"), new Color(ModConfig.critDamageColor), -0.055f, -0.045F, () -> ModConfig.damageCritIndicator);
-    @Unique
-    private final TextParticleProvider MISSING = TextParticleProvider.register(Text.translatable("dominatus.text.missing"), new Color(255, 255, 255), -0.045f, -1);
 
     @Shadow
     public abstract double getAttributeValue(RegistryEntry<EntityAttribute> attribute);
@@ -77,45 +69,68 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
             return amount;
         }
 
-        // Handle projectile critical hits
+        boolean shouldCrit;
+
         Entity projectileSource = source.getSource();
         if (projectileSource instanceof PersistentProjectileEntity) {
-            criticalAttacker.storeCrit().setCritical(this.isCritical());
-            return criticalAttacker.calCritDamage(amount);
-        }
+            shouldCrit = criticalAttacker.calCritDamage(amount) > amount;
 
-        // Handle non-player entity critical hits
-        if (!(attacker instanceof PlayerEntity)) {
+            criticalAttacker.storeCrit().setCritical(shouldCrit);
+            this.setCritical(shouldCrit);
+
+            if (shouldCrit) {
+                Dominatus.LOGGER.info("Applying projectile critical hit!");
+                amount = criticalAttacker.calCritDamage(amount);
+
+                playCriticalSound(attacker);
+            }
+        }
+        else {
             float criticalDamage = criticalAttacker.calCritDamage(amount);
-            mobisCrit = criticalDamage != amount;
-            if (mobisCrit) {
+            shouldCrit = criticalDamage > amount;
+            amount = criticalDamage;
+
+            // Apply effects for non-player critical hits
+            if (shouldCrit) {
                 applyCriticalParticle(this);
                 playCriticalSound(attacker);
             }
-            return criticalDamage;
         }
+
+        Dominatus.LOGGER.info("Final damage: {}, isCrit = {}", amount, shouldCrit);
+
         return amount;
     }
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void handleDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Entity attacker = source.getAttacker();
-        if (attacker instanceof LivingEntity livingAttacker) {
-            isHit = calculateHit(livingAttacker);
-            if (!isHit) {
-                sendMissingParticles(livingAttacker);
-                if (attacker instanceof PlayerEntity player && player instanceof CriticalOverhaul criticalAttacker) {
-                    criticalAttacker.setCritical(false);
-                }
-                cir.setReturnValue(false);
-                return;
-            }
+        if (!(attacker instanceof LivingEntity livingAttacker)) {
+            return;
         }
 
-        if (source.getAttacker() instanceof CriticalOverhaul criticalOverhaul && source.getSource() instanceof PersistentProjectileEntity projectile) {
-            applyCriticalParticle(source.getSource());
-            criticalOverhaul.setCritical(projectile.isCritical());
-        } else if (attacker instanceof PlayerEntity) {
+        //Check if the attack should miss
+        isHit = calculateHit(livingAttacker);
+        if (!isHit) {
+            sendMissingParticles(livingAttacker);
+
+            if (attacker instanceof CriticalOverhaul criticalAttacker) {
+                criticalAttacker.setCritical(false);
+            }
+
+            cir.setReturnValue(false);
+            return;
+        }
+
+        //Handle projectile crit effects (works for skeletons and players)
+        if (source.getSource() instanceof PersistentProjectileEntity projectile) {
+            if (projectile instanceof CriticalOverhaul projectileCritical && projectileCritical.isCritical()) {
+                applyCriticalParticle(source.getSource());
+                ((CriticalOverhaul) attacker).setCritical(true);
+            }
+        }
+        //Handle melee crit effects (monsters, players)
+        else if (attacker instanceof CriticalOverhaul criticalOverhaul && criticalOverhaul.isCritical()) {
             applyCriticalParticle(this);
         }
     }
@@ -148,12 +163,12 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
 
     @Override
     public float getCritDamage() {
-        return (float) this.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_DAMAGE);
+        return (float) this.getAttributeValue(ModEntityAttributes.CRIT_DAMAGE);
     }
 
     @Override
     public float getCritRate() {
-        return (float) this.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_CHANCE);
+        return (float) this.getAttributeValue(ModEntityAttributes.CRIT_CHANCE);
     }
 
     @Unique
@@ -177,7 +192,7 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
             PlayerLookup.tracking((ServerWorld) target.getWorld(), target.getChunkPos())
                     .forEach(foundPlayer -> AddTextParticlesPayload.send(
                             foundPlayer, target.getId(),
-                            CRITICAL
+                            ModParticle.CRITICAL
                     ));
         }
     }
@@ -191,7 +206,7 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
 
     @Unique
     private void sendMissingParticles(LivingEntity attacker) {
-        PlayerLookup.tracking((ServerWorld) target.getWorld(), target.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayload.send(foundPlayer, this.getId(), MISSING));
-        PlayerLookup.tracking((ServerWorld) attacker.getWorld(), attacker.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayload.send(foundPlayer, this.getId(), MISSING));
+        PlayerLookup.tracking((ServerWorld) target.getWorld(), target.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayload.send(foundPlayer, this.getId(), ModParticle.MISSING));
+        PlayerLookup.tracking((ServerWorld) attacker.getWorld(), attacker.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayload.send(foundPlayer, this.getId(), ModParticle.MISSING));
     }
 }
