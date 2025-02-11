@@ -83,19 +83,19 @@ public final class PlayerInfoScreen extends Screen {
         Map<Text, Double> stats = new LinkedHashMap<>();
         stats.put(
                 Text.literal("Accuracy").formatted(Formatting.YELLOW),
-                player.getAttributeValue(ModEntityAttributes.GENERIC_ACCURACY)
+                player.getAttributeValue(ModEntityAttributes.ACCURACY)
         );
         stats.put(
                 Text.literal("Evasion").formatted(Formatting.AQUA),
-                player.getAttributeValue(ModEntityAttributes.GENERIC_EVASION)
+                player.getAttributeValue(ModEntityAttributes.EVASION)
         );
         stats.put(
                 Text.literal("Crit Chance").formatted(Formatting.RED),
-                player.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_CHANCE) * 100
+                player.getAttributeValue(ModEntityAttributes.CRIT_CHANCE) * 100
         );
         stats.put(
                 Text.literal("Crit Damage").formatted(Formatting.DARK_RED),
-                player.getAttributeValue(ModEntityAttributes.GENERIC_CRIT_DAMAGE) * 100
+                player.getAttributeValue(ModEntityAttributes.CRIT_DAMAGE) * 100
         );
 
         renderStats(drawContext, stats);
