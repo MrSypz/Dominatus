@@ -15,8 +15,8 @@ public class EntityCombatAttributes {
 
     public EntityCombatAttributes(LivingEntity entity) {
         this.entity = entity;
-        this.accuracy = new Accuracy(entity.getAttributeValue(ModEntityAttributes.GENERIC_ACCURACY));
-        this.evasion = new Evasion(entity.getAttributeValue(ModEntityAttributes.GENERIC_EVASION));
+        this.accuracy = new Accuracy(entity.getAttributeValue(ModEntityAttributes.ACCURACY));
+        this.evasion = new Evasion(entity.getAttributeValue(ModEntityAttributes.EVASION));
     }
 
     public Accuracy getAccuracy() {
