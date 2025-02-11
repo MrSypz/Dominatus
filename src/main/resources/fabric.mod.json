@@ -21,6 +21,9 @@
     ],
     "cardinal-components-entity": [
       "sypztep.dominatus.common.init.ModEntityComponents"
+    ],
+    "fabric-datagen": [
+      "sypztep.dominatus.data.ModDataGenerator"
     ]
   },
   "mixins": [
