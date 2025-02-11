@@ -16,7 +16,7 @@ public record AddTextParticlesPayload(int entityId,int selector) implements Cust
     public static final PacketCodec<PacketByteBuf, AddTextParticlesPayload> CODEC = PacketCodec.tuple(
             PacketCodecs.VAR_INT,
             AddTextParticlesPayload::entityId,
-            PacketCodecs.UNSIGNED_SHORT, // size 0-65,535
+            PacketCodecs.UNSIGNED_SHORT,
             AddTextParticlesPayload::selector,
             AddTextParticlesPayload::new
     );
