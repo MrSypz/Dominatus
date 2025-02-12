@@ -12,6 +12,7 @@
     "core.registry.attribute.LivingEntityMixin"
   ],
   "client": [
+    "core.tabs.inventory.InventoryScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
