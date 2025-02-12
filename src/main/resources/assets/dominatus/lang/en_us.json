@@ -1,8 +1,0 @@
-{
-  "dominatus.text.missing": "Missing",
-  "dominatus.text.critical": "Critical",
-
-  "text.autoconfig.dominatus.title": "Dominatus Config",
-  "text.autoconfig.dominatus.option.damageCritIndicator": "Crit Indicator",
-  "text.autoconfig.dominatus.option.critDamageColor": "Crit Damage Color"
-}

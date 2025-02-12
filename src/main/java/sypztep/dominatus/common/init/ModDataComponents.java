@@ -7,9 +7,9 @@ import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.data.Refinement;
 
 public class ModDataComponents {
-    public static final ComponentType<Refinement> PENOMIOR = new ComponentType.Builder<Refinement>().codec(Refinement.CODEC).build();
+    public static final ComponentType<Refinement> REFINEMENT = new ComponentType.Builder<Refinement>().codec(Refinement.CODEC).build();
 
     public static void init() {
-        Registry.register(Registries.DATA_COMPONENT_TYPE, Dominatus.id("refinement"), PENOMIOR);
+        Registry.register(Registries.DATA_COMPONENT_TYPE, Dominatus.id("refinement"), REFINEMENT);
     }
 }

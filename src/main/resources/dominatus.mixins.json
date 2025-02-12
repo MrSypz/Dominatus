@@ -8,7 +8,7 @@
     "core.combat.critevasion.PlayerEntityMixin",
     "core.combat.projectileclipthrough.PersistentProjectileEntityMixin",
     "core.combat.projectileclipthrough.TridentEntityMixin",
-    "core.item.ItemStackMixin",
+    "core.item.refinement.ItemMixin",
     "core.registry.attribute.LivingEntityMixin"
   ],
   "client": [

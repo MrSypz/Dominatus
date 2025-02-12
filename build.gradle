@@ -36,7 +36,9 @@ repositories {
     }
 }
 fabricApi {
-    configureDataGeneration()
+    configureDataGeneration() {
+        client = true
+    }
 }
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"

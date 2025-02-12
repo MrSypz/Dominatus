@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "dominatus:item/refine_armor_enforge_stone"
+  }
+}

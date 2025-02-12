@@ -1,0 +1,18 @@
+{
+  "arg": {
+    "vanilla": true
+  },
+  "itemProperties": {
+    "maxLvl": 20,
+    "startAccuracy": 0,
+    "endAccuracy": 182,
+    "startEvasion": 0,
+    "endEvasion": 0,
+    "maxDurability": 100,
+    "starDamage": 0,
+    "endDamage": 15,
+    "startProtection": 0,
+    "endProtection": 0,
+    "repairpoint": 5
+  }
+}
