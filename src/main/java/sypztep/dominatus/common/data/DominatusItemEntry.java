@@ -21,21 +21,24 @@ public record DominatusItemEntry(
         float endDamage,
         int startProtection,
         int endProtection,
-        int repairpoint
-)
-{
-    public static final Map<RegistryEntry<Item>, DominatusItemEntry> PENOMIOR_ITEM_ENTRY_MAP = new HashMap<>();
+        int repairpoint,
+        Map<Integer, Float> failStackRates
+) {
+    public static final Map<RegistryEntry<Item>, DominatusItemEntry> DOMINATUS_ITEM_ENTRY_MAP = new HashMap<>();
 
     public static Optional<DominatusItemEntry> getDominatusItemData(ItemStack stack) {
         RegistryEntry<Item> itemEntry = Registries.ITEM.getEntry(stack.getItem());
-        return Optional.ofNullable(PENOMIOR_ITEM_ENTRY_MAP.get(itemEntry));
+        return Optional.ofNullable(DOMINATUS_ITEM_ENTRY_MAP.get(itemEntry));
     }
+
     public static Optional<DominatusItemEntry> getDominatusItemData(String itemID) {
         Identifier itemIdentifier = Identifier.of(itemID);
         RegistryEntry<Item> itemEntry = Registries.ITEM.getEntry(itemIdentifier).orElse(null);
-        return Optional.ofNullable(PENOMIOR_ITEM_ENTRY_MAP.get(itemEntry));
+        return Optional.ofNullable(DOMINATUS_ITEM_ENTRY_MAP.get(itemEntry));
     }
+    // get the item id from the item stack exam minecraft:stone
     public static String getItemId(ItemStack stack) {
         return Registries.ITEM.getId(stack.getItem()).toString();
     }
 }
+

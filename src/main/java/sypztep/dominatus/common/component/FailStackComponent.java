@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
+import sypztep.dominatus.common.init.ModEntityComponents;
 
 public final class FailStackComponent implements AutoSyncedComponent {
     private final PlayerEntity obj;
@@ -21,5 +22,17 @@ public final class FailStackComponent implements AutoSyncedComponent {
     @Override
     public void writeToNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         nbtCompound.putInt("Failstack", failstack);
+    }
+
+    public int getFailstack() {
+        return failstack;
+    }
+
+    public void setFailstack(int failstack) {
+        this.failstack = failstack;
+        sync();
+    }
+    public void sync() {
+        ModEntityComponents.FAILSTACK_COMPONENT.sync(this.obj);
     }
 }

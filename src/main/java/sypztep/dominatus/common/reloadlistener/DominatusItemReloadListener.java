@@ -1,5 +1,6 @@
 package sypztep.dominatus.common.reloadlistener;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
@@ -14,6 +15,8 @@ import sypztep.dominatus.common.data.DominatusItemEntry;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DominatusItemReloadListener implements SimpleSynchronousResourceReloadListener {
     private static final Identifier ID = Dominatus.id("penomioritemdata");
@@ -24,7 +27,7 @@ public class DominatusItemReloadListener implements SimpleSynchronousResourceRel
 
     @Override
     public void reload(ResourceManager manager) {
-        DominatusItemEntry.PENOMIOR_ITEM_ENTRY_MAP.clear();
+        DominatusItemEntry.DOMINATUS_ITEM_ENTRY_MAP.clear();
         manager.findAllResources("refine", path -> path.getPath().endsWith(".json")).forEach((identifier, resources) -> {
             for (Resource resource : resources) {
                 try (InputStream stream = resource.getInputStream()) {
@@ -41,13 +44,24 @@ public class DominatusItemReloadListener implements SimpleSynchronousResourceRel
                     }
                     Item item = Registries.ITEM.get(itemId);
 
+                    // Log the processing
                     Dominatus.LOGGER.info("Processing item: {}", itemId);
 
                     if (item == Registries.ITEM.get(Registries.ITEM.getDefaultId()) && !itemId.equals(Registries.ITEM.getDefaultId())) {
                         Dominatus.LOGGER.warn("Item with ID {} could not be found, skipping.", itemId);
                         continue;
                     }
+
                     JsonObject itemProperties = object.getAsJsonObject("itemProperties");
+
+                    JsonObject failstackRate = object.getAsJsonObject("failstackRate");
+                    Map<Integer, Float> failstackRates = new HashMap<>();
+                    for (Map.Entry<String, JsonElement> entry : failstackRate.entrySet()) {
+                        int level = Integer.parseInt(entry.getKey()); // Get level as integer
+                        float rate = entry.getValue().getAsFloat();   // Get success rate as float
+                        failstackRates.put(level, rate);
+                    }
+
                     int maxLvl = itemProperties.get("maxLvl").getAsInt();
                     int startAccuracy = itemProperties.get("startAccuracy").getAsInt();
                     int endAccuracy = itemProperties.get("endAccuracy").getAsInt();
@@ -60,7 +74,6 @@ public class DominatusItemReloadListener implements SimpleSynchronousResourceRel
                     int endProtection = itemProperties.get("endProtection").getAsInt();
                     int repairpoint = itemProperties.get("repairpoint").getAsInt();
 
-
                     DominatusItemEntry entry = new DominatusItemEntry(
                             maxLvl,
                             startAccuracy,
@@ -72,12 +85,13 @@ public class DominatusItemReloadListener implements SimpleSynchronousResourceRel
                             endDamage,
                             startProtection,
                             endProtection,
-                            repairpoint
+                            repairpoint,
+                            failstackRates
                     );
-                    DominatusItemEntry.PENOMIOR_ITEM_ENTRY_MAP.put(Registries.ITEM.getEntry(item), entry);
+
+                    DominatusItemEntry.DOMINATUS_ITEM_ENTRY_MAP.put(Registries.ITEM.getEntry(item), entry);
 
                 } catch (Exception ignored) {
-
                 }
             }
         });

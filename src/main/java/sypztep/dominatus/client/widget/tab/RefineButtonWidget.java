@@ -1,9 +1,9 @@
 package sypztep.dominatus.client.widget.tab;
 
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.client.widget.TabWidgetButton;
+import sypztep.dominatus.common.payload.RefineButtonPayloadC2S;
 
 import java.util.Collections;
 
@@ -18,7 +18,7 @@ public class RefineButtonWidget extends TabWidgetButton {
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-//        RefineButtonPayloadC2S.send();
+        RefineButtonPayloadC2S.send();
         super.onClick(mouseX, mouseY);
     }
 }

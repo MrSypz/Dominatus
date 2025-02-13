@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import sypztep.dominatus.client.screen.PlayerInfoScreen;
 import sypztep.dominatus.client.widget.TabWidgetButton;
 
 import java.util.Collections;
@@ -19,8 +20,8 @@ public class StatButtonWidget extends TabWidgetButton {
     @Override
     public void onClick(double mouseX, double mouseY) {
         super.onClick(mouseX, mouseY);
-//        if (client != null)
-//            client.setScreen(new PlayerInfoScreen(client));
+        if (client != null)
+            client.setScreen(new PlayerInfoScreen());
 //        else client.player.sendMessage(Text.literal("Client is null"));
     }
 }

@@ -25,7 +25,6 @@ public abstract class InventoryScreenMixin extends HandledScreen<PlayerScreenHan
     @Unique
     private TabWidgetButton[] tabButtons;
 
-
     public InventoryScreenMixin(PlayerScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }
