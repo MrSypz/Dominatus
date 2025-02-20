@@ -19,6 +19,7 @@ import sypztep.dominatus.common.util.FailStackUtil;
 import sypztep.dominatus.common.util.RefinementUtil;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class RefineScreenHandler extends ScreenHandler {
     private final Inventory inventory = new SimpleInventory(3) {
@@ -153,7 +154,7 @@ public class RefineScreenHandler extends ScreenHandler {
         DominatusItemEntry itemData = DominatusItemEntry.getDominatusItemData(itemID)
                 .orElseThrow(() -> new NoSuchElementException("Item data not found for item ID: " + itemID));
 
-        RefinementUtil.setRefinement(slotOutput, 0,0,0,100,0,0); // Initialize item data if null
+//        RefinementUtil.setRefinement(slotOutput, 0,0,0,100,0,0); // Initialize item data if null
 
         // Predefine variables
         int currentRefineLvl = RefinementUtil.getRefineLvl(slotOutput);
@@ -170,7 +171,7 @@ public class RefineScreenHandler extends ScreenHandler {
         int endProtect = itemData.endProtection();
         int failStack = ModEntityComponents.FAILSTACK_COMPONENT.get(this.player).getFailstack();
         int repairPoint = itemData.repairpoint();
-
+    System.out.println("Refine: "+Objects.requireNonNull(slotOutput.get(ModDataComponents.REFINEMENT)).refine());
         if (isValidItem(slotOutput) && currentRefineLvl < maxLvl && durability > 0 && !isRepairMaterial(materialInput)) {
             RefinementUtil.processRefinement(slotOutput, failStack, currentRefineLvl, itemData, player);
             this.decrementStack();

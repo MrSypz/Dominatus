@@ -39,7 +39,7 @@ public class RefinementUtil {
     public static int getProtection(ItemStack stack) {
         return getRefinement(stack).protection();
     }
-
+    //TODO: Update the way to update value
     public static void updateRefinement(ItemStack stack, int refineLvl, int maxLvl, int startAcc, int endAcc, int startEva, int endEva, float startDmg, float endDmg, int startProt, int endProt) {
         Refinement oldRef = getRefinement(stack);
         int newAccuracy = refineValue(refineLvl, maxLvl, startAcc, endAcc);
@@ -55,10 +55,7 @@ public class RefinementUtil {
         int newEvasion = refineValue(refineLvl, entry.maxLvl(), entry.startEvasion(), entry.endAccuracy());
         float newDamage = refineValue(refineLvl, entry.maxLvl(), entry.starDamage(), entry.endDamage());
         int newProtection = refineValue(refineLvl, entry.maxLvl(), entry.startProtection(), entry.endProtection());
-
-        // Debug output to confirm refineLvl change
-        System.out.println("Updating refinement - New refineLvl: " + refineLvl);
-
+        System.out.println("Level" + refineLvl);
         setRefinement(stack, refineLvl, newAccuracy, newEvasion, oldRef.durability(), newDamage, newProtection);
     }
 
@@ -67,7 +64,6 @@ public class RefinementUtil {
         double successRate = FailStackUtil.calculateSuccessRate(slotOutput, failStack);
         Random random = new Random();
         double randomValue = random.nextDouble();
-        System.out.println("Success Rate: " + successRate + ", Random Value: " + randomValue);  // Debugging line
         return randomValue < successRate;
     }
 
@@ -79,9 +75,7 @@ public class RefinementUtil {
         }
     }
     public static void handleSuccess(ItemStack slotOutput, int currentRefineLvl, DominatusItemEntry entry, PlayerEntity player) {
-        int newRefineLvl = currentRefineLvl + 1;
-        System.out.println(newRefineLvl);
-        updateRefinement(slotOutput,entry,newRefineLvl);
+        updateRefinement(slotOutput,entry,currentRefineLvl + 1);
         FailStackUtil.successRefine(player);
 //        AddRefineSoundPayloadS2C.send(serverPlayer, player.getId(), RefineUtil.RefineSound.SUCCESS.select());
     }
