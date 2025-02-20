@@ -98,7 +98,7 @@ public final class RefineScreen
             context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("???").formatted(Formatting.OBFUSCATED), 201, 78, 0xE0E0E0);
             context.getMatrices().pop();
         }
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.of("Failstack: " + ModEntityComponents.FAILSTACK_COMPONENT.get(handler.getPlayer()).getFailstack()), 132, 10, 0xE0E0E0);
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.of("Failstack: " + ModEntityComponents.FAILSTACK_COMPONENT.get(handler.getPlayer()).getFailstack()), 134, 32, 0xE0E0E0);
     }
 
     @Override
