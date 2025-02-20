@@ -12,16 +12,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import sypztep.dominatus.Dominatus;
+import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.payload.RefinePayloadC2S;
 import sypztep.dominatus.common.screen.RefineScreenHandler;
-import sypztep.dominatus.common.util.FailStackUtil;
-import sypztep.dominatus.common.util.RefinementUtil;
+import sypztep.dominatus.common.util.RefinementCalculator;
+import sypztep.dominatus.common.util.RefinementManager;
 
 @Environment(EnvType.CLIENT)
 public final class RefineScreen
@@ -84,23 +84,81 @@ public final class RefineScreen
         float scale = 0.75f;
         int x = (int) (32 / scale);
         int y = (int) (74 / scale);
-        double successRate = FailStackUtil.getSuccessRate() * 100;
-        String formattedSuccessRate = String.format("%.2f%%", successRate);
+
         ItemStack stack = handler.getSlot(1).getStack();
-        boolean bl = handler.isValidItem(stack);
-        boolean bl2 = stack.contains(ModDataComponents.REFINEMENT);
-        if (bl && bl2) {
-            context.getMatrices().push();
-            context.getMatrices().scale(scale, scale, 0);
-            if (RefinementUtil.getRefineLvl(stack) != 20)
-                context.drawCenteredTextWithShadow(this.textRenderer, Text.of("Rate: " + formattedSuccessRate), x + 80, y - 35, 0xE0E0E0);
-            else context.drawCenteredTextWithShadow(this.textRenderer, Text.of("Reach to max Refine Lvl!"), x + 80, y - 35, 0xE0E0E0);
-            context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("???").formatted(Formatting.OBFUSCATED), 201, 78, 0xE0E0E0);
-            context.getMatrices().pop();
+        if (!handler.isValidItem(stack) || !stack.contains(ModDataComponents.REFINEMENT)) {
+            // Only draw failstack if no valid item
+            drawFailstackCounter(context);
+            return;
         }
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.of("Failstack: " + ModEntityComponents.FAILSTACK_COMPONENT.get(handler.getPlayer()).getFailstack()), 134, 32, 0xE0E0E0);
+
+        // Get refinement data
+        Refinement refinement = stack.get(ModDataComponents.REFINEMENT);
+        if (refinement == null) return;
+
+        int currentLevel = refinement.refine();
+        if (currentLevel >= RefinementManager.MAX_ENHANCED_LEVEL) {
+            drawMaxLevelMessage(context, x, y, scale);
+        } else {
+            drawSuccessRate(context, x, y, scale, currentLevel);
+        }
+
+        // Always draw failstack counter
+        drawFailstackCounter(context);
     }
 
+    private void drawSuccessRate(DrawContext context, int x, int y, float scale, int currentLevel) {
+        int failStack = ModEntityComponents.FAILSTACK_COMPONENT.get(handler.getPlayer()).getFailstack();
+        double successRate = RefinementCalculator.calculateSuccessRate(currentLevel, failStack) * 100;
+        String formattedSuccessRate = String.format("%.2f%%", successRate);
+
+        context.getMatrices().push();
+        context.getMatrices().scale(scale, scale, 0);
+        context.drawCenteredTextWithShadow(
+                this.textRenderer,
+                Text.of("Rate: " + formattedSuccessRate),
+                x + 80,
+                y - 35,
+                getSuccessRateColor(successRate)
+        );
+        context.getMatrices().pop();
+    }
+
+    private void drawMaxLevelMessage(DrawContext context, int x, int y, float scale) {
+        context.getMatrices().push();
+        context.getMatrices().scale(scale, scale, 0);
+        context.drawCenteredTextWithShadow(
+                this.textRenderer,
+                Text.of("Reach to max Refine Lvl!"),
+                x + 80,
+                y - 35,
+                0xFFD700 // Gold color for max level
+        );
+        context.getMatrices().pop();
+    }
+
+    private void drawFailstackCounter(DrawContext context) {
+        int failstack = ModEntityComponents.FAILSTACK_COMPONENT.get(handler.getPlayer()).getFailstack();
+        context.drawCenteredTextWithShadow(
+                this.textRenderer,
+                Text.of("Failstack: " + failstack),
+                134,
+                32,
+                getFailstackColor(failstack)
+        );
+    }
+
+    private int getSuccessRateColor(double rate) {
+        if (rate >= 90.0) return 0x00FF00; // Green
+        if (rate >= 50.0) return 0xFFFF00; // Yellow
+        return 0xFF6B6B; // Red
+    }
+
+    private int getFailstackColor(int failstack) {
+        if (failstack >= 30) return 0x00FF00; // Green
+        if (failstack >= 15) return 0xFFFF00; // Yellow
+        return 0xE0E0E0; // Default gray
+    }
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int i = (this.width - this.backgroundWidth) / 2;
