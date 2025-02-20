@@ -15,8 +15,6 @@ import sypztep.dominatus.common.data.DominatusItemEntry;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DominatusItemReloadListener implements SimpleSynchronousResourceReloadListener {
     private static final Identifier ID = Dominatus.id("penomioritemdata");
@@ -39,7 +37,7 @@ public class DominatusItemReloadListener implements SimpleSynchronousResourceRel
                     String namespace = identifier.getNamespace(); // e.g., "minecraft" or "pointblank"
                     String pathStr = identifier.getPath().substring(identifier.getPath().indexOf("/") + 1, identifier.getPath().length() - 5).replace("/", ":");
                     Identifier itemId = Identifier.of(namespace,pathStr);
-                    if (isVanilla) {
+                    if (isVanilla) { // if true it will use the vanilla namespace
                         itemId = Identifier.ofVanilla(itemId.getPath());
                     }
                     Item item = Registries.ITEM.get(itemId);
