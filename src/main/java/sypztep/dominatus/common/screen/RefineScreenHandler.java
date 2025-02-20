@@ -40,7 +40,7 @@ public class RefineScreenHandler extends ScreenHandler {
 
         this.context = context;
         this.player = playerInventory.player;
-        addSlot(new Slot(this.inventory, 0, 79, 7) {
+        addSlot(new Slot(this.inventory, 0, 80, 7) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return isRefineMaterial(stack);
@@ -52,7 +52,7 @@ public class RefineScreenHandler extends ScreenHandler {
                 return isValidItem(stack);
             }
         });
-        addSlot(new Slot(this.inventory, 2, 79, 27) {
+        addSlot(new Slot(this.inventory, 2, 80, 27) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return false;
@@ -170,14 +170,12 @@ public class RefineScreenHandler extends ScreenHandler {
         int endProtect = itemData.endProtection();
         int failStack = ModEntityComponents.FAILSTACK_COMPONENT.get(this.player).getFailstack();
         int repairPoint = itemData.repairpoint();
-        ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
 
         if (isValidItem(slotOutput) && currentRefineLvl < maxLvl && durability > 0 && !isRepairMaterial(materialInput)) {
-//            RefinementUtil.updateRefinement(slotOutput,itemData,currentRefineLvl);
-//            RefineUtil.processRefinement(slotOutput, failStack, currentRefineLvl, maxLvl, startAccuracy, endAccuracy, startEvasion, endEvasion, startDamage, endDamage, startProtect, endProtect, serverPlayer, player);
+            RefinementUtil.processRefinement(slotOutput, failStack, currentRefineLvl, itemData, player);
             this.decrementStack();
         } else {
-//            RefineUtil.processRepair(materialInput, slotOutput, maxDurability, durability, repairPoint, serverPlayer, player);
+//            RefinementUtil.processRepair(materialInput, slotOutput, maxDurability, durability, repairPoint, serverPlayer, player);
             this.decrementStack();
         }
     }
