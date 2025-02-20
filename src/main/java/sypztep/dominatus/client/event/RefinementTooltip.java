@@ -30,14 +30,14 @@ public final class RefinementTooltip implements ItemTooltipCallback {
             addTooltipLine(lines, "Protection", refinement.protection());
 
             // Optional: Add success rate information if available
-            if (stack.get(ModDataComponents.REFINEMENT).refine() < RefinementManager.MAX_ENHANCED_LEVEL) {
-                int failStack = 0; // You might want to get this from somewhere
-                double successRate = RefinementCalculator.calculateSuccessRate(
-                        refinement.refine(),
-                        failStack
-                );
-                addTooltipLine(lines, "Success Rate", String.format("%.1f%%", successRate * 100));
-            }
+//            if (stack.get(ModDataComponents.REFINEMENT).refine() < RefinementManager.MAX_ENHANCED_LEVEL) {
+//                int failStack = 0; // You might want to get this from somewhere
+//                double successRate = RefinementCalculator.calculateSuccessRate(
+//                        refinement.refine(),
+//                        failStack
+//                );
+//                addTooltipLine(lines, "Success Rate", String.format("%.1f%%", successRate * 100));
+//            }
         }
     }
 

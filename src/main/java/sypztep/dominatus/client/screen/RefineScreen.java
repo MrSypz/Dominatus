@@ -15,6 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import sypztep.dominatus.Dominatus;
+import sypztep.dominatus.common.data.DominatusItemEntry;
 import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModEntityComponents;
@@ -41,6 +42,10 @@ public final class RefineScreen
 //            ModItems.REFINE_ARMORENFORGE_STONE.getDefaultStack(),
 //            ModItems.MOONLIGHT_CRESCENT.getDefaultStack()
 //    );
+
+    private static final int STAT_START_X = 10; // Left side position
+    private static final int STAT_START_Y = 20; // Starting Y position
+    private static final int STAT_SPACING = 10; // Spacing between stats
 
     public RefineScreen(RefineScreenHandler handler, PlayerInventory playerInventory, Text title) {
         super(handler, playerInventory, Text.translatable(Dominatus.MODID + ".refine_screen"));
@@ -87,7 +92,6 @@ public final class RefineScreen
 
         ItemStack stack = handler.getSlot(1).getStack();
         if (!handler.isValidItem(stack) || !stack.contains(ModDataComponents.REFINEMENT)) {
-            // Only draw failstack if no valid item
             drawFailstackCounter(context);
             return;
         }
@@ -104,6 +108,10 @@ public final class RefineScreen
         }
 
         drawFailstackCounter(context);
+
+        if (handler.isValidItem(stack) && stack.contains(ModDataComponents.REFINEMENT)) {
+            drawComparisonStats(context, stack);
+        }
     }
 
     private void drawSuccessRate(DrawContext context, int x, int y, float scale, int currentLevel) {
@@ -116,7 +124,7 @@ public final class RefineScreen
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.of("Rate: " + formattedSuccessRate),
-                x + 80,
+                x + 138,
                 y - 35,
                 getSuccessRateColor(successRate)
         );
@@ -129,7 +137,7 @@ public final class RefineScreen
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.of("Reach to max Refine Lvl!"),
-                x + 80,
+                x + 138,
                 y - 35,
                 0xFFD700 // Gold color for max level
         );
@@ -202,5 +210,107 @@ public final class RefineScreen
         public void setDisabled(boolean disable) {
             this.disabled = disable;
         }
+    }
+
+    private void drawComparisonStats(DrawContext context, ItemStack stack) {
+        Refinement currentRef = stack.get(ModDataComponents.REFINEMENT);
+        if (currentRef == null) return;
+
+        int currentLevel = currentRef.refine();
+        if (currentLevel >= RefinementManager.MAX_ENHANCED_LEVEL) return;
+
+        DominatusItemEntry entry = DominatusItemEntry.getDominatusItemData(stack).orElse(null);
+        if (entry == null) return;
+
+        // Draw level comparison with scaling
+        float scale = 0.8f; // Reduce text scale
+        context.getMatrices().push();
+
+        context.getMatrices().scale(scale, scale, 1.0f);
+        String levelText = String.format("%d → %d", currentLevel, currentLevel + 1);
+        float scaledX = STAT_START_X / scale;
+        float scaledY = STAT_START_Y / scale;
+        context.drawTextWithShadow(textRenderer, Text.literal("Refine Level"),
+                (int)scaledX, (int)scaledY - 13, 0xFFFFFF);
+        context.drawTextWithShadow(textRenderer, Text.literal(levelText),
+                (int)scaledX, (int)scaledY, 0xFFFFFF);
+        context.getMatrices().pop();
+
+        int y = STAT_START_Y + STAT_SPACING + 5;
+
+        // Draw stat comparisons
+        drawStatComparison(context, "ACC",
+                currentRef.accuracy(),
+                RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                        entry.startAccuracy(), entry.endAccuracy()),
+                y);
+        y += STAT_SPACING;
+
+        drawStatComparison(context, "EVA",
+                currentRef.evasion(),
+                RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                        entry.startEvasion(), entry.endEvasion()),
+                y);
+        y += STAT_SPACING;
+
+        drawStatComparison(context, "DMG",
+                currentRef.damage(),
+                RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                        entry.starDamage(), entry.endDamage()),
+                y);
+        y += STAT_SPACING;
+
+        drawStatComparison(context, "DEF",
+                currentRef.protection(),
+                RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                        entry.startProtection(), entry.endProtection()),
+                y);
+    }
+
+    private void drawStatComparison(DrawContext context, String statName, Number currentValue, Number nextValue, int y) {
+        float scale = 0.55f;
+        context.getMatrices().push();
+        context.getMatrices().scale(scale, scale, 1.0f);
+
+        String text;
+        int color;
+        double diff = nextValue.doubleValue() - currentValue.doubleValue();
+
+        if (diff > 0) {
+            color = 0x00FF00;
+            text = String.format("%s: %s→%s (%s)", // Fixed spacing here
+                    statName,
+                    formatValue(currentValue),
+                    formatValue(nextValue),
+                    "+" + formatValue(diff));
+        } else if (diff < 0) {
+            color = 0xFF0000;
+            text = String.format("%s: %s→%s (%s)", // Fixed spacing here
+                    statName,
+                    formatValue(currentValue),
+                    formatValue(nextValue),
+                    formatValue(diff));
+        } else {
+            color = 0xFFFFFF;
+            text = String.format("%s: %s→%s",
+                    statName,
+                    formatValue(currentValue),
+                    formatValue(nextValue));
+        }
+
+        float scaledX = STAT_START_X / scale;
+        float scaledY = y / scale;
+
+        context.drawTextWithShadow(textRenderer, Text.literal(text),
+                (int)scaledX, (int)scaledY, color);
+
+        context.getMatrices().pop();
+    }
+
+    private String formatValue(Number value) {
+        if (value instanceof Float || value instanceof Double) {
+            return String.format("%.1f", value.doubleValue());
+        }
+        return String.valueOf(value.intValue());
     }
 }
