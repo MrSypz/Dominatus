@@ -16,9 +16,9 @@ import sypztep.dominatus.common.util.RefinementUtil;
 
 @Mixin(Item.class)
 public abstract class ItemMixin implements ComponentHolder {
-
     @Inject(method = "onCraftByPlayer", at = @At("HEAD"))
     public void onCraft(ItemStack stack, World world, PlayerEntity player, CallbackInfo ci) {
+        System.out.println("is Present"+DominatusItemEntry.getDominatusItemData(stack).isPresent());
         if (!stack.isEmpty() && DominatusItemEntry.getDominatusItemData(stack).isPresent()) {
             RefinementUtil.setRefinement(stack, new Refinement(0, 0, 0, 100, 0.0f, 0));
         }

@@ -54,14 +54,6 @@ public class DominatusItemReloadListener implements SimpleSynchronousResourceRel
 
                     JsonObject itemProperties = object.getAsJsonObject("itemProperties");
 
-                    JsonObject failstackRate = object.getAsJsonObject("failstackRate");
-                    Map<Integer, Float> failstackRates = new HashMap<>();
-                    for (Map.Entry<String, JsonElement> entry : failstackRate.entrySet()) {
-                        int level = Integer.parseInt(entry.getKey()); // Get level as integer
-                        float rate = entry.getValue().getAsFloat();   // Get success rate as float
-                        failstackRates.put(level, rate);
-                    }
-
                     int maxLvl = itemProperties.get("maxLvl").getAsInt();
                     int startAccuracy = itemProperties.get("startAccuracy").getAsInt();
                     int endAccuracy = itemProperties.get("endAccuracy").getAsInt();
@@ -85,8 +77,7 @@ public class DominatusItemReloadListener implements SimpleSynchronousResourceRel
                             endDamage,
                             startProtection,
                             endProtection,
-                            repairpoint,
-                            failstackRates
+                            repairpoint
                     );
 
                     DominatusItemEntry.DOMINATUS_ITEM_ENTRY_MAP.put(Registries.ITEM.getEntry(item), entry);

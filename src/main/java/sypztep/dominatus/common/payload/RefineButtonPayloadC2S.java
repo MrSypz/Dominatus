@@ -13,6 +13,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import sypztep.dominatus.common.screen.RefineScreenHandler;
 
 public record RefineButtonPayloadC2S() implements CustomPayload {
     public static final Id<RefineButtonPayloadC2S> ID = CustomPayload.id("refine_button");

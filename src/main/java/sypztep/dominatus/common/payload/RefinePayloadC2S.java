@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
+import sypztep.dominatus.common.screen.RefineScreenHandler;
 
 public record RefinePayloadC2S() implements CustomPayload {
     public static final Id<RefinePayloadC2S> ID = CustomPayload.id("refined");

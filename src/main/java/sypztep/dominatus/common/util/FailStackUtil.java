@@ -8,8 +8,18 @@ import sypztep.dominatus.common.init.ModEntityComponents;
 import java.util.Optional;
 
 public class FailStackUtil {
+    private static final double[] normalSuccessRates = {
+            100.0, 95.0, 90.0, 80.0, 70.0, 60.0, 50.0, 40.0, 30.0, 20.0, 10.0,
+            9.0, 8.0, 7.0, 6.0, 5.0, // Levels 1-15
+            25.0, // PRI (16)
+            17.5, // DUO (17)
+            12.5, // TRI (18)
+            7.5,  // TET (19)
+            2.5   // PEN (20)
+    };
+    private static final double SUCCESS_RATE_CAP = 90.0; // Cap for success rate
     private static double successRate;
-    private static final float SUCCESS_RATE_CAP = 90.0F; // Cap for success rate
+    //------------set-----------//
 
     public static double getSuccessRate() {
         return successRate;
@@ -18,34 +28,21 @@ public class FailStackUtil {
     private static void setSuccessRate(double v) {
         successRate = v;
     }
-
-    // Calculate Success Rate based on item and failstack
-    private static double calculateSuccessRate(ItemStack slotOutput, int failStack) {
-        Optional<DominatusItemEntry> itemDataOpt = DominatusItemEntry.getDominatusItemData(slotOutput);
-        if (itemDataOpt.isEmpty()) return 0.0; // If item data is not found, return 0.0
-
-
-        DominatusItemEntry itemData = itemDataOpt.get();
-
-        // Check if the failstack rate exists for the given failstack level
-        Float failstackRate = itemData.failStackRates().get(failStack);
-        if (failstackRate == null) return 0.0; // If no specific failstack rate for the level, return 0.0
-
-        // Get the base success rate for the item based on its refine level
+    public static double calculateSuccessRate(ItemStack slotOutput, int failStack) {
         int currentRefineLvl = RefinementUtil.getRefineLvl(slotOutput);
-        if (currentRefineLvl >= itemData.maxLvl()) return 0.0; // Handle out-of-bounds refine level
+        if (currentRefineLvl >= normalSuccessRates.length)
+            return 0.0; // or handle appropriately for out-of-bounds condition
 
-        // Get the base success rate from the item data and adjust based on failstack rate
-        double baseSuccessRate = failstackRate;
+        double baseSuccessRate = normalSuccessRates[currentRefineLvl] * 0.01;
         double successRate = baseSuccessRate + (failStack * (baseSuccessRate * 0.1));
-        return Math.min(successRate, SUCCESS_RATE_CAP * 0.01); // Apply success rate cap
-    }
+        successRate = Math.min(successRate, SUCCESS_RATE_CAP * 0.01);
 
+        return successRate;
+    }
     // Method to calculate and set the success rate for an item
     public static void getCalculateSuccessRate(ItemStack slotOutput, int failStack) {
         setSuccessRate(calculateSuccessRate(slotOutput, failStack));
     }
-
     // Handle success refinement
     public static void successRefine(PlayerEntity player) {
         ModEntityComponents.FAILSTACK_COMPONENT.get(player).setFailstack(0);

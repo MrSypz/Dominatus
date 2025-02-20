@@ -21,8 +21,7 @@ public record DominatusItemEntry(
         float endDamage,
         int startProtection,
         int endProtection,
-        int repairpoint,
-        Map<Integer, Float> failStackRates
+        int repairpoint
 ) {
     public static final Map<RegistryEntry<Item>, DominatusItemEntry> DOMINATUS_ITEM_ENTRY_MAP = new HashMap<>();
 

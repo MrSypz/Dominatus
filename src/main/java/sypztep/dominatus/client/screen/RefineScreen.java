@@ -19,6 +19,7 @@ import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.payload.RefinePayloadC2S;
+import sypztep.dominatus.common.screen.RefineScreenHandler;
 import sypztep.dominatus.common.util.FailStackUtil;
 import sypztep.dominatus.common.util.RefinementUtil;
 
