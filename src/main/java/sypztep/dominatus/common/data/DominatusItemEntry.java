@@ -35,7 +35,6 @@ public record DominatusItemEntry(
         RegistryEntry<Item> itemEntry = Registries.ITEM.getEntry(itemIdentifier).orElse(null);
         return Optional.ofNullable(DOMINATUS_ITEM_ENTRY_MAP.get(itemEntry));
     }
-    // get the item id from the item stack exam minecraft:stone
     public static String getItemId(ItemStack stack) {
         return Registries.ITEM.getId(stack.getItem()).toString();
     }
