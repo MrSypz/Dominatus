@@ -11,15 +11,13 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import sypztep.dominatus.client.payload.RefinePayloadS2C;
 import sypztep.dominatus.common.data.DominatusItemEntry;
+import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.init.ModItems;
 import sypztep.dominatus.common.init.ModScreenHandler;
-import sypztep.dominatus.common.util.FailStackUtil;
-import sypztep.dominatus.common.util.RefinementUtil;
-
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import sypztep.dominatus.common.util.RefinementCalculator;
+import sypztep.dominatus.common.util.RefinementManager;
 
 public class RefineScreenHandler extends ScreenHandler {
     private final Inventory inventory = new SimpleInventory(3) {
@@ -83,44 +81,34 @@ public class RefineScreenHandler extends ScreenHandler {
         boolean allSlotInsert = this.getSlot(0).hasStack() && this.getSlot(1).hasStack();
         boolean canRefine = false;
 
-        if (allSlotInsert && isValidItem(slotOutput) && RefinementUtil.getRefineLvl(slotOutput) < 20) {
-            boolean isArmor = slotOutput.getItem() instanceof ArmorItem;
-            boolean isRefined = slotOutput.get(ModDataComponents.REFINEMENT) != null;
-            int currentRefineLvl = RefinementUtil.getRefineLvl(slotOutput);
-            int currentDurability = RefinementUtil.getDurability(slotOutput);
+        if (allSlotInsert && isValidItem(slotOutput)) {
+            if (!slotOutput.contains(ModDataComponents.REFINEMENT)) {
+                RefinementManager.initializeRefinement(slotOutput);
+            }
 
-            // Determine if refinement is possible based on item type and material
-            if (!isRefined) {
-                if (!isArmor) {
-                    canRefine = material.isOf(ModItems.REFINE_WEAPON_STONE);
-                } else {
-                    canRefine = material.isOf(ModItems.REFINE_ARMOR_STONE);
+            // Get current refinement state
+            Refinement currentRef = slotOutput.get(ModDataComponents.REFINEMENT);
+            int currentRefineLvl = currentRef.refine();
+            int currentDurability = currentRef.durability();
+
+            if (currentRefineLvl < RefinementManager.MAX_ENHANCED_LEVEL) {
+                if (isRepairMaterial(material) && currentDurability < 100) {
+                    canRefine = true;
                 }
-            } else if (currentDurability > 20){
-                if (!isArmor) {
-                    if (currentRefineLvl < 15) {
-                        canRefine = material.isOf(ModItems.REFINE_WEAPON_STONE);
-                    } else if (currentRefineLvl < 20) { //15 -> 19
-                        canRefine = material.isOf(ModItems.REFINE_WEAPONENFORGE_STONE);
-                    }
-                } else {
-                    // Armor refinement logic
-                    if (currentRefineLvl < 15) {
-                        canRefine = material.isOf(ModItems.REFINE_ARMOR_STONE);
-                    } else if (currentRefineLvl < 20)
-                        canRefine = material.isOf(ModItems.REFINE_ARMORENFORGE_STONE);
+                else if (currentDurability > 20) {
+                    canRefine = RefinementManager.MaterialValidator.isValidMaterial(material, slotOutput, currentRefineLvl);
                 }
             }
-            // Additional condition for repairable items
-            if (isRepairMaterial(material) && currentDurability < 100 && isRefined) {
-                canRefine = true;
+
+            // Calculate success rate for valid refinement attempts
+            if (canRefine) {
+                int failStack = ModEntityComponents.FAILSTACK_COMPONENT.get(this.player).getFailstack();
+                double successRate = RefinementCalculator.calculateSuccessRate(currentRefineLvl, failStack);
             }
         }
-        int failStack = ModEntityComponents.FAILSTACK_COMPONENT.get(this.player).getFailstack();
-        FailStackUtil.getCalculateSuccessRate(slotOutput, failStack);
+
         RefinePayloadS2C.send((ServerPlayerEntity) this.player, !canRefine);
     }
-
 
     @Override
     public void onClosed(PlayerEntity player) {
@@ -147,37 +135,26 @@ public class RefineScreenHandler extends ScreenHandler {
     }
 
     public void refine() {
-        ItemStack materialInput = this.getSlot(0).getStack();
-        ItemStack slotOutput = this.getSlot(1).getStack();
-
-        String itemID = DominatusItemEntry.getItemId(slotOutput);
-        DominatusItemEntry itemData = DominatusItemEntry.getDominatusItemData(itemID)
-                .orElseThrow(() -> new NoSuchElementException("Item data not found for item ID: " + itemID));
-
-//        RefinementUtil.setRefinement(slotOutput, 0,0,0,100,0,0); // Initialize item data if null
-
-        // Predefine variables
-        int currentRefineLvl = RefinementUtil.getRefineLvl(slotOutput);
-        int maxLvl = itemData.maxLvl();
-        int startAccuracy = itemData.startAccuracy();
-        int endAccuracy = itemData.endAccuracy();
-        int startEvasion = itemData.startEvasion();
-        int endEvasion = itemData.endEvasion();
-        int durability = RefinementUtil.getDurability(slotOutput);
-        int maxDurability = itemData.maxDurability();
-        float startDamage = itemData.starDamage();
-        float endDamage = itemData.endDamage();
-        int startProtect = itemData.startProtection();
-        int endProtect = itemData.endProtection();
+        ItemStack item = this.getSlot(1).getStack();
+        ItemStack material = this.getSlot(0).getStack();
         int failStack = ModEntityComponents.FAILSTACK_COMPONENT.get(this.player).getFailstack();
-        int repairPoint = itemData.repairpoint();
-    System.out.println("Refine: "+Objects.requireNonNull(slotOutput.get(ModDataComponents.REFINEMENT)).refine());
-        if (isValidItem(slotOutput) && currentRefineLvl < maxLvl && durability > 0 && !isRepairMaterial(materialInput)) {
-            RefinementUtil.processRefinement(slotOutput, failStack, currentRefineLvl, itemData, player);
+
+        RefinementManager.RefinementResult result = RefinementManager.processRefinement(
+                item,
+                material,
+                failStack
+        );
+
+        ModEntityComponents.FAILSTACK_COMPONENT.get(this.player).setFailstack(result.newFailStack());
+
+        if (result.consumeMaterial()) {
             this.decrementStack();
+        }
+
+        if (result.success()) {
+            // TODO: Send success message/sound
         } else {
-//            RefinementUtil.processRepair(materialInput, slotOutput, maxDurability, durability, repairPoint, serverPlayer, player);
-            this.decrementStack();
+            // TODO: Send failure message/sound
         }
     }
 
@@ -197,31 +174,34 @@ public class RefineScreenHandler extends ScreenHandler {
             ItemStack slotStack = slot.getStack();
             stack = slotStack.copy();
 
-            if (index < 3) { // 0, 1, 2 are container slots
+            if (index < 3) { // Container slots
                 if (!insertItem(slotStack, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickTransfer(slotStack, stack);
             } else {
+                // Handle material slots
                 if (isRefineMaterial(slotStack)) {
                     if (!insertItem(slotStack, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (isValidItem(slotStack)) {
+                }
+                // Handle refineable items
+                else if (isValidItem(slotStack)) {
+                    if (!slotStack.contains(ModDataComponents.REFINEMENT)) {
+                        RefinementManager.initializeRefinement(slotStack);
+                    }
                     if (!insertItem(slotStack, 1, 2, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (slotStack.isOf(Items.COPPER_INGOT)) {
-                    if (!insertItem(slotStack, 2, 3, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else {
-                    if (index < 30) { // Player main inventory (excluding hotbar)
-                        if (!insertItem(slotStack, 30, 39, false)) { // Try hotbar
+                }
+                else {
+                    if (index < 30) { // From inventory to hotbar
+                        if (!insertItem(slotStack, 30, 39, false)) {
                             return ItemStack.EMPTY;
                         }
-                    } else if (index < 39) { // Hotbar
-                        if (!insertItem(slotStack, 3, 30, false)) { // Try main inventory
+                    } else if (index < 39) { // From hotbar to inventory
+                        if (!insertItem(slotStack, 3, 30, false)) {
                             return ItemStack.EMPTY;
                         }
                     } else {
@@ -230,6 +210,7 @@ public class RefineScreenHandler extends ScreenHandler {
                 }
             }
 
+            // Update slot states
             if (slotStack.isEmpty()) {
                 slot.setStack(ItemStack.EMPTY);
             } else {
