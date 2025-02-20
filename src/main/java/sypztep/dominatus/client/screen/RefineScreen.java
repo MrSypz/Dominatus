@@ -103,7 +103,6 @@ public final class RefineScreen
             drawSuccessRate(context, x, y, scale, currentLevel);
         }
 
-        // Always draw failstack counter
         drawFailstackCounter(context);
     }
 
@@ -142,7 +141,7 @@ public final class RefineScreen
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.of("Failstack: " + failstack),
-                134,
+                138,
                 32,
                 getFailstackColor(failstack)
         );

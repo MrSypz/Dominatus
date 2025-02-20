@@ -43,11 +43,11 @@ public class RefinementDataProvider implements DataProvider {
 
         // Swords
         futures.add(generateWeaponData(writer, Items.WOODEN_SWORD.toString(), true, 20, 15, 65, 8, 45, 100, 8, 25, 3, 12, 10));
-        futures.add(generateWeaponData(writer, Items.STONE_SWORD.toString(), true, 20, 18, 70, 10, 48, 120, 10, 28, 4, 14, 12));
-        futures.add(generateWeaponData(writer, Items.IRON_SWORD.toString(), true, 20, 22, 75, 12, 52, 150, 12, 32, 5, 16, 15));
-        futures.add(generateWeaponData(writer, Items.GOLDEN_SWORD.toString(), true, 20, 25, 78, 15, 55, 140, 15, 35, 6, 18, 20));
-        futures.add(generateWeaponData(writer, Items.DIAMOND_SWORD.toString(), true, 20, 28, 82, 18, 58, 200, 18, 40, 8, 22, 25));
-        futures.add(generateWeaponData(writer, Items.NETHERITE_SWORD.toString(), true, 20, 32, 88, 20, 62, 250, 22, 45, 10, 25, 30));
+        futures.add(generateWeaponData(writer, Items.STONE_SWORD.toString(), true, 20, 18, 70, 10, 48, 100, 10, 28, 4, 14, 12));
+        futures.add(generateWeaponData(writer, Items.IRON_SWORD.toString(), true, 20, 22, 75, 12, 52, 100, 12, 32, 5, 16, 15));
+        futures.add(generateWeaponData(writer, Items.GOLDEN_SWORD.toString(), true, 20, 25, 78, 15, 55, 100, 15, 35, 6, 18, 20));
+        futures.add(generateWeaponData(writer, Items.DIAMOND_SWORD.toString(), true, 20, 28, 82, 18, 58, 100, 18, 40, 8, 22, 25));
+        futures.add(generateWeaponData(writer, Items.NETHERITE_SWORD.toString(), true, 20, 32, 88, 20, 62, 100, 22, 45, 10, 25, 30));
 
         // Axes
         futures.add(generateWeaponData(writer, Items.WOODEN_AXE.toString(), true, 20, 12, 60, 5, 40, 90, 9, 26, 2, 10, 10));
