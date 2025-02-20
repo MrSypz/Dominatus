@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sypztep.dominatus.common.data.DominatusItemEntry;
 import sypztep.dominatus.common.data.Refinement;
-import sypztep.dominatus.common.util.RefinementUtil;
+import sypztep.dominatus.common.util.RefinementManager;
 
 
 @Mixin(Item.class)
@@ -20,7 +20,7 @@ public abstract class ItemMixin implements ComponentHolder {
     public void onCraft(ItemStack stack, World world, PlayerEntity player, CallbackInfo ci) {
         System.out.println("is Present"+DominatusItemEntry.getDominatusItemData(stack).isPresent());
         if (!stack.isEmpty() && DominatusItemEntry.getDominatusItemData(stack).isPresent()) {
-            RefinementUtil.setRefinement(stack, new Refinement(0, 0, 0, 100, 0.0f, 0));
+            RefinementManager.initializeRefinement(stack);
         }
     }
 }
