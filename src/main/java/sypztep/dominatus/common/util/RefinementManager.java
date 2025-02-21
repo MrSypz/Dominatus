@@ -98,6 +98,17 @@ public class RefinementManager {
         }
         int newDurability = Math.max(current.durability() - durabilityLoss, 0);
 
+        // Calculate and apply vanilla durability loss
+        if (item.isDamageable()) {
+            int maxVanillaDurability = item.getMaxDamage();
+            // Calculate percentage of custom durability lost
+            float durabilityLostPercent = (float)(current.durability() - newDurability) / getDominatusEntry(item).maxDurability();
+            // Apply same percentage to vanilla durability
+            int vanillaDurabilityLoss = Math.round(maxVanillaDurability * durabilityLostPercent);
+            int newVanillaDamage = Math.min(item.getDamage() + vanillaDurabilityLoss, maxVanillaDurability);
+            item.setDamage(newVanillaDamage);
+        }
+
         int failstackIncrease = currentLevel >= MAX_NORMAL_LEVEL ?
                 ENHANCED_FAILSTACK_INCREASE : // +2 failstacks for +15 to +20
                 NORMAL_FAILSTACK_INCREASE;    // +1 failstack for +1 to +14
@@ -163,6 +174,19 @@ public class RefinementManager {
     private static DominatusItemEntry getDominatusEntry(ItemStack item) {
         return DominatusItemEntry.getDominatusItemData(DominatusItemEntry.getItemId(item))
                 .orElseThrow(() -> new IllegalStateException("Invalid item for refinement"));
+    }
+
+    public static int getMaxAllowedVanillaRepair(ItemStack item) {
+        if (!item.isDamageable() || !item.contains(ModDataComponents.REFINEMENT)) {
+            return 0;
+        }
+
+        Refinement refinement = getRefinement(item);
+        DominatusItemEntry entry = getDominatusEntry(item);
+
+        float customDurabilityPercent = (float)refinement.durability() / entry.maxDurability();
+        int maxVanillaDurability = item.getMaxDamage();
+        return Math.round(maxVanillaDurability * (1 - customDurabilityPercent));
     }
 
     public static class MaterialValidator {
