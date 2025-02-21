@@ -43,9 +43,13 @@ public final class RefineScreen
 //            ModItems.MOONLIGHT_CRESCENT.getDefaultStack()
 //    );
 
-    private static final int STAT_START_X = 10; // Left side position
-    private static final int STAT_START_Y = 20; // Starting Y position
-    private static final int STAT_SPACING = 10; // Spacing between stats
+    private static final int LEFT_LABEL_X = -13;
+    private static final int LEFT_LABEL_START_Y = 35;
+    private static final int STAT_SPACING = 10;
+    private static final int VALUE_X = 10;
+    // Constants for main area values
+    private static final int MAIN_VALUE_X = 10;
+    private static final int MAIN_VALUE_START_Y = 30;
 
     public RefineScreen(RefineScreenHandler handler, PlayerInventory playerInventory, Text title) {
         super(handler, playerInventory, Text.translatable(Dominatus.MODID + ".refine_screen"));
@@ -114,6 +118,11 @@ public final class RefineScreen
         }
     }
 
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return super.isMouseOver(mouseX, mouseY);
+    }
+
     private void drawSuccessRate(DrawContext context, int x, int y, float scale, int currentLevel) {
         int failStack = ModEntityComponents.FAILSTACK_COMPONENT.get(handler.getPlayer()).getFailstack();
         double successRate = RefinementCalculator.calculateSuccessRate(currentLevel, failStack) * 100;
@@ -124,9 +133,9 @@ public final class RefineScreen
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.of("Rate: " + formattedSuccessRate),
-                x + 138,
-                y - 35,
-                getSuccessRateColor(successRate)
+                x + 144,
+                y - 30,
+                0xE0E0E0
         );
         context.getMatrices().pop();
     }
@@ -137,7 +146,7 @@ public final class RefineScreen
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.of("Reach to max Refine Lvl!"),
-                x + 138,
+                x + 140,
                 y - 35,
                 0xFFD700 // Gold color for max level
         );
@@ -149,16 +158,10 @@ public final class RefineScreen
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.of("Failstack: " + failstack),
-                138,
-                32,
+                140,
+                36,
                 getFailstackColor(failstack)
         );
-    }
-
-    private int getSuccessRateColor(double rate) {
-        if (rate >= 90.0) return 0x00FF00; // Green
-        if (rate >= 50.0) return 0xFFFF00; // Yellow
-        return 0xFF6B6B; // Red
     }
 
     private int getFailstackColor(int failstack) {
@@ -171,6 +174,8 @@ public final class RefineScreen
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0, 0,175,166, 256,256);
+        // Small box area for hold extra like EVA ACC DMG DEF
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE,i - 23,j + 24, 176,54,24,57, 256,256);
     }
 
     @Override
@@ -222,87 +227,92 @@ public final class RefineScreen
         DominatusItemEntry entry = DominatusItemEntry.getDominatusItemData(stack).orElse(null);
         if (entry == null) return;
 
-        // Draw level comparison with scaling
-        float scale = 0.8f; // Reduce text scale
-        context.getMatrices().push();
+        // Draw level info at the top of main area
+        drawLevelInfo(context, currentLevel);
 
-        context.getMatrices().scale(scale, scale, 1.0f);
-        String levelText = String.format("%d → %d", currentLevel, currentLevel + 1);
-        float scaledX = STAT_START_X / scale;
-        float scaledY = STAT_START_Y / scale;
-        context.drawTextWithShadow(textRenderer, Text.literal("Refine Level"),
-                (int)scaledX, (int)scaledY - 13, 0xFFFFFF);
-        context.drawTextWithShadow(textRenderer, Text.literal(levelText),
-                (int)scaledX, (int)scaledY, 0xFFFFFF);
-        context.getMatrices().pop();
-
-        int y = STAT_START_Y + STAT_SPACING + 5;
-
-        // Draw stat comparisons
-        drawStatComparison(context, "ACC",
-                currentRef.accuracy(),
-                RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
-                        entry.startAccuracy(), entry.endAccuracy()),
-                y);
-        y += STAT_SPACING;
-
-        drawStatComparison(context, "EVA",
-                currentRef.evasion(),
-                RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
-                        entry.startEvasion(), entry.endEvasion()),
-                y);
-        y += STAT_SPACING;
-
-        drawStatComparison(context, "DMG",
-                currentRef.damage(),
-                RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
-                        entry.starDamage(), entry.endDamage()),
-                y);
-        y += STAT_SPACING;
-
-        drawStatComparison(context, "DEF",
-                currentRef.protection(),
-                RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
-                        entry.startProtection(), entry.endProtection()),
-                y);
+        // Draw stats with aligned values
+        drawStatsWithValues(context, currentRef, currentLevel, entry);
     }
 
-    private void drawStatComparison(DrawContext context, String statName, Number currentValue, Number nextValue, int y) {
-        float scale = 0.55f;
+    private void drawStatsWithValues(DrawContext context, Refinement currentRef, int currentLevel, DominatusItemEntry entry) {
+        float scale = 0.65f;
         context.getMatrices().push();
         context.getMatrices().scale(scale, scale, 1.0f);
 
-        String text;
-        int color;
-        double diff = nextValue.doubleValue() - currentValue.doubleValue();
+        // Stats data array to hold all stat pairs
+        StatPair[] stats = {
+                new StatPair("ACC:", currentRef.accuracy(),
+                        RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                                entry.startAccuracy(), entry.endAccuracy())),
+                new StatPair("EVA:", currentRef.evasion(),
+                        RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                                entry.startEvasion(), entry.endEvasion())),
+                new StatPair("DMG:", currentRef.damage(),
+                        RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                                entry.starDamage(), entry.endDamage())),
+                new StatPair("DEF:", currentRef.protection(),
+                        RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                                entry.startProtection(), entry.endProtection()))
+        };
 
-        if (diff > 0) {
-            color = 0x00FF00;
-            text = String.format("%s: %s→%s (%s)", // Fixed spacing here
-                    statName,
-                    formatValue(currentValue),
-                    formatValue(nextValue),
-                    "+" + formatValue(diff));
-        } else if (diff < 0) {
-            color = 0xFF0000;
-            text = String.format("%s: %s→%s (%s)", // Fixed spacing here
-                    statName,
-                    formatValue(currentValue),
-                    formatValue(nextValue),
-                    formatValue(diff));
-        } else {
-            color = 0xFFFFFF;
-            text = String.format("%s: %s→%s",
-                    statName,
-                    formatValue(currentValue),
-                    formatValue(nextValue));
+        float baseY = LEFT_LABEL_START_Y / scale;
+
+        // Draw each stat pair
+        for (int i = 0; i < stats.length; i++) {
+            float currentY = baseY + (i * STAT_SPACING / scale);
+
+            // Draw label in left box
+            context.drawTextWithShadow(textRenderer,
+                    Text.literal(stats[i].label),
+                    (int)(LEFT_LABEL_X / scale),
+                    (int)currentY,
+                    0xFFFFFF);
+
+            // Draw value in main area
+            drawStatValue(context,
+                    stats[i].current,
+                    stats[i].next,
+                    (int)(VALUE_X / scale),
+                    (int)currentY);
         }
 
-        float scaledX = STAT_START_X / scale;
-        float scaledY = y / scale;
+        context.getMatrices().pop();
+    }
+
+    // Helper record to store stat information
+    private record StatPair(String label, Number current, Number next) {}
+
+    private void drawStatValue(DrawContext context, Number currentValue, Number nextValue, int x, int y) {
+        double diff = nextValue.doubleValue() - currentValue.doubleValue();
+        int color = diff > 0 ? 0x00FF00 : (diff < 0 ? 0xFF0000 : 0xFFFFFF);
+
+        String text = String.format("%s→%s",
+                formatValue(currentValue),
+                formatValue(nextValue));
+
+        if (diff != 0) {
+            text += String.format(" (%s%s)",
+                    diff > 0 ? "+" : "",
+                    formatValue(diff));
+        }
 
         context.drawTextWithShadow(textRenderer, Text.literal(text),
-                (int)scaledX, (int)scaledY, color);
+                x, y, color);
+    }
+
+    private void drawLevelInfo(DrawContext context, int currentLevel) {
+        float scale = 0.8f;
+        context.getMatrices().push();
+        context.getMatrices().scale(scale, scale, 1.0f);
+
+        float scaledX = MAIN_VALUE_X / scale;
+        float scaledY = (MAIN_VALUE_START_Y - 15) / scale;
+
+        context.drawTextWithShadow(textRenderer, Text.literal("Refine Level"),
+                (int)scaledX, (int)scaledY - 8, 0xFFFFFF);
+        context.drawTextWithShadow(textRenderer, Text.literal(
+                        String.format("%d → %d", currentLevel, currentLevel + 1)),
+                (int)scaledX, (int)scaledY + 4, 0xFFFFFF);
 
         context.getMatrices().pop();
     }
