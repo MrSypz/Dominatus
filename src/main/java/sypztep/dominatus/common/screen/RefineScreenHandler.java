@@ -151,12 +151,6 @@ public class RefineScreenHandler extends ScreenHandler {
         if (result.consumeMaterial()) {
             this.decrementStack();
         }
-
-        if (result.success()) {
-            // TODO: Send success message/sound
-        } else {
-            // TODO: Send failure message/sound
-        }
     }
 
     private void decrementStack() {
