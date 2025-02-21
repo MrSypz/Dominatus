@@ -1,5 +1,7 @@
 package sypztep.dominatus.common.util;
 
+import net.minecraft.util.math.MathHelper;
+
 public class RefinementCalculator {
     // Base success rates for each enhancement level (0-20)
     private static final double[] SUCCESS_RATES = {
@@ -62,14 +64,14 @@ public class RefinementCalculator {
 
     public static int calculateStatValue(int currentLvl, int maxLvl, int startValue, int endValue) {
         if (currentLvl < 0 || currentLvl > maxLvl) {
-            throw new IllegalArgumentException("Input value out of range");
+            currentLvl = MathHelper.clamp(currentLvl, 0, maxLvl);
         }
         return calculateValue(currentLvl, maxLvl, startValue, endValue).intValue();
     }
 
     public static float calculateStatValue(int currentLvl, int maxLvl, float startValue, float endValue) {
         if (currentLvl < 0 || currentLvl > maxLvl) {
-            throw new IllegalArgumentException("Input value out of range");
+            currentLvl = MathHelper.clamp(currentLvl, 0, maxLvl);
         }
         return calculateValue(currentLvl, maxLvl, startValue, endValue).floatValue();
     }
