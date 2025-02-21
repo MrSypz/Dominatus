@@ -23,14 +23,14 @@ public class ModItems {
     public static Item MOONLIGHT_CRESCENT;
 
     public static void init() {
-        REFINE_WEAPON_STONE = register("refine_weapon_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_weapon_stone")))));
-        REFINE_ARMOR_STONE = register("refine_armor_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_armor_stone")))));
-        LOSS_FRAGMENT = register("loss_fragment", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.UNCOMMON).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("loss_fragment")))));
-        LAHAV_FRAGMENT = register("lahav_fragment", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.UNCOMMON).fireproof().registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("lahav_fragment")))));
-        REFINE_WEAPONENFORGE_STONE = register("refine_weapon_enforge_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.EPIC).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_weapon_enforge_stone")))));
-        REFINE_ARMORENFORGE_STONE = register("refine_armor_enforge_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.EPIC).fireproof().registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_armor_enforge_stone")))));
-        MAHILNANT = register("mahilnant", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("mahilnant")))));
-        MOONLIGHT_CRESCENT = register("moonlight_crescent", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("moonlight_crescent")))));
+        REFINE_WEAPON_STONE = register("refine_weapon_stone", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_weapon_stone")))));
+        REFINE_ARMOR_STONE = register("refine_armor_stone", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_armor_stone")))));
+        LOSS_FRAGMENT = register("loss_fragment", new RefinementStoneItem(new Item.Settings().rarity(Rarity.UNCOMMON).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("loss_fragment")))));
+        LAHAV_FRAGMENT = register("lahav_fragment", new RefinementStoneItem(new Item.Settings().rarity(Rarity.UNCOMMON).fireproof().registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("lahav_fragment")))));
+        REFINE_WEAPONENFORGE_STONE = register("refine_weapon_enforge_stone", new RefinementStoneItem(new Item.Settings().rarity(Rarity.EPIC).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_weapon_enforge_stone")))));
+        REFINE_ARMORENFORGE_STONE = register("refine_armor_enforge_stone", new RefinementStoneItem(new Item.Settings().rarity(Rarity.EPIC).fireproof().registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_armor_enforge_stone")))));
+        MAHILNANT = register("mahilnant", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("mahilnant")))));
+        MOONLIGHT_CRESCENT = register("moonlight_crescent", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("moonlight_crescent")))));
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
             content.addAfter(Items.DISC_FRAGMENT_5, ModItems.REFINE_ARMOR_STONE);
