@@ -39,84 +39,80 @@ public class RefinementDataProvider implements DataProvider {
     private List<CompletableFuture<?>> generateWeapons(DataWriter writer) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
 
-        // Swords (Like Liverto/Rosar variants)
         // Format: name, isVanilla, maxLvl, startAcc, endAcc, startEva(0), endEva(0), durability, startDmg, endDmg, startProt(0), endProt(0), repair
-        futures.add(generateWeaponData(writer, Items.WOODEN_SWORD.toString(), true, 15, 15, 45, 0, 0, 100, 8, 25, 0, 0, 10));
-        futures.add(generateWeaponData(writer, Items.STONE_SWORD.toString(), true, 15, 18, 48, 0, 0, 100, 12, 32, 0, 0, 12));
-        futures.add(generateWeaponData(writer, Items.IRON_SWORD.toString(), true, 15, 22, 52, 0, 0, 100, 16, 38, 0, 0, 15));
-        futures.add(generateWeaponData(writer, Items.GOLDEN_SWORD.toString(), true, 15, 28, 58, 0, 0, 100, 14, 35, 0, 0, 20)); // High accuracy, lower damage
-        futures.add(generateWeaponData(writer, Items.DIAMOND_SWORD.toString(), true, 15, 25, 55, 0, 0, 100, 20, 45, 0, 0, 25)); // Like Liverto
-        futures.add(generateWeaponData(writer, Items.NETHERITE_SWORD.toString(), true, 15, 30, 62, 0, 0, 100, 25, 52, 0, 0, 30)); // Better Liverto
+        futures.add(generateWeaponData(writer, Items.WOODEN_SWORD.toString(), true, 20, 42, 84, 0, 0, 100, 18, 33, 0, 0, 10));  // Green Grade
+        futures.add(generateWeaponData(writer, Items.STONE_SWORD.toString(), true, 20, 45, 86, 0, 0, 100, 21, 37, 0, 0, 10));   // Green Grade
+        futures.add(generateWeaponData(writer, Items.IRON_SWORD.toString(), true, 20, 48, 89, 0, 0, 100, 23, 39, 0, 0, 5));     // Blue Grade
+        futures.add(generateWeaponData(writer, Items.GOLDEN_SWORD.toString(), true, 20, 54, 96, 0, 0, 100, 25, 42, 0, 0, 5));   // Blue Grade
+        futures.add(generateWeaponData(writer, Items.DIAMOND_SWORD.toString(), true, 20, 68, 115, 0, 0, 100, 32, 54, 0, 0, 2)); // Yellow Grade
+        futures.add(generateWeaponData(writer, Items.NETHERITE_SWORD.toString(), true, 20, 72, 122, 0, 0, 100, 38, 62, 0, 0, 1)); // Boss Grade
 
-        // Axes (Higher damage, lower accuracy - like Iron/Steel axes in BDO)
-        futures.add(generateWeaponData(writer, Items.WOODEN_AXE.toString(), true, 15, 12, 38, 0, 0, 100, 10, 28, 0, 0, 10));
-        futures.add(generateWeaponData(writer, Items.STONE_AXE.toString(), true, 15, 15, 42, 0, 0, 100, 14, 35, 0, 0, 12));
-        futures.add(generateWeaponData(writer, Items.IRON_AXE.toString(), true, 15, 18, 45, 0, 0, 100, 18, 42, 0, 0, 15));
-        futures.add(generateWeaponData(writer, Items.DIAMOND_AXE.toString(), true, 15, 22, 48, 0, 0, 100, 24, 50, 0, 0, 20));
-        futures.add(generateWeaponData(writer, Items.NETHERITE_AXE.toString(), true, 15, 25, 52, 0, 0, 100, 28, 58, 0, 0, 25));
+        futures.add(generateWeaponData(writer, Items.WOODEN_AXE.toString(), true, 20, 38, 78, 0, 0, 100, 21, 36, 0, 0, 10));    // Green Grade
+        futures.add(generateWeaponData(writer, Items.STONE_AXE.toString(), true, 20, 42, 82, 0, 0, 100, 24, 40, 0, 0, 10));     // Green Grade
+        futures.add(generateWeaponData(writer, Items.IRON_AXE.toString(), true, 20, 45, 85, 0, 0, 100, 28, 45, 0, 0, 5));       // Blue Grade
+        futures.add(generateWeaponData(writer, Items.DIAMOND_AXE.toString(), true, 20, 62, 108, 0, 0, 100, 35, 58, 0, 0, 2));   // Yellow Grade
+        futures.add(generateWeaponData(writer, Items.NETHERITE_AXE.toString(), true, 20, 68, 115, 0, 0, 100, 42, 65, 0, 0, 1)); // Boss Grade
 
         return futures;
     }
 
-    // Armor sets rebalanced to focus on Protection and Evasion only
     private List<CompletableFuture<?>> generateLeatherArmor(DataWriter writer) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
-        // Leather - Like Agerian/Talis (Evasion focused)
-        // Format: name, isVanilla, maxLvl, startAcc(0), endAcc(0), startEva, endEva, durability, startDmg(0), endDmg(0), startProt, endProt, repair
-        futures.add(generateWeaponData(writer, Items.LEATHER_HELMET.toString(), true, 15, 0, 0, 12, 32, 100, 0, 0, 4, 15, 10));
-        futures.add(generateWeaponData(writer, Items.LEATHER_CHESTPLATE.toString(), true, 15, 0, 0, 15, 38, 100, 0, 0, 7, 22, 15));
-        futures.add(generateWeaponData(writer, Items.LEATHER_LEGGINGS.toString(), true, 15, 0, 0, 14, 35, 100, 0, 0, 6, 18, 12));
-        futures.add(generateWeaponData(writer, Items.LEATHER_BOOTS.toString(), true, 15, 0, 0, 16, 40, 100, 0, 0, 4, 15, 10));
+        // Leather - Green Grade
+        futures.add(generateWeaponData(writer, Items.LEATHER_HELMET.toString(), true, 20, 0, 0, 18, 38, 100, 0, 0, 14, 29, 10));
+        futures.add(generateWeaponData(writer, Items.LEATHER_CHESTPLATE.toString(), true, 20, 0, 0, 22, 42, 100, 0, 0, 28, 43, 10));
+        futures.add(generateWeaponData(writer, Items.LEATHER_LEGGINGS.toString(), true, 20, 0, 0, 16, 36, 100, 0, 0, 12, 27, 10));
+        futures.add(generateWeaponData(writer, Items.LEATHER_BOOTS.toString(), true, 20, 0, 0, 17, 37, 100, 0, 0, 13, 28, 10));
         return futures;
     }
 
     private List<CompletableFuture<?>> generateChainmailArmor(DataWriter writer) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
-        // Chainmail - Like Fortuna/Hercules (Balanced)
-        futures.add(generateWeaponData(writer, Items.CHAINMAIL_HELMET.toString(), true, 15, 0, 0, 10, 28, 100, 0, 0, 6, 18, 12));
-        futures.add(generateWeaponData(writer, Items.CHAINMAIL_CHESTPLATE.toString(), true, 15, 0, 0, 12, 32, 100, 0, 0, 10, 26, 18));
-        futures.add(generateWeaponData(writer, Items.CHAINMAIL_LEGGINGS.toString(), true, 15, 0, 0, 11, 30, 100, 0, 0, 8, 22, 15));
-        futures.add(generateWeaponData(writer, Items.CHAINMAIL_BOOTS.toString(), true, 15, 0, 0, 13, 34, 100, 0, 0, 6, 18, 12));
+        // Chainmail - Blue Grade
+        futures.add(generateWeaponData(writer, Items.CHAINMAIL_HELMET.toString(), true, 20, 0, 0, 15, 35, 100, 0, 0, 17, 32, 5));
+        futures.add(generateWeaponData(writer, Items.CHAINMAIL_CHESTPLATE.toString(), true, 20, 0, 0, 17, 37, 100, 0, 0, 32, 47, 5));
+        futures.add(generateWeaponData(writer, Items.CHAINMAIL_LEGGINGS.toString(), true, 20, 0, 0, 14, 34, 100, 0, 0, 15, 30, 5));
+        futures.add(generateWeaponData(writer, Items.CHAINMAIL_BOOTS.toString(), true, 20, 0, 0, 15, 35, 100, 0, 0, 16, 31, 5));
         return futures;
     }
 
     private List<CompletableFuture<?>> generateIronArmor(DataWriter writer) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
-        // Iron - Like Grunil (Protection focused)
-        futures.add(generateWeaponData(writer, Items.IRON_HELMET.toString(), true, 15, 0, 0, 8, 25, 100, 0, 0, 8, 22, 15));
-        futures.add(generateWeaponData(writer, Items.IRON_CHESTPLATE.toString(), true, 15, 0, 0, 10, 28, 100, 0, 0, 12, 32, 20));
-        futures.add(generateWeaponData(writer, Items.IRON_LEGGINGS.toString(), true, 15, 0, 0, 9, 26, 100, 0, 0, 10, 28, 18));
-        futures.add(generateWeaponData(writer, Items.IRON_BOOTS.toString(), true, 15, 0, 0, 11, 30, 100, 0, 0, 8, 22, 15));
+        // Iron - Blue Grade
+        futures.add(generateWeaponData(writer, Items.IRON_HELMET.toString(), true, 20, 0, 0, 16, 36, 100, 0, 0, 18, 33, 5));
+        futures.add(generateWeaponData(writer, Items.IRON_CHESTPLATE.toString(), true, 20, 0, 0, 18, 38, 100, 0, 0, 34, 49, 5));
+        futures.add(generateWeaponData(writer, Items.IRON_LEGGINGS.toString(), true, 20, 0, 0, 15, 35, 100, 0, 0, 16, 31, 5));
+        futures.add(generateWeaponData(writer, Items.IRON_BOOTS.toString(), true, 20, 0, 0, 16, 36, 100, 0, 0, 17, 32, 5));
         return futures;
     }
 
     private List<CompletableFuture<?>> generateGoldenArmor(DataWriter writer) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
-        // Golden - Like Rocaba (High evasion)
-        futures.add(generateWeaponData(writer, Items.GOLDEN_HELMET.toString(), true, 15, 0, 0, 14, 35, 100, 0, 0, 5, 18, 20));
-        futures.add(generateWeaponData(writer, Items.GOLDEN_CHESTPLATE.toString(), true, 15, 0, 0, 18, 42, 100, 0, 0, 8, 25, 25));
-        futures.add(generateWeaponData(writer, Items.GOLDEN_LEGGINGS.toString(), true, 15, 0, 0, 16, 38, 100, 0, 0, 7, 22, 22));
-        futures.add(generateWeaponData(writer, Items.GOLDEN_BOOTS.toString(), true, 15, 0, 0, 15, 36, 100, 0, 0, 5, 18, 20));
+        // Golden - Yellow Grade (like Rocaba)
+        futures.add(generateWeaponData(writer, Items.GOLDEN_HELMET.toString(), true, 20, 0, 0, 20, 40, 100, 0, 0, 16, 31, 2));
+        futures.add(generateWeaponData(writer, Items.GOLDEN_CHESTPLATE.toString(), true, 20, 0, 0, 24, 44, 100, 0, 0, 30, 45, 2));
+        futures.add(generateWeaponData(writer, Items.GOLDEN_LEGGINGS.toString(), true, 20, 0, 0, 22, 42, 100, 0, 0, 14, 29, 2));
+        futures.add(generateWeaponData(writer, Items.GOLDEN_BOOTS.toString(), true, 20, 0, 0, 21, 41, 100, 0, 0, 15, 30, 2));
         return futures;
     }
 
     private List<CompletableFuture<?>> generateDiamondArmor(DataWriter writer) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
-        // Diamond - Like Heve (Better balanced)
-        futures.add(generateWeaponData(writer, Items.DIAMOND_HELMET.toString(), true, 15, 0, 0, 12, 32, 100, 0, 0, 10, 28, 22));
-        futures.add(generateWeaponData(writer, Items.DIAMOND_CHESTPLATE.toString(), true, 15, 0, 0, 15, 38, 100, 0, 0, 15, 35, 28));
-        futures.add(generateWeaponData(writer, Items.DIAMOND_LEGGINGS.toString(), true, 15, 0, 0, 14, 35, 100, 0, 0, 12, 32, 25));
-        futures.add(generateWeaponData(writer, Items.DIAMOND_BOOTS.toString(), true, 15, 0, 0, 13, 34, 100, 0, 0, 10, 28, 22));
+        // Diamond - Yellow Grade (like Akum)
+        futures.add(generateWeaponData(writer, Items.DIAMOND_HELMET.toString(), true, 20, 0, 0, 20, 40, 100, 0, 0, 22, 37, 2));
+        futures.add(generateWeaponData(writer, Items.DIAMOND_CHESTPLATE.toString(), true, 20, 0, 0, 24, 44, 100, 0, 0, 38, 53, 2));
+        futures.add(generateWeaponData(writer, Items.DIAMOND_LEGGINGS.toString(), true, 20, 0, 0, 18, 38, 100, 0, 0, 20, 35, 2));
+        futures.add(generateWeaponData(writer, Items.DIAMOND_BOOTS.toString(), true, 20, 0, 0, 19, 39, 100, 0, 0, 21, 36, 2));
         return futures;
     }
 
     private List<CompletableFuture<?>> generateNetheriteArmor(DataWriter writer) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
-        // Netherite - Like Ultimate Armor (Pre-boss)
-        futures.add(generateWeaponData(writer, Items.NETHERITE_HELMET.toString(), true, 15, 0, 0, 15, 38, 100, 0, 0, 12, 32, 25));
-        futures.add(generateWeaponData(writer, Items.NETHERITE_CHESTPLATE.toString(), true, 15, 0, 0, 18, 42, 100, 0, 0, 18, 42, 32));
-        futures.add(generateWeaponData(writer, Items.NETHERITE_LEGGINGS.toString(), true, 15, 0, 0, 16, 40, 100, 0, 0, 15, 38, 28));
-        futures.add(generateWeaponData(writer, Items.NETHERITE_BOOTS.toString(), true, 15, 0, 0, 15, 38, 100, 0, 0, 12, 32, 25));
+        // Netherite - Boss Grade
+        futures.add(generateWeaponData(writer, Items.NETHERITE_HELMET.toString(), true, 20, 0, 0, 22, 42, 100, 0, 0, 25, 40, 1));
+        futures.add(generateWeaponData(writer, Items.NETHERITE_CHESTPLATE.toString(), true, 20, 0, 0, 26, 46, 100, 0, 0, 41, 56, 1));
+        futures.add(generateWeaponData(writer, Items.NETHERITE_LEGGINGS.toString(), true, 20, 0, 0, 20, 40, 100, 0, 0, 23, 38, 1));
+        futures.add(generateWeaponData(writer, Items.NETHERITE_BOOTS.toString(), true, 20, 0, 0, 28, 48, 100, 0, 0, 24, 39, 1));
         return futures;
     }
 
