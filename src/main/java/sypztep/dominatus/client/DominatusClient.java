@@ -13,6 +13,7 @@ import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.client.event.RefinementTooltip;
+import sypztep.dominatus.client.payload.AddRefineSoundPayloadS2C;
 import sypztep.dominatus.client.payload.AddTextParticlesPayload;
 import sypztep.dominatus.client.payload.RefinePayloadS2C;
 import sypztep.dominatus.client.screen.PlayerInfoScreen;
@@ -31,6 +32,7 @@ public class DominatusClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(RefinePayloadS2C.ID, new RefinePayloadS2C.Receiver());
         ClientPlayNetworking.registerGlobalReceiver(AddTextParticlesPayload.ID, new AddTextParticlesPayload.Receiver());
+        ClientPlayNetworking.registerGlobalReceiver(AddRefineSoundPayloadS2C.ID, new AddRefineSoundPayloadS2C.Receiver());
 
         AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
