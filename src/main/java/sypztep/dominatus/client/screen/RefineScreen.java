@@ -81,9 +81,6 @@ public final class RefineScreen
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.fill(0, 0, width, height, 0xFF121212);
-        context.fill(width / 2 , height / 2, width / 2  + 200, height / 2 + 100, 0xFFFFFF);
-
         super.render(context, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
