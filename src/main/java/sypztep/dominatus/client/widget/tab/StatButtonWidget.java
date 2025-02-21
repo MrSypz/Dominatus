@@ -20,9 +20,7 @@ public class StatButtonWidget extends TabWidgetButton {
     @Override
     public void onClick(double mouseX, double mouseY) {
         super.onClick(mouseX, mouseY);
-        if (client != null)
-            client.setScreen(new PlayerInfoScreen());
-//        else client.player.sendMessage(Text.literal("Client is null"));
+        if (client != null) client.setScreen(new PlayerInfoScreen());
     }
 }
 
