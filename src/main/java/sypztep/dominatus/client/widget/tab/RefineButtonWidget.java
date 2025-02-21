@@ -8,8 +8,6 @@ import sypztep.dominatus.common.payload.RefineButtonPayloadC2S;
 import java.util.Collections;
 
 public class RefineButtonWidget extends TabWidgetButton {
-
-
     public RefineButtonWidget(int x, int y, int width, int height, Text message, Identifier icon) {
         super(x, y, width, height, message, null, icon,
                 Collections.singletonList(Text.literal("Refinement")),
