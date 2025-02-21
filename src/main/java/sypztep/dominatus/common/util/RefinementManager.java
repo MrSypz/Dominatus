@@ -88,7 +88,7 @@ public class RefinementManager {
         int newLevel;
         if (currentLevel > MAX_NORMAL_LEVEL && currentLevel != 16)  // Only degrade if above PRI
             newLevel = currentLevel - 1;
-         else
+        else
             newLevel = currentLevel; // Stay at current level for +15 and PRI
 
         // Calculate durability loss based on enhancement level
@@ -164,6 +164,7 @@ public class RefinementManager {
         return DominatusItemEntry.getDominatusItemData(DominatusItemEntry.getItemId(item))
                 .orElseThrow(() -> new IllegalStateException("Invalid item for refinement"));
     }
+
     public static class MaterialValidator {
         public static boolean isValidMaterial(ItemStack material, ItemStack target, int currentLevel) {
             boolean isArmor = target.getItem() instanceof ArmorItem;
@@ -179,10 +180,12 @@ public class RefinementManager {
             }
             return false;
         }
+
         public static boolean isRepairMaterial(ItemStack material) {
             return material.isOf(ModItems.MOONLIGHT_CRESCENT);
         }
     }
+
     public enum RefineSound {
         FAIL(0, SoundEvents.ENTITY_WITHER_HURT, 0.7F, 0.5F),
         // Success sounds - celebratory and rewarding
@@ -232,5 +235,15 @@ public class RefinementManager {
             }
             return FAIL; // default fallback
         }
+    }
+    public static String toRoman(int num) {
+        return switch (num) {
+            case 16 -> "I";
+            case 17 -> "II";
+            case 18 -> "III";
+            case 19 -> "IV";
+            case 20 -> "V";
+            default -> "" + num;
+        };
     }
 }
