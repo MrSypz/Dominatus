@@ -23,5 +23,4 @@ public class ModEntityAttributes {
     private static RegistryEntry<EntityAttribute> register(String id, EntityAttribute attribute) {
         return Registry.registerReference(Registries.ATTRIBUTE, Dominatus.id(id), attribute);
     }
-
 }
