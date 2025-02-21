@@ -4,10 +4,12 @@
   "package": "sypztep.dominatus.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "core.combat.backattack.LivingEntityMixin",
     "core.combat.critevasion.LivingEntityMixin",
     "core.combat.critevasion.PlayerEntityMixin",
     "core.combat.projectileclipthrough.PersistentProjectileEntityMixin",
     "core.combat.projectileclipthrough.TridentEntityMixin",
+    "core.item.applyrefinestats.LivingEntityMixin",
     "core.item.refinement.ItemMixin",
     "core.registry.attribute.LivingEntityMixin"
   ],
