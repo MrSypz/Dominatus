@@ -42,8 +42,6 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
     @Unique
     private boolean isHit;
     @Unique
-    public boolean mobisCrit;
-    @Unique
     protected LivingEntity target = (LivingEntity) (Object) this;
 
     @Shadow
