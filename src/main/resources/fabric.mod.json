@@ -34,6 +34,7 @@
     "fabric": "*",
     "minecraft": "${minecraft_version}"
   },
+  "accessWidener": "dominatus.accesswidener",
   "custom": {
     "cardinal-components": [
       "dominatus:failstack"
