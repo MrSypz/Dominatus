@@ -142,7 +142,8 @@ public class RefineScreenHandler extends ScreenHandler {
         RefinementManager.RefinementResult result = RefinementManager.processRefinement(
                 item,
                 material,
-                failStack
+                failStack,
+                player
         );
 
         ModEntityComponents.FAILSTACK_COMPONENT.get(this.player).setFailstack(result.newFailStack());

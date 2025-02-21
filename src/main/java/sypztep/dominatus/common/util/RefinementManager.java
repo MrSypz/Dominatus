@@ -1,7 +1,12 @@
 package sypztep.dominatus.common.util;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import sypztep.dominatus.client.payload.AddRefineSoundPayloadS2C;
 import sypztep.dominatus.common.data.DominatusItemEntry;
 import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModDataComponents;
@@ -48,7 +53,7 @@ public class RefinementManager {
                 .applyTo(stack);
     }
 
-    public static RefinementResult processRefinement(ItemStack item, ItemStack material, int failStack) {
+    public static RefinementResult processRefinement(ItemStack item, ItemStack material, int failStack, PlayerEntity player) {
         Refinement currentRef = getRefinement(item);
         if (currentRef == null) {
             initializeRefinement(item);
@@ -57,7 +62,7 @@ public class RefinementManager {
 
         // Check if this is a repair attempt
         if (MaterialValidator.isRepairMaterial(material)) {
-            return handleRepair(item, failStack);
+            return handleRepair(item, failStack, player);
         }
 
         // Validate material for refinement
@@ -71,13 +76,13 @@ public class RefinementManager {
         boolean success = Math.random() < successRate;
 
         if (success) {
-            return handleSuccess(item, currentLevel);
+            return handleSuccess(item, currentLevel, player);
         } else {
-            return handleFailure(item, currentLevel, failStack);
+            return handleFailure(item, currentLevel, failStack, player);
         }
     }
 
-    private static RefinementResult handleFailure(ItemStack item, int currentLevel, int failStack) {
+    private static RefinementResult handleFailure(ItemStack item, int currentLevel, int failStack, PlayerEntity player) {
         Refinement current = getRefinement(item);
 
         int newLevel;
@@ -104,16 +109,25 @@ public class RefinementManager {
                 .withDurability(newDurability)
                 .applyTo(item);
 
+        if (player instanceof ServerPlayerEntity serverPlayer)
+            AddRefineSoundPayloadS2C.send(serverPlayer, player.getId(), RefineSound.FAIL);
+
         return new RefinementResult(false, newLevel, newDurability, newFailStack, true);
     }
 
-    private static RefinementResult handleSuccess(ItemStack item, int currentLevel) {
+    private static RefinementResult handleSuccess(ItemStack item, int currentLevel, PlayerEntity player) {
         int newLevel = currentLevel + 1;
         applyRefinement(item, getDominatusEntry(item), newLevel);
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            if (currentLevel >= MAX_NORMAL_LEVEL) {
+                AddRefineSoundPayloadS2C.send(serverPlayer, player.getId(), RefineSound.HIGH_ENHANCE);
+            }
+            AddRefineSoundPayloadS2C.send(serverPlayer, player.getId(), RefineSound.SUCCESS);
+        }
         return new RefinementResult(true, newLevel, getRefinement(item).durability(), 0, true);
     }
 
-    private static RefinementResult handleRepair(ItemStack item,int failStack) {
+    private static RefinementResult handleRepair(ItemStack item, int failStack, PlayerEntity player) {
         Refinement current = getRefinement(item);
         DominatusItemEntry entry = getDominatusEntry(item);
 
@@ -134,6 +148,8 @@ public class RefinementManager {
                 .fromExisting(current)
                 .withDurability(newDurability)
                 .applyTo(item);
+        if (player instanceof ServerPlayerEntity serverPlayer)
+            AddRefineSoundPayloadS2C.send(serverPlayer, player.getId(), RefineSound.REPAIR);
 
         return new RefinementResult(
                 true,
@@ -165,6 +181,56 @@ public class RefinementManager {
         }
         public static boolean isRepairMaterial(ItemStack material) {
             return material.isOf(ModItems.MOONLIGHT_CRESCENT);
+        }
+    }
+    public enum RefineSound {
+        FAIL(0, SoundEvents.ENTITY_WITHER_HURT, 0.7F, 0.5F),
+        // Success sounds - celebratory and rewarding
+        SUCCESS(1, SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.2F),
+        // Repair sounds - magical and restorative
+        REPAIR(2, SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.8F, 1.4F),
+        // Enhancement start - mystical and anticipating
+        ENHANCE_START(3, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 0.6F, 1.0F),
+        // High-level enhancement - epic and powerful
+        HIGH_ENHANCE(4, SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 0.5F, 1.2F),
+        // Critical success (for max level achievements)
+        CRITICAL_SUCCESS(5, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0F, 1.0F);
+
+        private final int id;
+        private final SoundEvent sound;
+        private final float volume;
+        private final float pitch;
+
+        RefineSound(int id, SoundEvent sound, float volume, float pitch) {
+            this.id = id;
+            this.sound = sound;
+            this.volume = volume;
+            this.pitch = pitch;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public SoundEvent getSound() {
+            return sound;
+        }
+
+        public float getVolume() {
+            return volume;
+        }
+
+        public float getPitch() {
+            return pitch;
+        }
+
+        public static RefineSound byId(int id) {
+            for (RefineSound sound : values()) {
+                if (sound.getId() == id) {
+                    return sound;
+                }
+            }
+            return FAIL; // default fallback
         }
     }
 }
