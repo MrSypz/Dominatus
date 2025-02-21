@@ -13,7 +13,7 @@ public class ModConfig implements ConfigData {
     public static boolean damageCritIndicator = true;
     @ConfigEntry.Category("feature-client")
     @Comment("Missing Indicato (default : true)")
-    public static boolean missingIndicator;
+    public static boolean missingIndicator = true;
     @ConfigEntry.Category("feature-client")
     @ConfigEntry.ColorPicker()
     @Comment("Color of the crit indicator")
