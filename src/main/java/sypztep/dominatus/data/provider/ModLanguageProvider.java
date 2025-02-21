@@ -16,6 +16,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         // Damage Translation
         translate.add("dominatus.text.missing", "Missing");
         translate.add("dominatus.text.critical", "Critical");
+        translate.add("dominatus.text.back", "Back Attack");
         // Config
         translate.add("text.autoconfig.dominatus.title", "Dominatus Config");
         translate.add("text.autoconfig.dominatus.option.damageCritIndicator", "Crit Indicator");
@@ -40,5 +41,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("item.dominatus.moonlight_crescent", "Moonlight Crescent");
         translate.add("item.dominatus.moonlight_crescent.desc", "Used to restore the items. durability.");
 
+        // Screen
+        translate.add("dominatus.refinebutton_tooltip", "Refinement");
     }
 }
