@@ -10,7 +10,9 @@
     "core.combat.projectileclipthrough.PersistentProjectileEntityMixin",
     "core.combat.projectileclipthrough.TridentEntityMixin",
     "core.item.applyrefinestats.LivingEntityMixin",
+    "core.item.refinement.newdurability.ItemStackMixin",
     "core.item.refinement.ItemMixin",
+    "core.item.refinement.iteminfo.ItemStackMixin",
     "core.registry.attribute.LivingEntityMixin"
   ],
   "client": [

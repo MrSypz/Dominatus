@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.Style;
@@ -17,11 +18,15 @@ import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public final class PlayerInfoScreen extends Screen {
-    // Use relative positioning instead of fixed values
-    private static final float PANEL_WIDTH_RATIO = 0.25f; // 25% of screen width
-    private static final float PANEL_HEIGHT_RATIO = 0.35f; // 35% of screen height
-    private static final float PANEL_X_RATIO = 0.02f; // 2% from left
-    private static final float PANEL_Y_RATIO = 0.2f; // 20% from top
+    private static final float PANEL_WIDTH_RATIO = 0.25f;
+    private static final float PANEL_HEIGHT_RATIO = 0.45f; // Increased height for more content
+    private static final float PANEL_X_RATIO = 0.02f;
+    private static final float PANEL_Y_RATIO = 0.2f;
+
+    // Category headers
+    private static final Text OFFENSIVE_HEADER = Text.literal("Offensive").formatted(Formatting.RED, Formatting.BOLD);
+    private static final Text DEFENSIVE_HEADER = Text.literal("Defensive").formatted(Formatting.BLUE, Formatting.BOLD);
+    private static final Text CRITICAL_HEADER = Text.literal("Critical").formatted(Formatting.GOLD, Formatting.BOLD);
 
     private int panelX;
     private int panelY;
@@ -57,50 +62,142 @@ public final class PlayerInfoScreen extends Screen {
         super.render(drawContext, mouseX, mouseY, delta);
         PlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return;
+
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
         drawPanel(drawContext);
 
-        // Scale text based on panel size
-        float scale = Math.min(panelWidth / 225f, panelHeight / 100f);
-        scale = Math.max(1.0f, Math.min(scale, 1.5f)); // Limit scale between 1.0 and 1.5
-
-        // Draw title with scaling
+        // Main title
         Text title = Text.literal("Combat Statistics").setStyle(Style.EMPTY.withBold(true));
-        float titleX = panelX + textPadding;
-        float titleY = panelY + textPadding;
         drawContext.drawText(
                 textRenderer,
                 title,
-                (int)titleX,
-                (int)titleY,
+                panelX + textPadding,
+                panelY + textPadding,
                 0xFFFFFFFF,
                 true
         );
 
-        // Setup stats map
-        Map<Text, Double> stats = new LinkedHashMap<>();
-        stats.put(
+        // Render attribute categories
+        renderAttributeCategories(drawContext, player);
+
+        RenderSystem.disableBlend();
+    }
+
+    private void renderAttributeCategories(DrawContext drawContext, PlayerEntity player) {
+        int startY = panelY + textPadding + lineHeight + 5;
+        int categorySpacing = lineHeight * 2;
+
+        // Offensive Stats
+        startY = renderCategoryHeader(drawContext, OFFENSIVE_HEADER, startY);
+        Map<Text, Double> offensiveStats = new LinkedHashMap<>();
+        offensiveStats.put(
+                Text.literal("Damage").formatted(Formatting.DARK_RED),
+                player.getAttributeValue(EntityAttributes.ATTACK_DAMAGE)
+        );
+        offensiveStats.put(
                 Text.literal("Accuracy").formatted(Formatting.YELLOW),
                 player.getAttributeValue(ModEntityAttributes.ACCURACY)
         );
-        stats.put(
+        startY = renderStats(drawContext, offensiveStats, startY) + categorySpacing;
+
+        // Defensive Stats
+        startY = renderCategoryHeader(drawContext, DEFENSIVE_HEADER, startY);
+        Map<Text, Double> defensiveStats = new LinkedHashMap<>();
+        defensiveStats.put(
+                Text.literal("Armor").formatted(Formatting.BLUE),
+                player.getAttributeValue(EntityAttributes.ARMOR)
+        );
+        defensiveStats.put(
                 Text.literal("Evasion").formatted(Formatting.AQUA),
                 player.getAttributeValue(ModEntityAttributes.EVASION)
         );
-        stats.put(
-                Text.literal("Crit Chance").formatted(Formatting.RED),
+        startY = renderStats(drawContext, defensiveStats, startY) + categorySpacing;
+
+        // Critical Stats
+        startY = renderCategoryHeader(drawContext, CRITICAL_HEADER, startY);
+        Map<Text, Double> criticalStats = new LinkedHashMap<>();
+        criticalStats.put(
+                Text.literal("Crit Chance").formatted(Formatting.GOLD),
                 player.getAttributeValue(ModEntityAttributes.CRIT_CHANCE) * 100
         );
-        stats.put(
+        criticalStats.put(
                 Text.literal("Crit Damage").formatted(Formatting.DARK_RED),
                 player.getAttributeValue(ModEntityAttributes.CRIT_DAMAGE) * 100
         );
+        renderStats(drawContext, criticalStats, startY);
+    }
 
-        renderStats(drawContext, stats);
+    private int renderCategoryHeader(DrawContext drawContext, Text header, int y) {
+        drawContext.drawText(
+                textRenderer,
+                header,
+                panelX + textPadding,
+                y,
+                0xFFFFFFFF,
+                true
+        );
+        return y + lineHeight;
+    }
 
-        RenderSystem.disableBlend();
+    private int renderStats(DrawContext drawContext, Map<Text, Double> stats, int startY) {
+        int y = startY;
+        int barHeight = Math.max(4, lineHeight / 3);
+
+        for (Map.Entry<Text, Double> stat : stats.entrySet()) {
+            // Draw stat label
+            drawContext.drawText(
+                    textRenderer,
+                    stat.getKey(),
+                    panelX + textPadding,
+                    y,
+                    0xFFFFFFFF,
+                    false
+            );
+
+            // Draw stat value with percentage if needed
+            String value = formatStatValue(stat.getKey().getString(), stat.getValue());
+            int valueWidth = textRenderer.getWidth(value);
+            drawContext.drawText(
+                    textRenderer,
+                    value,
+                    panelX + panelWidth - textPadding - valueWidth,
+                    y,
+                    0xFFFFFFFF,
+                    false
+            );
+
+            // Draw stat bar
+            drawStatBar(
+                    drawContext,
+                    panelX + textPadding,
+                    y + lineHeight - barHeight - 1,
+                    panelWidth - (textPadding * 2),
+                    barHeight,
+                    normalizeStatValue(stat.getKey().getString(), stat.getValue()),
+                    getStatColor(stat.getKey().getString())
+            );
+
+            y += lineHeight;
+        }
+        return y;
+    }
+
+    private String formatStatValue(String statName, double value) {
+        if (statName.contains("Crit")) {
+            return String.format("%.1f%%", value);
+        }
+        return String.format("%.1f", value);
+    }
+
+    private float normalizeStatValue(String statName, double value) {
+        return switch (statName.toLowerCase()) {
+            case "damage" -> (float) (value / 30.0); // Normalize damage to max of 30
+            case "armor" -> (float) (value / 20.0); // Normalize armor to max of 20
+            case "crit damage" -> (float) ((value - 100) / 100.0); // Normalize relative to base 100%
+            default -> (float) (value / 100.0);
+        };
     }
 
     private void drawPanel(DrawContext drawContext) {
@@ -118,48 +215,6 @@ public final class PlayerInfoScreen extends Screen {
         drawContext.fill(panelX + panelWidth - borderThickness, panelY, panelX + panelWidth, panelY + panelHeight, borderColor);
     }
 
-    private void renderStats(DrawContext drawContext, Map<Text, Double> stats) {
-        int yOffset = panelY + textPadding + lineHeight + 5;
-        int barHeight = Math.max(4, lineHeight / 3);
-
-        for (Map.Entry<Text, Double> stat : stats.entrySet()) {
-            // Draw stat label
-            drawContext.drawText(
-                    textRenderer,
-                    stat.getKey(),
-                    panelX + textPadding,
-                    yOffset,
-                    0xFFFFFFFF,
-                    false
-            );
-
-            // Draw stat value
-            String value = String.format("%.1f", stat.getValue());
-            int valueWidth = textRenderer.getWidth(value);
-            drawContext.drawText(
-                    textRenderer,
-                    value,
-                    panelX + panelWidth - textPadding - valueWidth,
-                    yOffset,
-                    0xFFFFFFFF,
-                    false
-            );
-
-            // Draw stat bar with responsive height
-            drawStatBar(
-                    drawContext,
-                    panelX + textPadding,
-                    yOffset + lineHeight,
-                    panelWidth - (textPadding * 2),
-                    barHeight,
-                    stat.getValue().floatValue(),
-                    getStatColor(stat.getKey().getString())
-            );
-
-            yOffset += lineHeight * 2;
-        }
-    }
-
     private void drawStatBar(DrawContext drawContext, int x, int y, int width, int height, float value, int color) {
         // Background
         drawContext.fill(x, y, x + width, y + height, 0xFF333333);
@@ -174,10 +229,10 @@ public final class PlayerInfoScreen extends Screen {
 
     private int getStatColor(String statName) {
         return switch (statName.toLowerCase()) {
-            case "accuracy" -> 0xFFFFAA00;
+            case "damage", "crit damage" -> 0xFFFF4444;
+            case "accuracy", "crit chance" -> 0xFFFFAA00;
+            case "armor" -> 0xFF5555FF;
             case "evasion" -> 0xFF00AAFF;
-            case "crit chance" -> 0xFFFF0000;
-            case "crit damage" -> 0xFFAA0000;
             default -> 0xFFFFFFFF;
         };
     }
