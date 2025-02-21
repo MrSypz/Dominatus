@@ -27,7 +27,7 @@ public class RefinementManager {
         new RefinementBuilder().applyTo(stack);
     }
 
-    private static Refinement getRefinement(ItemStack stack) {
+    public static Refinement getRefinement(ItemStack stack) {
         return stack.get(ModDataComponents.REFINEMENT);
     }
 
