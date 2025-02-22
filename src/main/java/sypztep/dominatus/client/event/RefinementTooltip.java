@@ -9,8 +9,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModDataComponents;
-import sypztep.dominatus.common.util.RefinementCalculator;
-import sypztep.dominatus.common.util.RefinementManager;
 
 import java.util.List;
 
@@ -25,6 +23,7 @@ public final class RefinementTooltip implements ItemTooltipCallback {
 
             if (refinement.accuracy() > 0) addStatTooltip(lines, "Accuracy", refinement.accuracy(), isArmor);
             if (refinement.evasion() > 0) addStatTooltip(lines, "Evasion", refinement.evasion(), isArmor);
+            if (refinement.durability() > 0) addStatTooltip(lines, "Durability", refinement.durability(), isArmor);
         }
     }
 
@@ -33,6 +32,5 @@ public final class RefinementTooltip implements ItemTooltipCallback {
                     .formatted(Formatting.BLUE));
          else lines.add(Text.literal(" " + String.format("%d", value) + " " + label)
                     .formatted(Formatting.DARK_GREEN));
-
     }
 }
