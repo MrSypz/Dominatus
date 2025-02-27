@@ -30,18 +30,6 @@ public final class RefineScreen
         implements ScreenHandlerListener {
     public static final Identifier TEXTURE = Dominatus.id("gui/container/refine_screen.png");
     public RefineButton refineButton;
-//    private final CyclingItemSlotIcon weaponSlotIcon = new CyclingItemSlotIcon(0);
-//    private final CyclingItemSlotIcon armorSlotIcon = new CyclingItemSlotIcon(0);
-//    private static final List<ItemStack> WEAPON_STONE = List.of(
-//            ModItems.REFINE_WEAPON_STONE.getDefaultStack(),
-//            ModItems.REFINE_WEAPONENFORGE_STONE.getDefaultStack(),
-//            ModItems.MOONLIGHT_CRESCENT.getDefaultStack()
-//            );
-//    private static final List<ItemStack> ARMOR_STONE = List.of(
-//            ModItems.REFINE_ARMOR_STONE.getDefaultStack(),
-//            ModItems.REFINE_ARMORENFORGE_STONE.getDefaultStack(),
-//            ModItems.MOONLIGHT_CRESCENT.getDefaultStack()
-//    );
 
     private static final int LEFT_LABEL_X = -13;
     private static final int LEFT_LABEL_START_Y = 35;
@@ -71,7 +59,6 @@ public final class RefineScreen
     protected void handledScreenTick() {
         super.handledScreenTick();
     }
-
     @Override
     public void removed() {
         super.removed();
