@@ -2,7 +2,6 @@ package sypztep.dominatus.client.widget;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
@@ -14,7 +13,7 @@ import sypztep.dominatus.Dominatus;
 
 import java.util.List;
 
-public abstract class TabWidgetButton extends ClickableWidget {
+public abstract class  TabWidgetButton extends ClickableWidget {
     protected final MinecraftClient client;
     private final Identifier buttonTexture;
     private final Identifier buttonHoverTexture;
