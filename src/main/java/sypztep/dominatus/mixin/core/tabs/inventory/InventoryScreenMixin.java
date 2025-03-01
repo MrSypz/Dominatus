@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.widget.TabWidgetButton;
 import sypztep.dominatus.client.widget.tab.RefineButtonWidget;
+import sypztep.dominatus.client.widget.tab.ReformButtonWidget;
 import sypztep.dominatus.client.widget.tab.StatButtonWidget;
 
 @Mixin(InventoryScreen.class)
@@ -35,9 +36,10 @@ public abstract class InventoryScreenMixin extends HandledScreen<PlayerScreenHan
         int height = 26;
 
         TabWidgetButton refineTab = new RefineButtonWidget(0, 0, width, height, Text.literal("refine"),  Dominatus.id("hud/container/tab/icon/refine"));
-        TabWidgetButton statTab = new StatButtonWidget(0, 0, width, height, Text.literal("stats"), this.client, Identifier.ofVanilla("icon/accessibility"));
+        TabWidgetButton statTab = new StatButtonWidget(0, 0, width, height, Text.literal("stats"), this.client, Identifier.ofVanilla("icon/info"));
+        TabWidgetButton reformTab = new ReformButtonWidget(0, 0, width, height, Text.literal("reform"),  Identifier.ofVanilla("icon/accessibility"));
 
-        tabButtons = new TabWidgetButton[] { refineTab, statTab };
+        tabButtons = new TabWidgetButton[] { refineTab, statTab,reformTab };
 
         setButtonCoordinates();
 
