@@ -75,19 +75,16 @@ public class RefinementManager {
                 .withProtection(protection)
                 .applyTo(stack);
 
-        // Apply attribute modifiers to the item directly
         updateItemAttributes(stack, accuracy, evasion, damage, protection);
     }
 
     private static void updateItemAttributes(ItemStack stack, int accuracy, int evasion, float damage, int protection) {
-        // Get current attribute modifiers or default
         AttributeModifiersComponent attributeModifiers = stack.getOrDefault(
                 DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
 
         AttributeModifiersComponent.Builder builder = AttributeModifiersComponent.builder();
         AttributeModifierSlot slot = getAppropriateSlot(stack);
 
-        // Define our refinement attribute IDs
         Map<RegistryEntry<EntityAttribute>, Pair<Identifier, Number>> refinementAttributes = new HashMap<>();
 
         // Only add attributes with positive values
@@ -119,7 +116,6 @@ public class RefinementManager {
             }
         }
 
-        // Add our refinement attributes
         refinementAttributes.forEach((attribute, pair) ->
                 builder.add(
                         attribute,
@@ -153,38 +149,27 @@ public class RefinementManager {
             currentRef = getRefinement(item);
         }
 
-        // Check if this is a repair attempt
-        if (MaterialValidator.isRepairMaterial(material)) {
-            return handleRepair(item, failStack, player);
-        }
+        if (MaterialValidator.isRepairMaterial(material)) return handleRepair(item, failStack, player);
 
-        // Validate material for refinement
-        if (!MaterialValidator.isValidMaterial(material, item, currentRef.refine())) {
-            return new RefinementResult(false, currentRef.refine(), currentRef.durability(), failStack, false);
-        }
+        if (!MaterialValidator.isValidMaterial(material, item, currentRef.refine())) return new RefinementResult(false, currentRef.refine(), currentRef.durability(), failStack, false);
 
-        // Normal refinement process
         int currentLevel = currentRef.refine();
         double successRate = RefinementCalculator.calculateSuccessRate(currentLevel, failStack);
         boolean success = Math.random() < successRate;
 
-        if (success) {
-            return handleSuccess(item, currentLevel, player);
-        } else {
-            return handleFailure(item, currentLevel, failStack, player);
-        }
+        if (success) return handleSuccess(item, currentLevel, player);
+        else return handleFailure(item, currentLevel, failStack, player);
     }
 
     private static RefinementResult handleFailure(ItemStack item, int currentLevel, int failStack, PlayerEntity player) {
         Refinement current = getRefinement(item);
         DominatusItemEntry entry = getDominatusEntry(item);
 
-        // Determine new refinement level
         int newLevel;
-        if (currentLevel > MAX_NORMAL_LEVEL && currentLevel != 16)  // Only degrade if above PRI
+        if (currentLevel > MAX_NORMAL_LEVEL && currentLevel != 16)
             newLevel = currentLevel - 1;
         else
-            newLevel = currentLevel; // Stay at current level for +15 and PRI
+            newLevel = currentLevel;
 
         // Calculate durability loss based on enhancement level
         int durabilityLoss = BASE_DURABILITY_LOSS;
@@ -196,16 +181,15 @@ public class RefinementManager {
         int currentRefinementDurability = current.durability();
         int newRefinementDurability = Math.max(currentRefinementDurability - durabilityLoss, 0);
 
-        // Only affect vanilla item durability when refinement durability drops below threshold
-        if (currentRefinementDurability > 30 && newRefinementDurability <= 30) {
-            // Refinement durability dropped below threshold, reduce vanilla durability by 10%
-            if (item.isDamageable()) {
-                int maxDurability = item.getMaxDamage();
-                int currentVanillaDurability = maxDurability - item.getDamage();
-                int durabilityToReduce = (int)(maxDurability * 0.1f); // 10% of max durability
-                int newVanillaDurability = Math.max(currentVanillaDurability - durabilityToReduce, 0);
-                item.setDamage(maxDurability - newVanillaDurability);
-            }
+        // Calculate new durability percentage
+        float newDurabilityPercent = (float)newRefinementDurability / entry.maxDurability();
+
+        // Apply corresponding damage to the vanilla item
+        if (item.isDamageable()) {
+            int maxDurability = item.getMaxDamage();
+            int newItemDurability = Math.round(maxDurability * newDurabilityPercent);
+            int newDamage = maxDurability - newItemDurability;
+            item.setDamage(newDamage);
         }
 
         // Calculate failstack increase
@@ -214,7 +198,6 @@ public class RefinementManager {
                 NORMAL_FAILSTACK_INCREASE;    // +1 failstack for +1 to +14
         int newFailStack = failStack + failstackIncrease;
 
-        // Update refinement
         Refinement newRefinement = new RefinementBuilder()
                 .fromExisting(current)
                 .withRefine(newLevel)
@@ -235,7 +218,6 @@ public class RefinementManager {
 
         updateItemAttributes(item, accuracy, evasion, damage, protection);
 
-        // Play sound
         if (player instanceof ServerPlayerEntity serverPlayer)
             AddRefineSoundPayloadS2C.send(serverPlayer, player.getId(), RefineSound.FAIL);
 
