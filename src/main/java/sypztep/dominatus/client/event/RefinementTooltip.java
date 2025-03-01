@@ -21,8 +21,8 @@ public final class RefinementTooltip implements ItemTooltipCallback {
 
             boolean isArmor = stack.isIn(ItemTags.ARMOR_ENCHANTABLE);
 
-//            if (refinement.accuracy() > 0) addStatTooltip(lines, "Accuracy", refinement.accuracy(), isArmor);
-//            if (refinement.evasion() > 0) addStatTooltip(lines, "Evasion", refinement.evasion(), isArmor);
+            if (refinement.accuracy() > 0) addStatTooltip(lines, "Accuracy", refinement.accuracy(), isArmor);
+            if (refinement.evasion() > 0) addStatTooltip(lines, "Evasion", refinement.evasion(), isArmor);
             if (refinement.durability() > 0) addStatTooltip(lines, "Durability", refinement.durability(), isArmor);
         }
     }
