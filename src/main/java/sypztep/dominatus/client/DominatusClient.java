@@ -18,6 +18,7 @@ import sypztep.dominatus.client.payload.AddTextParticlesPayload;
 import sypztep.dominatus.client.payload.RefinePayloadS2C;
 import sypztep.dominatus.client.screen.PlayerInfoScreen;
 import sypztep.dominatus.client.screen.RefineScreen;
+import sypztep.dominatus.client.screen.ReformScreen;
 import sypztep.dominatus.common.init.ModScreenHandler;
 
 public class DominatusClient implements ClientModInitializer {
@@ -27,6 +28,7 @@ public class DominatusClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         HandledScreens.register(ModScreenHandler.REFINE_SCREEN_HANDLER_TYPE, RefineScreen::new);
+        HandledScreens.register(ModScreenHandler.REFORM_SCREEN_HANDLER_TYPE, ReformScreen::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(DominatusClient::onEndTick);
 
@@ -38,8 +40,6 @@ public class DominatusClient implements ClientModInitializer {
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
         ItemTooltipCallback.EVENT.register(new RefinementTooltip());
-
-
     }
     private static void onEndTick(MinecraftClient client) {
         if (stats_screen.wasPressed()) client.setScreen(new PlayerInfoScreen());

@@ -63,7 +63,6 @@ public final class RefineScreen
     public void removed() {
         super.removed();
         this.handler.removeListener(this);
-
     }
 
     @Override
