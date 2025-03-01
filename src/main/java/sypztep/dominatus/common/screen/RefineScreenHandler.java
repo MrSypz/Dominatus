@@ -16,8 +16,8 @@ import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.init.ModItems;
 import sypztep.dominatus.common.init.ModScreenHandler;
-import sypztep.dominatus.common.util.RefinementCalculator;
-import sypztep.dominatus.common.util.RefinementManager;
+import sypztep.dominatus.common.util.RefineSystem.RefinementCalculator;
+import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
 
 public class RefineScreenHandler extends ScreenHandler {
     private final Inventory inventory = new SimpleInventory(3) {
@@ -88,7 +88,7 @@ public class RefineScreenHandler extends ScreenHandler {
 
             // Get current refinement state
             Refinement currentRef = slotOutput.get(ModDataComponents.REFINEMENT);
-            int currentRefineLvl = currentRef.refine();
+            int currentRefineLvl = currentRef.refine(); // Ignore the ide it'll pass fine due to -> RefinementManager.initializeRefinement(slotOutput);
             int currentDurability = currentRef.durability();
 
             if (currentRefineLvl < RefinementManager.MAX_ENHANCED_LEVEL) {
@@ -103,7 +103,7 @@ public class RefineScreenHandler extends ScreenHandler {
             // Calculate success rate for valid refinement attempts
             if (canRefine) {
                 int failStack = ModEntityComponents.FAILSTACK_COMPONENT.get(this.player).getFailstack();
-                double successRate = RefinementCalculator.calculateSuccessRate(currentRefineLvl, failStack);
+                RefinementCalculator.calculateSuccessRate(currentRefineLvl, failStack);
             }
         }
 

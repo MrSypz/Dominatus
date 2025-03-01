@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import sypztep.dominatus.common.util.RefinementItemManager;
+import sypztep.dominatus.common.util.RefineSystem.RefinementItemManager;
 
 import java.util.Map;
 

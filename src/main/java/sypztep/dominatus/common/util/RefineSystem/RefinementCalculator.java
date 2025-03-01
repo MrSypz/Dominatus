@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util;
+package sypztep.dominatus.common.util.RefineSystem;
 
 import net.minecraft.util.math.MathHelper;
 

@@ -21,8 +21,8 @@ import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.payload.RefinePayloadC2S;
 import sypztep.dominatus.common.screen.RefineScreenHandler;
-import sypztep.dominatus.common.util.RefinementCalculator;
-import sypztep.dominatus.common.util.RefinementManager;
+import sypztep.dominatus.common.util.RefineSystem.RefinementCalculator;
+import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
 
 @Environment(EnvType.CLIENT)
 public final class RefineScreen

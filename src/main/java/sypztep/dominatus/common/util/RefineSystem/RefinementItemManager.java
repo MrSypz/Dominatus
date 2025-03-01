@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util;
+package sypztep.dominatus.common.util.RefineSystem;
 
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.entity.EquipmentSlot;

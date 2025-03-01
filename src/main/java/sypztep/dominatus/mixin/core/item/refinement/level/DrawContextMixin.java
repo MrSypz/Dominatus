@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sypztep.dominatus.common.init.ModDataComponents;
-import sypztep.dominatus.common.util.RefinementManager;
+import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
 
 @Mixin(DrawContext.class)
 public abstract class DrawContextMixin {

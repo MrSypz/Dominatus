@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util;
+package sypztep.dominatus.common.util.RefineSystem;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
