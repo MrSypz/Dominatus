@@ -19,8 +19,12 @@ public class ModItems {
     public static Item LAHAV_FRAGMENT;
     public static Item REFINE_WEAPONENFORGE_STONE;
     public static Item REFINE_ARMORENFORGE_STONE;
-    public static Item MAHILNANT;
     public static Item MOONLIGHT_CRESCENT;
+    public static Item MAHILNANT;
+
+    public static Item REFINE_STONE_GRADE_LOW;
+    public static Item REFINE_STONE_GRADE_MID;
+    public static Item REFINE_STONE_GRADE_HIGH;
 
     public static void init() {
         REFINE_WEAPON_STONE = register("refine_weapon_stone", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_weapon_stone")))));
@@ -29,8 +33,12 @@ public class ModItems {
         LAHAV_FRAGMENT = register("lahav_fragment", new RefinementStoneItem(new Item.Settings().rarity(Rarity.UNCOMMON).fireproof().registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("lahav_fragment")))));
         REFINE_WEAPONENFORGE_STONE = register("refine_weapon_enforge_stone", new RefinementStoneItem(new Item.Settings().rarity(Rarity.EPIC).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_weapon_enforge_stone")))));
         REFINE_ARMORENFORGE_STONE = register("refine_armor_enforge_stone", new RefinementStoneItem(new Item.Settings().rarity(Rarity.EPIC).fireproof().registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_armor_enforge_stone")))));
-        MAHILNANT = register("mahilnant", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("mahilnant")))));
         MOONLIGHT_CRESCENT = register("moonlight_crescent", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("moonlight_crescent")))));
+        MAHILNANT = register("mahilnant", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("mahilnant")))));
+
+        REFINE_STONE_GRADE_LOW = register("reform_stone_grade_low", new RefinementStoneItem(new Item.Settings().rarity(Rarity.COMMON).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("reform_stone_grade_low")))));
+        REFINE_STONE_GRADE_MID = register("reform_stone_grade_mid", new RefinementStoneItem(new Item.Settings().rarity(Rarity.UNCOMMON).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("reform_stone_grade_mid")))));
+        REFINE_STONE_GRADE_HIGH = register("reform_stone_grade_high", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("reform_stone_grade_high")))));
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
             content.addAfter(Items.DISC_FRAGMENT_5, ModItems.REFINE_ARMOR_STONE);
@@ -41,6 +49,9 @@ public class ModItems {
             content.addAfter(ModItems.REFINE_ARMORENFORGE_STONE, ModItems.REFINE_WEAPONENFORGE_STONE);
             content.addAfter(ModItems.REFINE_WEAPONENFORGE_STONE, ModItems.MOONLIGHT_CRESCENT);
             content.addAfter(ModItems.MOONLIGHT_CRESCENT, ModItems.MAHILNANT);
+            content.addAfter(ModItems.MAHILNANT, ModItems.REFINE_STONE_GRADE_LOW);
+            content.addAfter(ModItems.REFINE_STONE_GRADE_LOW, ModItems.REFINE_STONE_GRADE_MID);
+            content.addAfter(ModItems.REFINE_STONE_GRADE_MID, ModItems.REFINE_STONE_GRADE_HIGH);
         });
     }
 

@@ -31,6 +31,14 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("item.dominatus.refine_weapon_enforge_stone.desc", "A stone used to refine weapon with level > 15.");
         translate.add("item.dominatus.refine_armor_enforge_stone", "Refinement Enforge Armor Stone");
         translate.add("item.dominatus.refine_armor_enforge_stone.desc", "A stone used to refine armor with level > 15.");
+        // Reform Stone
+        translate.add("item.dominatus.reform_stone_grade_low", "Reform Stone Grade 1");
+        translate.add("item.dominatus.reform_stone_grade_low.desc", "A stone used to reform items.");
+        translate.add("item.dominatus.reform_stone_grade_mid", "Reform Stone Grade 2");
+        translate.add("item.dominatus.reform_stone_grade_mid.desc", "A stone used to reform items.");
+        translate.add("item.dominatus.reform_stone_grade_high", "Reform Stone Grade 3");
+        translate.add("item.dominatus.reform_stone_grade_high.desc", "A stone used to reform items.");
+
         // Miscellaneous
         translate.add("item.dominatus.loss_fragment", "Loss Fragment");
         translate.add("item.dominatus.loss_fragment.desc", "Combine to obtain Refined Armor Enforge.");

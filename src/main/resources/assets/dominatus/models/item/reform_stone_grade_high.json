@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "dominatus:item/reform_stone_grade_high"
+  }
+}
