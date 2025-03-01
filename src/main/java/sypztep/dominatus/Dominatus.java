@@ -22,6 +22,7 @@ public class Dominatus implements ModInitializer {
     @Override
     public void onInitialize() {
         ModDataComponents.init();
+
         ModScreenHandler.init();
 
         ModItems.init();
