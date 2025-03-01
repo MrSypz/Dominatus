@@ -60,55 +60,47 @@ public class RefinementManager {
             currentRef = getRefinement(item);
         }
 
-        // Check if this is a repair attempt
-        if (MaterialValidator.isRepairMaterial(material)) {
-            return handleRepair(item, failStack, player);
-        }
+        if (MaterialValidator.isRepairMaterial(material)) return handleRepair(item, failStack, player);
 
-        // Validate material for refinement
-        if (!MaterialValidator.isValidMaterial(material, item, currentRef.refine())) {
-            return new RefinementResult(false, currentRef.refine(), currentRef.durability(), failStack, false);
-        }
+        if (!MaterialValidator.isValidMaterial(material, item, currentRef.refine())) return new RefinementResult(false, currentRef.refine(), currentRef.durability(), failStack, false);
 
-        // Normal refinement process
         int currentLevel = currentRef.refine();
         double successRate = RefinementCalculator.calculateSuccessRate(currentLevel, failStack);
         boolean success = Math.random() < successRate;
 
-        if (success) {
-            return handleSuccess(item, currentLevel, player);
-        } else {
-            return handleFailure(item, currentLevel, failStack, player);
-        }
+        if (success) return handleSuccess(item, currentLevel, player);
+        else return handleFailure(item, currentLevel, failStack, player);
     }
 
     private static RefinementResult handleFailure(ItemStack item, int currentLevel, int failStack, PlayerEntity player) {
         Refinement current = getRefinement(item);
+        DominatusItemEntry entry = getDominatusEntry(item);
 
         int newLevel;
-        if (currentLevel > MAX_NORMAL_LEVEL && currentLevel != 16)  // Only degrade if above PRI
-            newLevel = currentLevel - 1;
-        else
-            newLevel = currentLevel; // Stay at current level for +15 and PRI
+        if (currentLevel > MAX_NORMAL_LEVEL && currentLevel != 16) newLevel = currentLevel - 1;
+        else newLevel = currentLevel;
 
         // Calculate durability loss based on enhancement level
         int durabilityLoss = BASE_DURABILITY_LOSS;
-        if (currentLevel >= MAX_NORMAL_LEVEL) {
-            durabilityLoss *= ENHANCED_DURABILITY_MULTIPLIER; // Double durability loss after +15
-        }
-        int newDurability = Math.max(current.durability() - durabilityLoss, 0);
+        if (currentLevel >= MAX_NORMAL_LEVEL) durabilityLoss *= ENHANCED_DURABILITY_MULTIPLIER; // Double durability loss after +15
 
-        // Calculate and apply vanilla durability loss
+
+        // Decrease refinement durability
+        int currentRefinementDurability = current.durability();
+        int newRefinementDurability = Math.max(currentRefinementDurability - durabilityLoss, 0);
+
+        // Calculate new durability percentage
+        float newDurabilityPercent = (float)newRefinementDurability / entry.maxDurability();
+
+        // Apply corresponding damage to the vanilla item
         if (item.isDamageable()) {
-            int maxVanillaDurability = item.getMaxDamage();
-            // Calculate percentage of custom durability lost
-            float durabilityLostPercent = (float)(current.durability() - newDurability) / getDominatusEntry(item).maxDurability();
-            // Apply same percentage to vanilla durability
-            int vanillaDurabilityLoss = Math.round(maxVanillaDurability * durabilityLostPercent);
-            int newVanillaDamage = Math.min(item.getDamage() + vanillaDurabilityLoss, maxVanillaDurability);
-            item.setDamage(newVanillaDamage);
+            int maxDurability = item.getMaxDamage();
+            int newItemDurability = Math.round(maxDurability * newDurabilityPercent);
+            int newDamage = maxDurability - newItemDurability;
+            item.setDamage(newDamage);
         }
 
+        // Calculate failstack increase
         int failstackIncrease = currentLevel >= MAX_NORMAL_LEVEL ?
                 ENHANCED_FAILSTACK_INCREASE : // +2 failstacks for +15 to +20
                 NORMAL_FAILSTACK_INCREASE;    // +1 failstack for +1 to +14
@@ -117,13 +109,13 @@ public class RefinementManager {
         new RefinementBuilder()
                 .fromExisting(current)
                 .withRefine(newLevel)
-                .withDurability(newDurability)
+                .withDurability(newRefinementDurability)
                 .applyTo(item);
 
         if (player instanceof ServerPlayerEntity serverPlayer)
             AddRefineSoundPayloadS2C.send(serverPlayer, player.getId(), RefineSound.FAIL);
 
-        return new RefinementResult(false, newLevel, newDurability, newFailStack, true);
+        return new RefinementResult(false, newLevel, newRefinementDurability, newFailStack, true);
     }
 
     private static RefinementResult handleSuccess(ItemStack item, int currentLevel, PlayerEntity player) {
