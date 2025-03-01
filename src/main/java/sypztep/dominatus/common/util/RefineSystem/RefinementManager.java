@@ -1,16 +1,32 @@
 package sypztep.dominatus.common.util.RefineSystem;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.EquippableComponent;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
+import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.payload.AddRefineSoundPayloadS2C;
 import sypztep.dominatus.common.data.DominatusItemEntry;
 import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModDataComponents;
+import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModItems;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RefinementManager {
     public static final int MAX_NORMAL_LEVEL = 15;
@@ -39,18 +55,95 @@ public class RefinementManager {
     public static void applyRefinement(ItemStack stack, DominatusItemEntry entry, int newLevel) {
         Refinement oldRef = getRefinement(stack);
 
+        // Calculate the new stats based on level
+        int accuracy = RefinementCalculator.calculateStatValue(
+                newLevel, entry.maxLvl(), entry.startAccuracy(), entry.endAccuracy());
+        int evasion = RefinementCalculator.calculateStatValue(
+                newLevel, entry.maxLvl(), entry.startEvasion(), entry.endEvasion());
+        float damage = RefinementCalculator.calculateStatValue(
+                newLevel, entry.maxLvl(), entry.starDamage(), entry.endDamage());
+        int protection = RefinementCalculator.calculateStatValue(
+                newLevel, entry.maxLvl(), entry.startProtection(), entry.endProtection());
+
+        // Update the refinement data component
         new RefinementBuilder()
                 .fromExisting(oldRef)
                 .withRefine(newLevel)
-                .withAccuracy(RefinementCalculator.calculateStatValue(
-                        newLevel, entry.maxLvl(), entry.startAccuracy(), entry.endAccuracy()))
-                .withEvasion(RefinementCalculator.calculateStatValue(
-                        newLevel, entry.maxLvl(), entry.startEvasion(), entry.endEvasion()))
-                .withDamage(RefinementCalculator.calculateStatValue(
-                        newLevel, entry.maxLvl(), entry.starDamage(), entry.endDamage()))
-                .withProtection(RefinementCalculator.calculateStatValue(
-                        newLevel, entry.maxLvl(), entry.startProtection(), entry.endProtection()))
+                .withAccuracy(accuracy)
+                .withEvasion(evasion)
+                .withDamage(damage)
+                .withProtection(protection)
                 .applyTo(stack);
+
+        // Apply attribute modifiers to the item directly
+        updateItemAttributes(stack, accuracy, evasion, damage, protection);
+    }
+
+    private static void updateItemAttributes(ItemStack stack, int accuracy, int evasion, float damage, int protection) {
+        // Get current attribute modifiers or default
+        AttributeModifiersComponent attributeModifiers = stack.getOrDefault(
+                DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
+
+        AttributeModifiersComponent.Builder builder = AttributeModifiersComponent.builder();
+        AttributeModifierSlot slot = getAppropriateSlot(stack);
+
+        // Define our refinement attribute IDs
+        Map<RegistryEntry<EntityAttribute>, Pair<Identifier, Number>> refinementAttributes = new HashMap<>();
+
+        // Only add attributes with positive values
+        if (accuracy > 0) refinementAttributes.put(ModEntityAttributes.ACCURACY,
+                new Pair<>(Dominatus.id("refinement.accuracy"), accuracy));
+        if (evasion > 0) refinementAttributes.put(ModEntityAttributes.EVASION,
+                new Pair<>(Dominatus.id("refinement.evasion"), evasion));
+        if (damage > 0) refinementAttributes.put(EntityAttributes.ATTACK_DAMAGE,
+                new Pair<>(Dominatus.id("refinement.damage"), damage));
+        if (protection > 0) refinementAttributes.put(EntityAttributes.ARMOR,
+                new Pair<>(Dominatus.id("refinement.armor"), protection));
+
+        // Copy non-conflicting attributes
+        for (AttributeModifiersComponent.Entry entry : attributeModifiers.modifiers()) {
+            Identifier modifierId = entry.modifier().id();
+            boolean isOurRefinementAttribute = modifierId.getNamespace().equals(Dominatus.MODID) &&
+                    modifierId.getPath().startsWith("refinement.");
+            boolean isConflictingVanilla = (refinementAttributes.containsKey(EntityAttributes.ATTACK_DAMAGE) &&
+                    entry.attribute().equals(EntityAttributes.ATTACK_DAMAGE) &&
+                    modifierId.getPath().startsWith("weapon.") &&
+                    entry.slot() == slot) ||
+                    (refinementAttributes.containsKey(EntityAttributes.ARMOR) &&
+                            entry.attribute().equals(EntityAttributes.ARMOR) &&
+                            modifierId.getPath().startsWith("armor.") &&
+                            entry.slot() == slot);
+
+            if (!isOurRefinementAttribute && !isConflictingVanilla) {
+                builder.add(entry.attribute(), entry.modifier(), entry.slot());
+            }
+        }
+
+        // Add our refinement attributes
+        refinementAttributes.forEach((attribute, pair) ->
+                builder.add(
+                        attribute,
+                        new EntityAttributeModifier(
+                                pair.getLeft(),
+                                pair.getRight().doubleValue(),
+                                EntityAttributeModifier.Operation.ADD_VALUE
+                        ),
+                        slot
+                )
+        );
+
+        stack.set(DataComponentTypes.ATTRIBUTE_MODIFIERS, builder.build());
+    }
+
+    private static AttributeModifierSlot getAppropriateSlot(ItemStack stack) {
+        if (stack.contains(DataComponentTypes.EQUIPPABLE)) {
+            EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+            EquipmentSlot equipSlot = equippable.slot();
+            return AttributeModifierSlot.forEquipmentSlot(equipSlot);
+        }
+
+        if (stack.getItem() instanceof ArmorItem) return AttributeModifierSlot.ARMOR;
+        return AttributeModifierSlot.MAINHAND;
     }
 
     public static RefinementResult processRefinement(ItemStack item, ItemStack material, int failStack, PlayerEntity player) {
@@ -84,7 +177,9 @@ public class RefinementManager {
 
     private static RefinementResult handleFailure(ItemStack item, int currentLevel, int failStack, PlayerEntity player) {
         Refinement current = getRefinement(item);
+        DominatusItemEntry entry = getDominatusEntry(item);
 
+        // Determine new refinement level
         int newLevel;
         if (currentLevel > MAX_NORMAL_LEVEL && currentLevel != 16)  // Only degrade if above PRI
             newLevel = currentLevel - 1;
@@ -96,34 +191,55 @@ public class RefinementManager {
         if (currentLevel >= MAX_NORMAL_LEVEL) {
             durabilityLoss *= ENHANCED_DURABILITY_MULTIPLIER; // Double durability loss after +15
         }
-        int newDurability = Math.max(current.durability() - durabilityLoss, 0);
 
-        // Calculate and apply vanilla durability loss
-        if (item.isDamageable()) {
-            int maxVanillaDurability = item.getMaxDamage();
-            // Calculate percentage of custom durability lost
-            float durabilityLostPercent = (float)(current.durability() - newDurability) / getDominatusEntry(item).maxDurability();
-            // Apply same percentage to vanilla durability
-            int vanillaDurabilityLoss = Math.round(maxVanillaDurability * durabilityLostPercent);
-            int newVanillaDamage = Math.min(item.getDamage() + vanillaDurabilityLoss, maxVanillaDurability);
-            item.setDamage(newVanillaDamage);
+        // Decrease refinement durability
+        int currentRefinementDurability = current.durability();
+        int newRefinementDurability = Math.max(currentRefinementDurability - durabilityLoss, 0);
+
+        // Only affect vanilla item durability when refinement durability drops below threshold
+        if (currentRefinementDurability > 30 && newRefinementDurability <= 30) {
+            // Refinement durability dropped below threshold, reduce vanilla durability by 10%
+            if (item.isDamageable()) {
+                int maxDurability = item.getMaxDamage();
+                int currentVanillaDurability = maxDurability - item.getDamage();
+                int durabilityToReduce = (int)(maxDurability * 0.1f); // 10% of max durability
+                int newVanillaDurability = Math.max(currentVanillaDurability - durabilityToReduce, 0);
+                item.setDamage(maxDurability - newVanillaDurability);
+            }
         }
 
+        // Calculate failstack increase
         int failstackIncrease = currentLevel >= MAX_NORMAL_LEVEL ?
                 ENHANCED_FAILSTACK_INCREASE : // +2 failstacks for +15 to +20
                 NORMAL_FAILSTACK_INCREASE;    // +1 failstack for +1 to +14
         int newFailStack = failStack + failstackIncrease;
 
-        new RefinementBuilder()
+        // Update refinement
+        Refinement newRefinement = new RefinementBuilder()
                 .fromExisting(current)
                 .withRefine(newLevel)
-                .withDurability(newDurability)
-                .applyTo(item);
+                .withDurability(newRefinementDurability)
+                .build();
 
+        item.set(ModDataComponents.REFINEMENT, newRefinement);
+
+        // Update attribute modifiers
+        int accuracy = RefinementCalculator.calculateStatValue(
+                newLevel, entry.maxLvl(), entry.startAccuracy(), entry.endAccuracy());
+        int evasion = RefinementCalculator.calculateStatValue(
+                newLevel, entry.maxLvl(), entry.startEvasion(), entry.endEvasion());
+        float damage = RefinementCalculator.calculateStatValue(
+                newLevel, entry.maxLvl(), entry.starDamage(), entry.endDamage());
+        int protection = RefinementCalculator.calculateStatValue(
+                newLevel, entry.maxLvl(), entry.startProtection(), entry.endProtection());
+
+        updateItemAttributes(item, accuracy, evasion, damage, protection);
+
+        // Play sound
         if (player instanceof ServerPlayerEntity serverPlayer)
             AddRefineSoundPayloadS2C.send(serverPlayer, player.getId(), RefineSound.FAIL);
 
-        return new RefinementResult(false, newLevel, newDurability, newFailStack, true);
+        return new RefinementResult(false, newLevel, newRefinementDurability, newFailStack, true);
     }
 
     private static RefinementResult handleSuccess(ItemStack item, int currentLevel, PlayerEntity player) {
