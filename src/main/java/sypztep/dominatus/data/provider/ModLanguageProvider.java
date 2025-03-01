@@ -38,7 +38,11 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("item.dominatus.reform_stone_grade_mid.desc", "A stone used to reform items.");
         translate.add("item.dominatus.reform_stone_grade_high", "Reform Stone Grade 3");
         translate.add("item.dominatus.reform_stone_grade_high.desc", "A stone used to reform items.");
-
+        // Attributes
+        translate.add("attribute.name.evasion", "Evasion");
+        translate.add("attribute.name.accuracy", "Accuracy");
+        translate.add("attribute.name.crit_chance", "Critical Chance");
+        translate.add("attribute.name.crit_damage", "Critical Damage");
         // Miscellaneous
         translate.add("item.dominatus.loss_fragment", "Loss Fragment");
         translate.add("item.dominatus.loss_fragment.desc", "Combine to obtain Refined Armor Enforge.");
