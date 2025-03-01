@@ -51,6 +51,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
 
         // Screen
         translate.add("dominatus.refinebutton_tooltip", "Refinement");
+        translate.add("dominatus.reform.screen", "Reform");
 
         // Tooltip
         translate.add("dominatus.attribute.modifier.armor", "+%s (%s) Armor");
