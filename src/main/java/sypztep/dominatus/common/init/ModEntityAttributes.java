@@ -5,7 +5,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
-import sypztep.dominatus.Dominatus;
+import net.minecraft.util.Identifier;
 
 public class ModEntityAttributes {
     public static final RegistryEntry<EntityAttribute> ACCURACY;
@@ -21,6 +21,6 @@ public class ModEntityAttributes {
     }
 
     private static RegistryEntry<EntityAttribute> register(String id, EntityAttribute attribute) {
-        return Registry.registerReference(Registries.ATTRIBUTE, Dominatus.id(id), attribute);
+        return Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), attribute);
     }
 }
