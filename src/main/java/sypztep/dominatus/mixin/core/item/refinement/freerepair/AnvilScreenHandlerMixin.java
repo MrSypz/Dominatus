@@ -29,7 +29,7 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
         }
     }
     @Inject(method = "updateResult", at = @At("TAIL"))
-    private void updateResult(CallbackInfo ci) {
+    private void zeroRepairCost(CallbackInfo ci) {
         if (input.getStack(0).contains(ModDataComponents.REFINEMENT)) {
             levelCost.set(0);
         }
