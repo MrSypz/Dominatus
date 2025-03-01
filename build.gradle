@@ -55,6 +55,7 @@ dependencies {
 
     modImplementation include("com.github.MrSypz:Knumber:${knumber_version}")
 //    modImplementation include("com.github.MrSypz:Tyrannus:${tyrannus_version}")
+    modImplementation include("com.github.MrSypz:hawsamoot:${hawsamoot_version}")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         exclude(group: "net.fabricmc.fabric-api")
