@@ -18,7 +18,7 @@ public abstract class LivingEntityMixin {
     private void onEquipmentChange(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir) {
         if (cir.getReturnValue() != null) {
             LivingEntity target = (LivingEntity) (Object) this;
-            RefinementItemManager.updateEntityStats(target);
+//            RefinementItemManager.updateEntityStats(target);
         }
     }
 }
