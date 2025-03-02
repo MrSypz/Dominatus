@@ -17,7 +17,10 @@ public class LivingEntityMixin {
                 .add(ModEntityAttributes.ACCURACY)
                 .add(ModEntityAttributes.EVASION)
                 .add(ModEntityAttributes.CRIT_CHANCE)
-                .add(ModEntityAttributes.CRIT_DAMAGE);
+                .add(ModEntityAttributes.CRIT_DAMAGE)
+                .add(ModEntityAttributes.BACK_ATTACK)
+                .add(ModEntityAttributes.AIR_ATTACK)
+                .add(ModEntityAttributes.DOWN_ATTACK);
         cir.setReturnValue(builder);
     }
 }

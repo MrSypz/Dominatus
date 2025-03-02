@@ -21,9 +21,9 @@ public class ModEntityAttributes {
         EVASION = register("evasion", new ClampedEntityAttribute("attribute.name.evasion", 20, 0.0, 2048.0D).setTracked(true));
         CRIT_CHANCE = register("crit_chance", new ClampedEntityAttribute("attribute.name.crit_chance", 0.05, 0.0, 2.0D).setTracked(true));
         CRIT_DAMAGE = register("crit_damage", new ClampedEntityAttribute("attribute.name.crit_damage", 0.5, 0.0, 10.24D).setTracked(true));
-        BACK_ATTACK = register("back_attack", new ClampedEntityAttribute("attribute.name.back_attack", 0.0, 0.0, 10.24D).setTracked(true));
-        AIR_ATTACK = register("air_attack", new ClampedEntityAttribute("attribute.name.air_attack", 0.0, 0.0, 10.24D).setTracked(true));
-        DOWN_ATTACK = register("down_attack", new ClampedEntityAttribute("attribute.name.down_attack", 0.0, 0.0, 10.24D).setTracked(true));
+        BACK_ATTACK = register("back_attack", new ClampedEntityAttribute("attribute.name.back_attack", 0.5, 0.0, 10.24D).setTracked(true));
+        AIR_ATTACK = register("air_attack", new ClampedEntityAttribute("attribute.name.air_attack", 1.0, 0.0, 10.24D).setTracked(true));
+        DOWN_ATTACK = register("down_attack", new ClampedEntityAttribute("attribute.name.down_attack", 0.5, 0.0, 10.24D).setTracked(true));
     }
 
     private static RegistryEntry<EntityAttribute> register(String id, EntityAttribute attribute) {

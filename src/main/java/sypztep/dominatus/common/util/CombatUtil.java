@@ -9,6 +9,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.client.init.ModParticle;
 import sypztep.dominatus.client.payload.AddTextParticlesPayload;
+import sypztep.dominatus.common.init.ModEntityAttributes;
 
 public class CombatUtil {
     public static float applyBackAttackModifier(LivingEntity target,float value, DamageSource source) {
@@ -24,7 +25,7 @@ public class CombatUtil {
                             AddTextParticlesPayload.send(foundPlayer, target.getId(), ModParticle.BACKATTACK)
                     );
                 }
-                return value * 1.5F;
+                return (float) (value * ((livingAttacker).getAttributeValue(ModEntityAttributes.BACK_ATTACK) + 1)); // (value * (0.5 + 1))
             }
         }
         return value;
