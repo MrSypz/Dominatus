@@ -113,7 +113,6 @@ public class ReformManager {
         }
     }
 
-    // Class to hold reform stats
     public record ReformStats(
             int accuracy,
             int evasion,
@@ -124,12 +123,10 @@ public class ReformManager {
             float critDamage
     ) {}
 
-    // Reform categories
     public enum ReformCategory {
         WEAPON, ARMOR, BOTH
     }
 
-    // Reform stone grades
     public enum ReformStoneGrade {
         LOW(1, RarityBorder.COMMON),
         MID(2, RarityBorder.RARE),
@@ -151,7 +148,6 @@ public class ReformManager {
             return rarityBorder;
         }
 
-        // Get stone grade from ItemStack
         public static ReformStoneGrade fromItem(ItemStack stack) {
             if (stack.isOf(ModItems.REFORM_STONE_GRADE_HIGH)) {
                 return HIGH;
@@ -164,7 +160,6 @@ public class ReformManager {
         }
     }
 
-    // Item category detection
     public static ReformCategory getItemCategory(ItemStack stack) {
         // Implement logic to detect if an item is a weapon or armor
         if (stack.getItem() instanceof net.minecraft.item.ArmorItem) {
@@ -177,15 +172,12 @@ public class ReformManager {
         return null; // Not reformable
     }
 
-    // Check if an item can be reformed with a specific stone
     public static boolean canReform(ItemStack item, ItemStack reformStone) {
-        // Get the item category
         ReformCategory itemCategory = getItemCategory(item);
         if (itemCategory == null) {
             return false; // Item is not reformable
         }
 
-        // Get the reform stone grade
         ReformStoneGrade stoneGrade = ReformStoneGrade.fromItem(reformStone);
         if (stoneGrade == null) {
             return false; // Not a valid reform stone
