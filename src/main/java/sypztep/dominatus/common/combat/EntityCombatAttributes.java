@@ -1,8 +1,8 @@
-package sypztep.dominatus.common.attributes;
+package sypztep.dominatus.common.combat;
 
 import net.minecraft.entity.LivingEntity;
-import sypztep.dominatus.common.attributes.element.Accuracy;
-import sypztep.dominatus.common.attributes.element.Evasion;
+import sypztep.dominatus.common.combat.element.Accuracy;
+import sypztep.dominatus.common.combat.element.Evasion;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 
 /**

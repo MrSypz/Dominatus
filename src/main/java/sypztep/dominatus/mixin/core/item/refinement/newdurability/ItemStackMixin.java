@@ -17,7 +17,6 @@ public class ItemStackMixin {
         if (DominatusItemEntry.getDominatusItemData(self).isPresent()) {
             int minimumDamage = RefinementManager.getMaxAllowedVanillaRepair(self);
 
-            // If trying to repair beyond the allowed amount, cancel and set to minimum damage
             if (damage < minimumDamage) {
                 self.setDamage(minimumDamage);
                 ci.cancel();

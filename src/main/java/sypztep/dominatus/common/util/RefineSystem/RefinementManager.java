@@ -160,7 +160,7 @@ public class RefinementManager {
         );
     }
 
-    private static DominatusItemEntry getDominatusEntry(ItemStack item) {
+    public static DominatusItemEntry getDominatusEntry(ItemStack item) {
         return DominatusItemEntry.getDominatusItemData(DominatusItemEntry.getItemId(item))
                 .orElseThrow(() -> new IllegalStateException("Invalid item for refinement"));
     }

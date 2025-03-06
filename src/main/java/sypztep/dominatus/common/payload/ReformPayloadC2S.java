@@ -21,8 +21,8 @@ public record ReformPayloadC2S() implements CustomPayload {
     public static class Receiver implements ServerPlayNetworking.PlayPayloadHandler<ReformPayloadC2S> {
         @Override
         public void receive(ReformPayloadC2S payload, ServerPlayNetworking.Context context) {
-            if (context.player().currentScreenHandler instanceof ReformScreenHandler)
-                ((ReformScreenHandler) context.player().currentScreenHandler).reform();
+//            if (context.player().currentScreenHandler instanceof ReformScreenHandler)
+//                ((ReformScreenHandler) context.player().currentScreenHandler).reform();
         }
     }
 }

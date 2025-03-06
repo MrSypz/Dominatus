@@ -109,6 +109,8 @@ public class RefinementItemManager {
     }
 
     private static boolean isItemInCorrectSlot(ItemStack stack, EquipmentSlot slot) {
+        if (stack.shouldBreak()) return false;
+
         Pair<ItemStack, EquipmentSlot> cacheKey = new Pair<>(stack, slot);
         Boolean cachedResult = SLOT_VALIDITY_CACHE.get(cacheKey);
         if (cachedResult != null) {

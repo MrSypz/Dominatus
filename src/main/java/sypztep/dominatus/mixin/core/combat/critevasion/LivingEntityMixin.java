@@ -19,11 +19,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.init.ModParticle;
 import sypztep.dominatus.client.payload.AddTextParticlesPayload;
 import sypztep.dominatus.common.api.combat.CriticalOverhaul;
-import sypztep.dominatus.common.attributes.EntityCombatAttributes;
+import sypztep.dominatus.common.combat.EntityCombatAttributes;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.api.combat.MissingAccessor;
 
@@ -77,9 +76,7 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
             this.setCritical(shouldCrit);
 
             if (shouldCrit) {
-                Dominatus.LOGGER.info("Applying projectile critical hit!");
                 amount = criticalAttacker.calCritDamage(amount);
-
                 playCriticalSound(attacker);
             }
         }
@@ -94,8 +91,6 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
                 playCriticalSound(attacker);
             }
         }
-
-        Dominatus.LOGGER.info("Final damage: {}, isCrit = {}", amount, shouldCrit);
 
         return amount;
     }

@@ -1,7 +1,7 @@
 package test.java.sypztep.dominatus;
 
-import sypztep.dominatus.common.attributes.element.Accuracy;
-import sypztep.dominatus.common.attributes.element.Evasion;
+import sypztep.dominatus.common.combat.element.Accuracy;
+import sypztep.dominatus.common.combat.element.Evasion;
 
 import java.util.HashMap;
 import java.util.Map;

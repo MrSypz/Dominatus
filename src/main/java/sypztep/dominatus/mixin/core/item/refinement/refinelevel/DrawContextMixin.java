@@ -1,4 +1,4 @@
-package sypztep.dominatus.mixin.core.item.refinement.level;
+package sypztep.dominatus.mixin.core.item.refinement.refinelevel;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -6,6 +6,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,7 +30,7 @@ public abstract class DrawContextMixin {
 
     @Inject(at = @At("RETURN"), method = "drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
     public void drawRefineLevel(TextRenderer textRenderer, ItemStack itemStack, int x, int y, String countOverride, CallbackInfo ci) {
-        drawtextInSlot(textRenderer, itemStack, x, y, 1F); // For double scale
+        drawtextInSlot(textRenderer, itemStack, x, y, 1F);
     }
 
     @Unique
@@ -50,9 +51,9 @@ public abstract class DrawContextMixin {
         this.matrices.push();
         this.matrices.scale(scale, scale, scale);
         this.matrices.translate(0.0F, 0.0F, 180.0F);
-        if (lvl > 0)
+        if (lvl > 0 && lvl < 16)
             drawBoldText(context, renderer, string, x, y, color, bordercolor);
-        else if (lvl > 16){
+        else {
             String romanString = RefinementManager.toRoman(lvl);
             int romanStringWidth = renderer.getWidth(romanString);
             int romanX = (int) ((i + 9) / scale) - romanStringWidth / 2;

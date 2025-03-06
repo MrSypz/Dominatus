@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.attributes;
+package sypztep.dominatus.common.combat;
 
 /**
  * Base abstract class for all combat-related attributes
