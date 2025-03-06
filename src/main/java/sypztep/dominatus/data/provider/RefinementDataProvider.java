@@ -39,19 +39,18 @@ public class RefinementDataProvider implements DataProvider {
     private List<CompletableFuture<?>> generateWeapons(DataWriter writer) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
 
-        // Format: name, isVanilla, maxLvl, startAcc, endAcc, startEva(0), endEva(0), durability, startDmg, endDmg, startProt(0), endProt(0), repair
-        futures.add(generateWeaponData(writer, Items.WOODEN_SWORD.toString(), true, 20, 42, 84, 0, 0, 100, 18, 33, 0, 0, 10));  // Green Grade
-        futures.add(generateWeaponData(writer, Items.STONE_SWORD.toString(), true, 20, 45, 86, 0, 0, 100, 21, 37, 0, 0, 10));   // Green Grade
-        futures.add(generateWeaponData(writer, Items.IRON_SWORD.toString(), true, 20, 48, 89, 0, 0, 100, 23, 39, 0, 0, 5));     // Blue Grade
-        futures.add(generateWeaponData(writer, Items.GOLDEN_SWORD.toString(), true, 20, 54, 96, 0, 0, 100, 25, 42, 0, 0, 5));   // Blue Grade
-        futures.add(generateWeaponData(writer, Items.DIAMOND_SWORD.toString(), true, 20, 68, 115, 0, 0, 100, 32, 54, 0, 0, 2)); // Yellow Grade
-        futures.add(generateWeaponData(writer, Items.NETHERITE_SWORD.toString(), true, 20, 72, 122, 0, 0, 100, 38, 62, 0, 0, 1)); // Boss Grade
+        futures.add(generateWeaponData(writer, Items.WOODEN_SWORD.toString(), true, 20, 42, 84, 0, 0, 100, 2, 8, 0, 0, 10));  // Green Grade
+        futures.add(generateWeaponData(writer, Items.STONE_SWORD.toString(), true, 20, 45, 86, 0, 0, 100, 3, 10, 0, 0, 10));   // Green Grade
+        futures.add(generateWeaponData(writer, Items.IRON_SWORD.toString(), true, 20, 48, 89, 0, 0, 100, 4, 12, 0, 0, 5));     // Blue Grade
+        futures.add(generateWeaponData(writer, Items.GOLDEN_SWORD.toString(), true, 20, 54, 96, 0, 0, 100, 2, 8, 0, 0, 5));   // Blue Grade
+        futures.add(generateWeaponData(writer, Items.DIAMOND_SWORD.toString(), true, 20, 68, 115, 0, 0, 100, 5, 14, 0, 0, 2)); // Yellow Grade
+        futures.add(generateWeaponData(writer, Items.NETHERITE_SWORD.toString(), true, 20, 72, 122, 0, 0, 100, 6, 16, 0, 0, 1)); // Boss Grade
 
-        futures.add(generateWeaponData(writer, Items.WOODEN_AXE.toString(), true, 20, 38, 78, 0, 0, 100, 21, 36, 0, 0, 10));    // Green Grade
-        futures.add(generateWeaponData(writer, Items.STONE_AXE.toString(), true, 20, 42, 82, 0, 0, 100, 24, 40, 0, 0, 10));     // Green Grade
-        futures.add(generateWeaponData(writer, Items.IRON_AXE.toString(), true, 20, 45, 85, 0, 0, 100, 28, 45, 0, 0, 5));       // Blue Grade
-        futures.add(generateWeaponData(writer, Items.DIAMOND_AXE.toString(), true, 20, 62, 108, 0, 0, 100, 35, 58, 0, 0, 2));   // Yellow Grade
-        futures.add(generateWeaponData(writer, Items.NETHERITE_AXE.toString(), true, 20, 68, 115, 0, 0, 100, 42, 65, 0, 0, 1)); // Boss Grade
+        futures.add(generateWeaponData(writer, Items.WOODEN_AXE.toString(), true, 20, 38, 78, 0, 0, 100, 5, 14, 0, 0, 10));    // Green Grade
+        futures.add(generateWeaponData(writer, Items.STONE_AXE.toString(), true, 20, 42, 82, 0, 0, 100, 7, 18, 0, 0, 10));     // Green Grade
+        futures.add(generateWeaponData(writer, Items.IRON_AXE.toString(), true, 20, 45, 85, 0, 0, 100, 7, 18, 0, 0, 5));       // Blue Grade
+        futures.add(generateWeaponData(writer, Items.DIAMOND_AXE.toString(), true, 20, 62, 108, 0, 0, 100, 7, 18, 0, 0, 2));   // Yellow Grade
+        futures.add(generateWeaponData(writer, Items.NETHERITE_AXE.toString(), true, 20, 68, 115, 0, 0, 100, 8, 20, 0, 0, 1)); // Boss Grade
 
         return futures;
     }
