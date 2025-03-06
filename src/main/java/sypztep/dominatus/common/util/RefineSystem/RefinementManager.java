@@ -80,27 +80,24 @@ public class RefinementManager {
         if (currentLevel > MAX_NORMAL_LEVEL && currentLevel != 16) newLevel = currentLevel - 1;
         else newLevel = currentLevel;
 
-        // Calculate durability loss based on enhancement level
         int durabilityLoss = BASE_DURABILITY_LOSS;
         if (currentLevel >= MAX_NORMAL_LEVEL) durabilityLoss *= ENHANCED_DURABILITY_MULTIPLIER; // Double durability loss after +15
 
-
-        // Decrease refinement durability
         int currentRefinementDurability = current.durability();
         int newRefinementDurability = Math.max(currentRefinementDurability - durabilityLoss, 0);
 
-        // Calculate new durability percentage
-        float newDurabilityPercent = (float)newRefinementDurability / entry.maxDurability();
+        float refinementDurabilityPercent = (float)newRefinementDurability / entry.maxDurability();
 
-        // Apply corresponding damage to the vanilla item
-        if (item.isDamageable()) {
+        float currentItemDurabilityPercent = 0;
+        if (item.isDamageable()) currentItemDurabilityPercent = 1.0f - ((float)item.getDamage() / item.getMaxDamage());
+
+
+        if (item.isDamageable() && refinementDurabilityPercent < currentItemDurabilityPercent) {
             int maxDurability = item.getMaxDamage();
-            int newItemDurability = Math.round(maxDurability * newDurabilityPercent);
-            int newDamage = maxDurability - newItemDurability;
+            int newDamage = maxDurability - Math.round(maxDurability * refinementDurabilityPercent);
             item.setDamage(newDamage);
         }
 
-        // Calculate failstack increase
         int failstackIncrease = currentLevel >= MAX_NORMAL_LEVEL ?
                 ENHANCED_FAILSTACK_INCREASE : // +2 failstacks for +15 to +20
                 NORMAL_FAILSTACK_INCREASE;    // +1 failstack for +1 to +14
