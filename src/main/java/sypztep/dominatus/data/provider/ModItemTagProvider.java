@@ -17,9 +17,5 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
 	@Override
 	protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-		getOrCreateTagBuilder(ModItemTags.REFORM_MATERIAL)
-				.add(ModItems.REFORM_STONE_GRADE_LOW)
-				.add(ModItems.REFORM_STONE_GRADE_MID)
-				.add(ModItems.REFORM_STONE_GRADE_HIGH);
 	}
 }

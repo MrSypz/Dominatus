@@ -22,9 +22,6 @@ public class ModItems {
     public static Item MOONLIGHT_CRESCENT;
     public static Item MAHILNANT;
 
-    public static Item REFORM_STONE_GRADE_LOW;
-    public static Item REFORM_STONE_GRADE_MID;
-    public static Item REFORM_STONE_GRADE_HIGH;
 
     public static void init() {
         REFINE_WEAPON_STONE = register("refine_weapon_stone", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("refine_weapon_stone")))));
@@ -36,9 +33,6 @@ public class ModItems {
         MOONLIGHT_CRESCENT = register("moonlight_crescent", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("moonlight_crescent")))));
         MAHILNANT = register("mahilnant", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("mahilnant")))));
 
-        REFORM_STONE_GRADE_LOW = register("reform_stone_grade_low", new RefinementStoneItem(new Item.Settings().rarity(Rarity.COMMON).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("reform_stone_grade_low")))));
-        REFORM_STONE_GRADE_MID = register("reform_stone_grade_mid", new RefinementStoneItem(new Item.Settings().rarity(Rarity.UNCOMMON).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("reform_stone_grade_mid")))));
-        REFORM_STONE_GRADE_HIGH = register("reform_stone_grade_high", new RefinementStoneItem(new Item.Settings().rarity(Rarity.RARE).registryKey(RegistryKey.of(RegistryKeys.ITEM, Dominatus.id("reform_stone_grade_high")))));
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
             content.addAfter(Items.DISC_FRAGMENT_5, ModItems.REFINE_ARMOR_STONE);
@@ -49,9 +43,6 @@ public class ModItems {
             content.addAfter(ModItems.REFINE_ARMORENFORGE_STONE, ModItems.REFINE_WEAPONENFORGE_STONE);
             content.addAfter(ModItems.REFINE_WEAPONENFORGE_STONE, ModItems.MOONLIGHT_CRESCENT);
             content.addAfter(ModItems.MOONLIGHT_CRESCENT, ModItems.MAHILNANT);
-            content.addAfter(ModItems.MAHILNANT, ModItems.REFORM_STONE_GRADE_LOW);
-            content.addAfter(ModItems.REFORM_STONE_GRADE_LOW, ModItems.REFORM_STONE_GRADE_MID);
-            content.addAfter(ModItems.REFORM_STONE_GRADE_MID, ModItems.REFORM_STONE_GRADE_HIGH);
         });
     }
 
