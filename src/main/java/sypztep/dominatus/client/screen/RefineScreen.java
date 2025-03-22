@@ -156,9 +156,8 @@ public final class RefineScreen
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0, 0,175,166, 256,256);
-        // Small box area for hold extra like EVA ACC DMG DEF
-        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE,i - 23,j + 24, 176,54,24,57, 256,256);
+        context.drawTexture(TEXTURE, i, j, 0, 0,175,166, 256,256);
+        context.drawTexture(TEXTURE,i - 23,j + 24, 176,54,24,57, 256,256);
     }
 
     @Override
@@ -192,7 +191,7 @@ public final class RefineScreen
                 v += this.height;
             }
 
-            context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, this.getX() - 1, this.getY(), 176, v, 18,18,256, 256);
+            context.drawTexture(TEXTURE, this.getX() - 1, this.getY(), 176, v, 18,18,256, 256);
         }
 
         public void setDisabled(boolean disable) {

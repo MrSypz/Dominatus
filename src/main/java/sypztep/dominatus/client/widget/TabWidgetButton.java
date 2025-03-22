@@ -33,12 +33,12 @@ public abstract class  TabWidgetButton extends ClickableWidget {
 
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawGuiTexture(RenderLayer::getGuiTextured,buttonTexture, getX(), getY(), getWidth(), getHeight());
-        context.drawGuiTexture(RenderLayer::getGuiTextured,icon, getX() + 10, getY() + 4,18,18);
+        context.drawGuiTexture(buttonTexture, getX(), getY(), getWidth(), getHeight());
+        context.drawGuiTexture(icon, getX() + 10, getY() + 4,18,18);
 
         if (isHovered()) {
-            context.drawGuiTexture(RenderLayer::getGuiTextured, buttonHoverTexture, getX(), getY(), getWidth(), getHeight());
-            context.drawGuiTexture(RenderLayer::getGuiTextured, icon, getX() + 8, getY() + 4,18,18);
+            context.drawGuiTexture(buttonHoverTexture, getX(), getY(), getWidth(), getHeight());
+            context.drawGuiTexture(icon, getX() + 8, getY() + 4,18,18);
 
             boolean isShiftHeld = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT);
             if (isShiftHeld) {

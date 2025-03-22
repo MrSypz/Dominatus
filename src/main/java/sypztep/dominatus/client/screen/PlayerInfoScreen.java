@@ -94,7 +94,7 @@ public final class PlayerInfoScreen extends Screen {
         Map<Text, Double> offensiveStats = new LinkedHashMap<>();
         offensiveStats.put(
                 Text.literal("Damage").formatted(Formatting.DARK_RED),
-                player.getAttributeValue(EntityAttributes.ATTACK_DAMAGE)
+                player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)
         );
         offensiveStats.put(
                 Text.literal("Accuracy").formatted(Formatting.YELLOW),
@@ -107,7 +107,7 @@ public final class PlayerInfoScreen extends Screen {
         Map<Text, Double> defensiveStats = new LinkedHashMap<>();
         defensiveStats.put(
                 Text.literal("Armor").formatted(Formatting.BLUE),
-                player.getAttributeValue(EntityAttributes.ARMOR)
+                player.getAttributeValue(EntityAttributes.GENERIC_ARMOR)
         );
         defensiveStats.put(
                 Text.literal("Evasion").formatted(Formatting.AQUA),

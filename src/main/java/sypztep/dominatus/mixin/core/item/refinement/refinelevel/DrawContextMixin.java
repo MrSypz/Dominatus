@@ -28,7 +28,7 @@ public abstract class DrawContextMixin {
     @Final
     private MatrixStack matrices;
 
-    @Inject(at = @At("RETURN"), method = "drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
+    @Inject(at = @At("RETURN"), method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
     public void drawRefineLevel(TextRenderer textRenderer, ItemStack itemStack, int x, int y, String countOverride, CallbackInfo ci) {
         drawtextInSlot(textRenderer, itemStack, x, y, 1F);
     }

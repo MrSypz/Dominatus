@@ -47,21 +47,21 @@ public class RefinementItemManager {
     }
 
     private static void clearExistingModifiers(LivingEntity entity) {
-        removeAttributeModifier(entity, EntityAttributes.ATTACK_DAMAGE, DAMAGE_MODIFIER_ID);
-        removeAttributeModifier(entity, EntityAttributes.ARMOR, ARMOR_MODIFIER_ID);
+        removeAttributeModifier(entity, EntityAttributes.GENERIC_ATTACK_DAMAGE, DAMAGE_MODIFIER_ID);
+        removeAttributeModifier(entity, EntityAttributes.GENERIC_ARMOR, ARMOR_MODIFIER_ID);
         removeAttributeModifier(entity, ModEntityAttributes.ACCURACY, ACCURACY_MODIFIER_ID);
         removeAttributeModifier(entity, ModEntityAttributes.EVASION, EVASION_MODIFIER_ID);
     }
 
     private static void forceUpdateAttributes(LivingEntity entity) {
-        updateAttribute(entity, EntityAttributes.ATTACK_DAMAGE, DAMAGE_MODIFIER_ID, STATS_HOLDER.damage);
-        updateAttribute(entity, EntityAttributes.ARMOR, ARMOR_MODIFIER_ID, STATS_HOLDER.protection);
+        updateAttribute(entity, EntityAttributes.GENERIC_ATTACK_DAMAGE, DAMAGE_MODIFIER_ID, STATS_HOLDER.damage);
+        updateAttribute(entity, EntityAttributes.GENERIC_ARMOR, ARMOR_MODIFIER_ID, STATS_HOLDER.protection);
         updateAttribute(entity, ModEntityAttributes.ACCURACY, ACCURACY_MODIFIER_ID, STATS_HOLDER.accuracy);
         updateAttribute(entity, ModEntityAttributes.EVASION, EVASION_MODIFIER_ID, STATS_HOLDER.evasion);
 
-        if (entity.getWorld() instanceof ServerWorld) {
-            ((ServerWorld) entity.getWorld()).getChunkManager().sendToOtherNearbyPlayers(entity, new EntityAttributesS2CPacket(entity.getId(), entity.getAttributes().getTracked()));
-        }
+//        if (entity.getWorld() instanceof ServerWorld) {
+//            ((ServerWorld) entity.getWorld()).getChunkManager().sendToOtherNearbyPlayers(entity, new EntityAttributesS2CPacket(entity.getId(), entity.getAttributes().getTracked()));
+//        }
     }
 
     private static void removeAttributeModifier(LivingEntity entity, RegistryEntry<EntityAttribute> attribute, Identifier modifierId) {

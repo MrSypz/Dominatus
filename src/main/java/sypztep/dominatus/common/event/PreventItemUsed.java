@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -29,13 +30,13 @@ public class PreventItemUsed implements UseItemCallback, AttackEntityCallback, A
     }
 
     @Override
-    public ActionResult interact(PlayerEntity player, World world, Hand hand) {
+    public TypedActionResult<ItemStack> interact(PlayerEntity player, World world, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         if (shouldPreventUse(stack)) {
             notifyPlayer(player);
-            return ActionResult.FAIL;
+            return TypedActionResult.fail(stack);
         }
-        return ActionResult.PASS;
+        return TypedActionResult.pass(stack);
     }
 
     @Override
