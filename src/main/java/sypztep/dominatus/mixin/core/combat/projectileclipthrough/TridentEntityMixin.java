@@ -11,7 +11,7 @@ import sypztep.dominatus.common.api.combat.MissingAccessor;
 @Mixin(TridentEntity.class)
 public abstract class TridentEntityMixin {
 
-    @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/TridentEntity;deflect(Lnet/minecraft/entity/ProjectileDeflection;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity;Z)Z"), cancellable = true)
+    @Inject(method = "onEntityHit",at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/TridentEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V",shift = At.Shift.BEFORE), cancellable = true)
     private void onEntityHit(EntityHitResult entityHitResult, CallbackInfo ci) {
         if (entityHitResult.getEntity() instanceof MissingAccessor accessor && accessor.isMissing()) {
             ci.cancel();

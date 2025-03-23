@@ -56,8 +56,8 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
     }
 
     @ModifyVariable(method = "applyDamage", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    private float applyDamageFirst(float amount, ServerWorld world, DamageSource source, float originalAmount) {
-        if (world.isClient()) {
+    private float applyDamageFirst(float amount, DamageSource source) {
+        if (this.getWorld().isClient()) {
             return amount;
         }
 
@@ -96,7 +96,7 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
     }
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
-    private void handleDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void handleDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Entity attacker = source.getAttacker();
         if (!(attacker instanceof LivingEntity livingAttacker)) {
             return;
@@ -129,7 +129,7 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
     }
 
     @Inject(method = "damage", at = @At("RETURN"))
-    private void handleCrit(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void handleCrit(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (source.getAttacker() instanceof CriticalOverhaul criticalOverhaul) {
             if (!this.getWorld().isClient() && this.isCritical()) {
                 applyCriticalParticle(this);
