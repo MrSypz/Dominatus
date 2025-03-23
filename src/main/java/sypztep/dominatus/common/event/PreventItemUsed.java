@@ -18,6 +18,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import sypztep.dominatus.common.init.ModDataComponents;
+//import sypztep.tyrannus.common.util.ItemStackHelper;
 
 public class PreventItemUsed implements UseItemCallback, AttackEntityCallback, AttackBlockCallback, UseBlockCallback {
 
@@ -75,7 +76,7 @@ public class PreventItemUsed implements UseItemCallback, AttackEntityCallback, A
         }
 
         if (stack.contains(ModDataComponents.REFINEMENT)) {
-            return stack.shouldBreak() || stack.willBreakNextUse();
+//            return ItemStackHelper.shouldBreak(stack) || ItemStackHelper.willBreakNextUse(stack);
         }
 
         return false;

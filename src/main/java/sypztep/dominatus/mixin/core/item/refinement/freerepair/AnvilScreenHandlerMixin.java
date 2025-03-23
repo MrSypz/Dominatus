@@ -56,7 +56,7 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
         ItemStack repairMaterial = this.input.getStack(1);
 
         if (!itemToRepair.isEmpty() && itemToRepair.contains(ModDataComponents.REFINEMENT)) {
-            if (!repairMaterial.isEmpty() && itemToRepair.canRepairWith(repairMaterial)) {
+            if (!repairMaterial.isEmpty() && itemToRepair.copy().getItem().canRepair(itemToRepair, repairMaterial)) {
                 int damage = itemToRepair.getDamage();
                 if (damage <= 0) {
                     this.output.setStack(0, ItemStack.EMPTY);
