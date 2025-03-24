@@ -1,11 +1,9 @@
-package sypztep.dominatus.data.provider;
+package sypztep.dominatus.client.data.provider;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.RegistryWrapper;
-import sypztep.dominatus.common.init.ModItems;
-import sypztep.dominatus.common.tag.ModItemTags;
 
 import java.util.concurrent.CompletableFuture;
 

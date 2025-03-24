@@ -1,4 +1,4 @@
-package sypztep.dominatus.data.provider;
+package sypztep.dominatus.client.data.provider;
 
 import net.minecraft.item.Items;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;

@@ -1,4 +1,4 @@
-package sypztep.dominatus.data.provider;
+package sypztep.dominatus.client.data.provider;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;

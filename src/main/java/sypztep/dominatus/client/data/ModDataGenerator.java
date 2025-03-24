@@ -1,11 +1,11 @@
-package sypztep.dominatus.data;
+package sypztep.dominatus.client.data;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import sypztep.dominatus.data.provider.ModDamageTypeTagProvider;
-import sypztep.dominatus.data.provider.ModItemTagProvider;
-import sypztep.dominatus.data.provider.ModLanguageProvider;
-import sypztep.dominatus.data.provider.RefinementDataProvider;
+import sypztep.dominatus.client.data.provider.ModDamageTypeTagProvider;
+import sypztep.dominatus.client.data.provider.ModItemTagProvider;
+import sypztep.dominatus.client.data.provider.ModLanguageProvider;
+import sypztep.dominatus.client.data.provider.RefinementDataProvider;
 
 public class ModDataGenerator implements DataGeneratorEntrypoint {
     @Override
