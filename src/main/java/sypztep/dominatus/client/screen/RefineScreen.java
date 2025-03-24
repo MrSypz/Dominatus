@@ -6,7 +6,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -21,8 +20,8 @@ import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.payload.RefinePayloadC2S;
 import sypztep.dominatus.common.screen.RefineScreenHandler;
-import sypztep.dominatus.common.util.RefineSystem.RefinementCalculator;
-import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
+import sypztep.dominatus.common.util.refinesystem.RefinementCalculator;
+import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
 @Environment(EnvType.CLIENT)
 public final class RefineScreen

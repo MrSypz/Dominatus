@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sypztep.dominatus.client.init.ModParticle;
 import sypztep.dominatus.client.payload.AddTextParticlesPayload;
 import sypztep.dominatus.common.api.combat.CriticalOverhaul;
-import sypztep.dominatus.common.combat.EntityCombatAttributes;
+import sypztep.dominatus.common.util.combatsystem.EntityCombatAttributes;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.api.combat.MissingAccessor;
 
@@ -97,6 +97,9 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void handleDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (this.getWorld().isClient()) {
+            return;
+        }
         Entity attacker = source.getAttacker();
         if (!(attacker instanceof LivingEntity livingAttacker)) {
             return;

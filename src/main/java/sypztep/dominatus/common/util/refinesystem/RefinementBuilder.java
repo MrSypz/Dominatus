@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util.RefineSystem;
+package sypztep.dominatus.common.util.refinesystem;
 
 import net.minecraft.item.ItemStack;
 import sypztep.dominatus.common.data.Refinement;

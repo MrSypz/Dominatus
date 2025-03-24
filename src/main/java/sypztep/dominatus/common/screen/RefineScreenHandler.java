@@ -16,8 +16,8 @@ import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.init.ModItems;
 import sypztep.dominatus.common.init.ModScreenHandler;
-import sypztep.dominatus.common.util.RefineSystem.RefinementCalculator;
-import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
+import sypztep.dominatus.common.util.refinesystem.RefinementCalculator;
+import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
 public class RefineScreenHandler extends ScreenHandler {
     private final Inventory inventory = new SimpleInventory(3) {

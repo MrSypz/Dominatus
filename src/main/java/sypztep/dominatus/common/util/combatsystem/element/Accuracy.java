@@ -1,7 +1,7 @@
-package sypztep.dominatus.common.combat.element;
+package sypztep.dominatus.common.util.combatsystem.element;
 
 import net.minecraft.util.math.MathHelper;
-import sypztep.dominatus.common.combat.CombatAttribute;
+import sypztep.dominatus.common.util.combatsystem.CombatAttribute;
 
 /**
  * Handles accuracy calculations and modifiers

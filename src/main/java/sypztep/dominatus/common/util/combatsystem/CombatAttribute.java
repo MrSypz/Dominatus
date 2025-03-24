@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.combat;
+package sypztep.dominatus.common.util.combatsystem;
 
 /**
  * Base abstract class for all combat-related attributes
@@ -32,6 +32,5 @@ public abstract class CombatAttribute {
         return baseValue + bonusValue;
     }
 
-    // Method to be implemented by specific attributes
     public abstract double calculateEffect();
 }

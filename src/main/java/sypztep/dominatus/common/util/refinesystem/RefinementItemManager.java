@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util.RefineSystem;
+package sypztep.dominatus.common.util.refinesystem;
 
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.entity.EquipmentSlot;
@@ -9,9 +9,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.apache.commons.lang3.mutable.MutableBoolean;

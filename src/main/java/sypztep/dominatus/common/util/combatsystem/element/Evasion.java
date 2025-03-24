@@ -1,6 +1,6 @@
-package sypztep.dominatus.common.combat.element;
+package sypztep.dominatus.common.util.combatsystem.element;
 
-import sypztep.dominatus.common.combat.CombatAttribute;
+import sypztep.dominatus.common.util.combatsystem.CombatAttribute;
 
 /**
  * Handles evasion calculations and modifiers

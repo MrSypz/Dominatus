@@ -1,7 +1,7 @@
 package test.java.sypztep.dominatus;
 
-import sypztep.dominatus.common.combat.element.Accuracy;
-import sypztep.dominatus.common.combat.element.Evasion;
+import sypztep.dominatus.common.util.combatsystem.element.Accuracy;
+import sypztep.dominatus.common.util.combatsystem.element.Evasion;
 
 public class CombatVisualizerTest {
 

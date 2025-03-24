@@ -8,7 +8,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
-import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
+import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
 public record AddRefineSoundPayloadS2C(int entityId, int soundId) implements CustomPayload {
     public static final Id<AddRefineSoundPayloadS2C> ID = CustomPayload.id("add_refinesound");
