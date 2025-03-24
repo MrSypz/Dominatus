@@ -86,7 +86,6 @@ public class RefineScreenHandler extends ScreenHandler {
                 RefinementManager.initializeRefinement(slotOutput);
             }
 
-            // Get current refinement state
             Refinement currentRef = slotOutput.get(ModDataComponents.REFINEMENT);
             int currentRefineLvl = currentRef.refine(); // Ignore the ide it'll pass fine due to -> RefinementManager.initializeRefinement(slotOutput);
             int currentDurability = currentRef.durability();
