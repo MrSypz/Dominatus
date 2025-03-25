@@ -8,7 +8,7 @@ import sypztep.dominatus.common.util.combatsystem.CombatAttribute;
  */
 public class Accuracy extends CombatAttribute {
     private static final double BASE_HIT_CHANCE = 0.95; // 95% base hit chance
-    private static final double ACCURACY_SCALING_FACTOR = 0.001; // 0.1% per point
+    private static final double ACCURACY_SCALING_FACTOR = 0.00125; // 0.125% per point
 
     public Accuracy(double baseValue) {
         super(baseValue);

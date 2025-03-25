@@ -24,7 +24,7 @@ public enum EntityComponentProvider implements IEntityComponentProvider {
         EntityCombatAttributes targetAttributes = new EntityCombatAttributes(livingTarget);
 
         // Get the hit chance as a percentage
-        double hitChance = playerAttributes.getAccuracy().calculatePveHitChance(targetAttributes.getEvasion(),20); //TODO: 25/3/2568 20 is place holder
+        double hitChance = playerAttributes.getAccuracy().calculateHitChance(targetAttributes.getEvasion());
         int hitChancePercent = (int) (hitChance * 100);
 
         // Add the hit chance information to the tooltip
