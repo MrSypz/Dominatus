@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -13,7 +12,7 @@ import sypztep.dominatus.Dominatus;
 
 import java.util.List;
 
-public abstract class  TabWidgetButton extends ClickableWidget {
+public abstract class TabWidgetButton extends ClickableWidget {
     protected final MinecraftClient client;
     private final Identifier buttonTexture;
     private final Identifier buttonHoverTexture;
