@@ -28,6 +28,6 @@ public class Accuracy extends CombatAttribute {
         double accuracyEffect = calculateEffect();
         double evasionEffect = targetEvasion.calculateEffect();
         double hitChance = accuracyEffect * (1.0 - evasionEffect);
-        return MathHelper.clamp(hitChance, 0.05f, 1.0f); // between 0.05 (5%) and 1.0 (100%)
+        return MathHelper.clamp(hitChance, 0.0f, 1.0f);
     }
 }
