@@ -17,12 +17,4 @@ public class Evasion extends CombatAttribute {
     public double calculateEffect() {
         return BASE_EVASION_CHANCE + (getTotalValue() * EVASION_SCALING_FACTOR);
     }
-
-    /**
-     * Calculate pure evasion chance without considering attacker's accuracy
-     * @return Evasion chance (0.0 to 1.0)
-     */
-    public double getEvasionChance() {
-        return Math.min(1, calculateEffect());
-    }
 }
