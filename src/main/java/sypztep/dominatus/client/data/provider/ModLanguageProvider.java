@@ -62,5 +62,8 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("dominatus.attribute.modifier.damage", "%s (%s) Attack Damage");
         translate.add("dominatus.attribute.modifier.accuracy", "%s Accuracy");
         translate.add("dominatus.attribute.modifier.evasion", "%s Evasion");
+
+        //Jade
+        translate.add( "tooltip.dominatus.hit_chance", "Hit Chance: %d%%");
     }
 }
