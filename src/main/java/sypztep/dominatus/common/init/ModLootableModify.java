@@ -17,16 +17,78 @@ public class ModLootableModify {
     public static void init() {
         LootTableEvents.MODIFY.register((id, tableBuilder, source, registries) -> {
             if (source.isBuiltin()) {
-                LootPool.Builder lootPool = LootPool.builder()
-                        .rolls(UniformLootNumberProvider.create(1,10));
-                LootPool.Builder builder = LootPool.builder()
-                        .rolls(UniformLootNumberProvider.create(1,3));
+                // TRIAL_CHAMBERS_REWARD_CHEST (Normal chest - lowest tier)
                 if (LootTables.TRIAL_CHAMBERS_REWARD_CHEST.equals(id)) {
-                    lootPool.with(ItemEntry.builder(ModItems.MOONLIGHT_CRESCENT));
-                    tableBuilder.pool(lootPool);
-                    builder.with(ItemEntry.builder(ModItems.LOSS_FRAGMENT));
-                    builder.with(ItemEntry.builder(ModItems.LAHAV_FRAGMENT));
-                    tableBuilder.pool(builder);
+                    // Moonlight Crescent: 1% chance, 2-4 items
+                    LootPool.Builder moonlightPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.01f))
+                            .rolls(UniformLootNumberProvider.create(2, 4))
+                            .with(ItemEntry.builder(ModItems.MOONLIGHT_CRESCENT));
+                    tableBuilder.pool(moonlightPool);
+
+                    // Loss & Lahav Fragments: 2% chance, 1-5 items each
+                    LootPool.Builder fragmentsPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.02f))
+                            .rolls(UniformLootNumberProvider.create(1, 5))
+                            .with(ItemEntry.builder(ModItems.LOSS_FRAGMENT))
+                            .with(ItemEntry.builder(ModItems.LAHAV_FRAGMENT));
+                    tableBuilder.pool(fragmentsPool);
+                }
+
+                // COMMON CHESTS
+                else if (LootTables.TRIAL_CHAMBERS_REWARD_COMMON_CHEST.equals(id) ||
+                        LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_COMMON_CHEST.equals(id)) {
+                    // Moonlight Crescent: 10% chance, 3-8 items
+                    LootPool.Builder moonlightPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.10f))
+                            .rolls(UniformLootNumberProvider.create(3, 8))
+                            .with(ItemEntry.builder(ModItems.MOONLIGHT_CRESCENT));
+                    tableBuilder.pool(moonlightPool);
+
+                    // Loss & Lahav Fragments: 5% chance, 5-13 items each
+                    LootPool.Builder fragmentsPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.05f))
+                            .rolls(UniformLootNumberProvider.create(5, 13))
+                            .with(ItemEntry.builder(ModItems.LOSS_FRAGMENT))
+                            .with(ItemEntry.builder(ModItems.LAHAV_FRAGMENT));
+                    tableBuilder.pool(fragmentsPool);
+                }
+
+                // RARE CHESTS
+                else if (LootTables.TRIAL_CHAMBERS_REWARD_RARE_CHEST.equals(id) ||
+                        LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_RARE_CHEST.equals(id)) {
+                    // Moonlight Crescent: 50% chance, 4-16 items
+                    LootPool.Builder moonlightPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.50f))
+                            .rolls(UniformLootNumberProvider.create(4, 16))
+                            .with(ItemEntry.builder(ModItems.MOONLIGHT_CRESCENT));
+                    tableBuilder.pool(moonlightPool);
+
+                    // Loss & Lahav Fragments: 7.5% chance, 10-19 items each
+                    LootPool.Builder fragmentsPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.075f))
+                            .rolls(UniformLootNumberProvider.create(10, 19))
+                            .with(ItemEntry.builder(ModItems.LOSS_FRAGMENT))
+                            .with(ItemEntry.builder(ModItems.LAHAV_FRAGMENT));
+                    tableBuilder.pool(fragmentsPool);
+                }
+
+                // UNIQUE CHESTS
+                else if (LootTables.TRIAL_CHAMBERS_REWARD_UNIQUE_CHEST.equals(id) ||
+                        LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_UNIQUE_CHEST.equals(id)) {
+                    // Moonlight Crescent: 100% chance (guaranteed), 5-32 items
+                    LootPool.Builder moonlightPool = LootPool.builder()
+                            .rolls(UniformLootNumberProvider.create(5, 32))
+                            .with(ItemEntry.builder(ModItems.MOONLIGHT_CRESCENT));
+                    tableBuilder.pool(moonlightPool);
+
+                    // Loss & Lahav Fragments: 15% chance, 18-26 items each
+                    LootPool.Builder fragmentsPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.15f))
+                            .rolls(UniformLootNumberProvider.create(18, 26))
+                            .with(ItemEntry.builder(ModItems.LOSS_FRAGMENT))
+                            .with(ItemEntry.builder(ModItems.LAHAV_FRAGMENT));
+                    tableBuilder.pool(fragmentsPool);
                 }
             }
             if (source.isBuiltin() && isHostileMobLootTable(id)) {
