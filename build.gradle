@@ -16,6 +16,11 @@ loom {
 
 repositories {
     maven {
+        name = "αccessories"
+        url = 'https://maven.wispforest.io/releases'
+    }
+
+    maven {
         name = "My Library"
         url = "https://jitpack.io"
     }
@@ -61,7 +66,7 @@ dependencies {
     modImplementation include("org.ladysnake.cardinal-components-api:cardinal-components-entity:${cardinal_components_version}")
 
     modImplementation include("com.github.MrSypz:Knumber:${knumber_version}")
-    modImplementation include("com.github.MrSypz:hawsamoot:${hawsamoot_version}")
+    modApi include("com.github.MrSypz:hawsamoot:${hawsamoot_version}")
     modImplementation include("com.github.MrSypz:Tyrannus:${tyranus_version}")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
@@ -69,6 +74,8 @@ dependencies {
     }
     modRuntimeOnly "maven.modrinth:sodium:${sodium_version}"
     modApi "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+    modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
 
     modImplementation "curse.maven:jade-324717:${jade_version}"
 }

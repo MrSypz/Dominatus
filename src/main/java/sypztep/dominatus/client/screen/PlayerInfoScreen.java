@@ -1,36 +1,55 @@
 package sypztep.dominatus.client.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
-import sypztep.dominatus.client.widget.DrawContextUtil;
-import sypztep.dominatus.client.widget.animate.Animated;
-import sypztep.dominatus.client.widget.animate.FadeAnimation;
+import sypztep.dominatus.client.screen.base.DominatusScreen;
+import sypztep.dominatus.client.screen.base.ProgressBar;
+import sypztep.dominatus.client.screen.base.TabManager;
+import sypztep.dominatus.client.screen.tab.QuestsTab;
+import sypztep.dominatus.client.screen.tab.SkillsTab;
+import sypztep.dominatus.client.screen.tab.StatsTab;
 
-@Environment(EnvType.CLIENT)
-public final class PlayerInfoScreen extends AnimateScreen {
-    private static final float FADE_DURATION = 10.0f; // Fade duration in seconds
-    private static final int BACKGROUND_COLOR = 0xF0121212; // Target color
-    private FadeAnimation backgroundFade;
+public class PlayerInfoScreen extends DominatusScreen {
+//    private ProgressBar xpBar;
 
     public PlayerInfoScreen() {
-        super(Text.literal("Player Info"));
+        super(Text.translatable("screen.dominatus.player_info"));
+        tabManager = new TabManager(this);
+
+        // Register tabs
+        tabManager.registerTab(new StatsTab());
+//        tabManager.registerTab(new SkillsTab());
+//        tabManager.registerTab(new QuestsTab());
     }
 
     @Override
-    protected void init() {
-        super.init();
+    protected void initPanels() {
+//        xpBar = new ProgressBar(10, height - 30, width - 20, 14);
+//        xpBar.setBarHeight(14);
+//        xpBar.setFillColor(0xFF00AA00); // Green XP bar
+//        updateXpBar();
+//        addPanel(xpBar);
+    }
 
-        backgroundFade = animationManager.createFadeAnimation(FADE_DURATION, false, BACKGROUND_COLOR)
-                .withRender(DrawContextUtil::fillScreen);
-        backgroundFade.start();
+    /**
+     * Update the XP bar with the player's current XP.
+     */
+    private void updateXpBar() {
+        if (client.player != null) {
+            float xpProgress = client.player.experienceProgress;
+            int xpLevel = client.player.experienceLevel;
+
+//            xpBar.setProgress(xpProgress);
+//            xpBar.setValueText("Level " + xpLevel);
+        }
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
-        backgroundFade.render(context);
+        // Update XP bar each frame
+        updateXpBar();
 
+        // Continue with normal render
+        super.render(context, mouseX, mouseY, delta);
     }
 }

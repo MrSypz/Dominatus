@@ -12,14 +12,6 @@ public abstract class CombatAttribute {
         this.bonusValue = 0.0;
     }
 
-    public double getBaseValue() {
-        return baseValue;
-    }
-
-    public void setBaseValue(double baseValue) {
-        this.baseValue = baseValue;
-    }
-
     public double getBonusValue() {
         return bonusValue;
     }

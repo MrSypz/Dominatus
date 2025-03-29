@@ -24,12 +24,13 @@ public enum EntityComponentProvider implements IEntityComponentProvider {
         EntityCombatAttributes targetAttributes = new EntityCombatAttributes(livingTarget);
 
         // Get the hit chance as a percentage
-        double hitChance = playerAttributes.getAccuracy().calculateHitChance(targetAttributes.getEvasion());
+        double hitChance = playerAttributes.getAccuracy().calculateHitChance(targetAttributes.getEvasion(), livingTarget.getArmor());
         int hitChancePercent = (int) (hitChance * 100);
 
         // Add the hit chance information to the tooltip
         iTooltip.add(Text.translatable("tooltip.dominatus.hit_chance", hitChancePercent)
                 .formatted(getColorForHitChance(hitChancePercent)));
+        iTooltip.add(Text.literal("Target Evasion: " + targetAttributes.getEvasion().getTotalValue()));
     }
     private Formatting getColorForHitChance(int hitChancePercent) {
         if (hitChancePercent >= 90) {

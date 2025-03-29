@@ -7,6 +7,7 @@
     "core.combat.backattack.LivingEntityMixin",
     "core.combat.critevasion.LivingEntityMixin",
     "core.combat.critevasion.PlayerEntityMixin",
+    "core.combat.newdamage.LivingEntityMixin",
     "core.combat.projectileclipthrough.PersistentProjectileEntityMixin",
     "core.combat.projectileclipthrough.TridentEntityMixin",
     "core.item.applyrefinestats.LivingEntityMixin",
@@ -15,7 +16,8 @@
     "core.item.refinement.iteminfo.ItemStackMixin",
     "core.item.refinement.newdurability.ItemStackMixin",
     "core.registry.attribute.EntityAttributesMixin",
-    "core.registry.attribute.LivingEntityMixin"
+    "core.registry.attribute.LivingEntityMixin",
+    "core.registry.attribute.apply.ServerWorldMixin"
   ],
   "client": [
     "core.item.refinement.refinelevel.DrawContextMixin",

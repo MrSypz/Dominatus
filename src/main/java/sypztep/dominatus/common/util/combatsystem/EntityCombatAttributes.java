@@ -33,7 +33,7 @@ public class EntityCombatAttributes {
      * @return true if the attack hits, false if it misses
      */
     public boolean calculateHit(EntityCombatAttributes defender) {
-        double hitChance = getAccuracy().calculateHitChance(defender.getEvasion());
+        double hitChance = getAccuracy().calculateHitChance(defender.getEvasion(), defender.entity.getArmor());
         return Math.random() < hitChance;
     }
 

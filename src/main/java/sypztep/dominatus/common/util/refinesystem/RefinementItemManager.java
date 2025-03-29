@@ -1,5 +1,10 @@
 package sypztep.dominatus.common.util.refinesystem;
 
+import io.wispforest.accessories.api.AccessoriesContainer;
+import io.wispforest.accessories.api.slot.SlotEntryReference;
+import io.wispforest.accessories.api.slot.SlotReference;
+import io.wispforest.accessories.api.slot.SlotType;
+import io.wispforest.accessories.menu.SlotAccessContainer;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -16,7 +21,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModEntityAttributes;
-//import sypztep.tyrannus.common.util.ItemStackHelper;
+import sypztep.tyrannus.common.util.ItemStackHelper;
 
 import java.util.*;
 
@@ -29,10 +34,6 @@ public class RefinementItemManager {
     private static final Identifier EVASION_MODIFIER_ID = Dominatus.id("extra.evasion_stats");
 
     public static void updateEntityStats(LivingEntity entity) {
-        if (!(entity instanceof PlayerEntity)) {
-            return;
-        }
-
         clearExistingModifiers(entity);
 
         STATS_HOLDER.reset();
@@ -57,10 +58,6 @@ public class RefinementItemManager {
         updateAttribute(entity, EntityAttributes.GENERIC_ARMOR, ARMOR_MODIFIER_ID, STATS_HOLDER.protection);
         updateAttribute(entity, ModEntityAttributes.ACCURACY, ACCURACY_MODIFIER_ID, STATS_HOLDER.accuracy);
         updateAttribute(entity, ModEntityAttributes.EVASION, EVASION_MODIFIER_ID, STATS_HOLDER.evasion);
-
-//        if (entity.getWorld() instanceof ServerWorld) {
-//            ((ServerWorld) entity.getWorld()).getChunkManager().sendToOtherNearbyPlayers(entity, new EntityAttributesS2CPacket(entity.getId(), entity.getAttributes().getTracked()));
-//        }
     }
 
     private static void removeAttributeModifier(LivingEntity entity, RegistryEntry<EntityAttribute> attribute, Identifier modifierId) {
@@ -95,6 +92,8 @@ public class RefinementItemManager {
 
     public static List<Refinement> getComponentFromAllEquippedSlots(LivingEntity living) {
         List<Refinement> refinements = new ArrayList<>();
+
+        // Process vanilla equipment slots
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             ItemStack itemStack = living.getEquippedStack(slot);
             if (!itemStack.isEmpty() && isItemInCorrectSlot(itemStack, slot)) {
@@ -104,37 +103,60 @@ public class RefinementItemManager {
                 }
             }
         }
+
+        // Process accessory slots if the entity has accessories
+        var accessoriesCapability = living.accessoriesCapability();
+        if (accessoriesCapability != null) {
+            for (SlotEntryReference slotRef : accessoriesCapability.getAllEquipped()) {
+                ItemStack stack = slotRef.reference().getStack();
+                if (!stack.isEmpty()) {
+                    Refinement refinement = RefinementManager.getRefinement(stack);
+                    if (refinement != null) {
+                        refinements.add(refinement);
+                    }
+                }
+            }
+        }
+
         return refinements;
     }
 
     private static boolean isItemInCorrectSlot(ItemStack stack, EquipmentSlot slot) {
-//        if (ItemStackHelper.shouldBreak(stack)) return false;
+        if (ItemStackHelper.shouldBreak(stack)) return false;
 
         Pair<ItemStack, EquipmentSlot> cacheKey = new Pair<>(stack, slot);
         Boolean cachedResult = SLOT_VALIDITY_CACHE.get(cacheKey);
-        if (cachedResult != null) {
-            return cachedResult;
-        }
+        if (cachedResult != null) return cachedResult;
 
         boolean result = checkSlotValidity(stack, slot);
         SLOT_VALIDITY_CACHE.put(cacheKey, result);
         return result;
     }
 
-
     private static boolean checkSlotValidity(ItemStack stack, EquipmentSlot slot) {
+        MutableBoolean hasAnyAttributeModifiers = new MutableBoolean(false);
+
         for (AttributeModifierSlot attributeModifierSlot : AttributeModifierSlot.values()) {
-            MutableBoolean isValid = new MutableBoolean(false);
             stack.applyAttributeModifier(attributeModifierSlot, (entry, modifier) -> {
-                if (attributeModifierSlot.matches(slot)) {
-                    isValid.setTrue();
-                }
+                hasAnyAttributeModifiers.setTrue();
             });
-            if (isValid.isTrue()) {
-                return true;
+
+            if (hasAnyAttributeModifiers.isTrue()) {
+                break;
             }
         }
-        return false;
+
+        if (hasAnyAttributeModifiers.isTrue()) {
+            for (AttributeModifierSlot attributeModifierSlot : AttributeModifierSlot.values()) {
+                MutableBoolean isValid = new MutableBoolean(false);
+                stack.applyAttributeModifier(attributeModifierSlot, (entry, modifier) -> {
+                    if (attributeModifierSlot.matches(slot)) isValid.setTrue();
+                });
+                if (isValid.isTrue()) return true;
+            }
+            return false;
+        }
+        else return slot == EquipmentSlot.MAINHAND;
     }
 
     private static void updateAttribute(LivingEntity entity, RegistryEntry<EntityAttribute> attribute, Identifier modifierId, double value) {
