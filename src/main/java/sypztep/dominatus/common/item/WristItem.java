@@ -23,6 +23,8 @@ import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 import java.util.List;
 
 public class WristItem extends AccessoryItem {
+    Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiers = HashMultimap.create();
+
     public WristItem(Settings properties) {
         super(properties.component(
                 AccessoriesDataComponents.RENDER_TRANSFORMATIONS,
@@ -41,7 +43,6 @@ public class WristItem extends AccessoryItem {
     @Override
     public void onEquip(ItemStack stack, SlotReference reference) {
         super.onEquip(stack, reference);
-        Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiers = HashMultimap.create();
         if (!stack.contains(ModDataComponents.REFINEMENT)) return;
         int refinable = RefinementManager.getRefinement(stack).refine();
         if (refinable > 0) {
@@ -49,13 +50,20 @@ public class WristItem extends AccessoryItem {
                 ModEntityAttributes.PLAYER_VERS_PLAYER_DAMAGE,
                 new EntityAttributeModifier(
                         Dominatus.id("yuria_bracket_pvp_bonus"),
-                        refinable,
+                        0.5 * Math.pow(refinable, 1.5),
                         EntityAttributeModifier.Operation.ADD_VALUE
                 )
         );
-
         reference.entity().getAttributes().addTemporaryModifiers(modifiers);
         }
+    }
+
+    @Override
+    public void onUnequip(ItemStack stack, SlotReference reference) {
+        super.onUnequip(stack, reference);
+        if (!stack.contains(ModDataComponents.REFINEMENT)) return;
+
+        reference.entity().getAttributes().removeModifiers(modifiers);
     }
 
     @Override
@@ -64,14 +72,14 @@ public class WristItem extends AccessoryItem {
 
         if (stack.contains(ModDataComponents.REFINEMENT)) {
             int refinementLevel = RefinementManager.getRefinement(stack).refine();
-
+            double d = Math.round(0.5 * Math.pow(refinementLevel, 1.5) * 0.01) / 100.0;
             if (refinementLevel > 0) {
                 tooltip.add(Text.empty());
 
                 tooltip.add(Text.literal("✦ SPECIAL EFFECT ✦").formatted(Formatting.AQUA, Formatting.BOLD));
 
                 tooltip.add(Text.literal(" Player Damage: ").formatted(Formatting.WHITE)
-                        .append(Text.literal("+" + refinementLevel + "%").formatted(Formatting.RED, Formatting.BOLD)));
+                        .append(Text.literal("+" + d + "%").formatted(Formatting.RED, Formatting.BOLD)));
 
                 tooltip.add(Text.empty());
                 tooltip.add(Text.literal("\"A mystical bracelet once worn by").formatted(Formatting.DARK_GRAY, Formatting.ITALIC));
