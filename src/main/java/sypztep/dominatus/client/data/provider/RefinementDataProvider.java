@@ -52,6 +52,11 @@ public class RefinementDataProvider implements DataProvider {
         futures.add(generateWeaponData(writer, Items.DIAMOND_SWORD.toString(), 20, 78, 185, 0, 0, 100, 5, 22, 0, 0, 2));  // Yellow Grade
         futures.add(generateWeaponData(writer, Items.NETHERITE_SWORD.toString(), 20, 90, 220, 0, 0, 100, 6, 28, 0, 0, 1)); // Boss Grade
 
+        futures.add(generateWeaponData(writer, Items.CROSSBOW.toString(), 20, 60, 185, 0, 0, 100, 0, 0, 0, 0, 5));     // Blue Grade
+        futures.add(generateWeaponData(writer, Items.BOW.toString(), 20, 60, 185, 0, 0, 100, 0, 0, 0, 0, 5));     // Blue Grade
+
+        futures.add(generateWeaponData(writer, Items.MACE.toString(), 20, 78, 185, 0, 0, 100, 5, 22, 0, 0, 1));  // Yellow Grade
+        futures.add(generateWeaponData(writer, Items.TRIDENT.toString(), 20, 78, 185, 0, 0, 100, 5, 22, 0, 0, 1));  // Yellow Grade
         // Axes - Higher damage, lower accuracy
         futures.add(generateWeaponData(writer, Items.WOODEN_AXE.toString(), 20, 45, 110, 0, 0, 100, 5, 18, 0, 0, 10));    // Green Grade
         futures.add(generateWeaponData(writer, Items.STONE_AXE.toString(), 20, 48, 115, 0, 0, 100, 7, 24, 0, 0, 10));     // Green Grade

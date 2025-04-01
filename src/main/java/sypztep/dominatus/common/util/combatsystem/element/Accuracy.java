@@ -3,9 +3,6 @@ package sypztep.dominatus.common.util.combatsystem.element;
 import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.common.util.combatsystem.CombatAttribute;
 
-/**
- * Handles accuracy calculations and modifiers
- */
 public class Accuracy extends CombatAttribute {
     private static final double BASE_HIT_CHANCE = 0.95; // 95% base hit chance
     private static final double ACCURACY_SCALING_FACTOR = 0.00125; // 0.125% per point
@@ -40,18 +37,14 @@ public class Accuracy extends CombatAttribute {
             }
         }
 
-        // Enhanced evasion effect with armor bonus
         double enhancedEvasionEffect = evasionEffect + armorBonus;
 
-        // Apply hit chance formula
         double hitChance = accuracyEffect * (1.0 - enhancedEvasionEffect);
 
-        // Additional balancing for high accuracy vs high armor
         if (getTotalValue() > 200 && targetArmor > 20) {
             double highAccuracyBonus = (getTotalValue() - 200) / 500.0;
             hitChance += highAccuracyBonus * (enhancedEvasionEffect - evasionEffect);
         }
-
         return MathHelper.clamp(hitChance, 0.05, 0.95);
     }
 }

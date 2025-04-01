@@ -5,9 +5,6 @@ import sypztep.dominatus.common.util.combatsystem.element.Accuracy;
 import sypztep.dominatus.common.util.combatsystem.element.Evasion;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 
-/**
- * Container class to manage combat attributes for an entity
- */
 public class EntityCombatAttributes {
     private final LivingEntity entity;
     private final Accuracy accuracy;
@@ -27,20 +24,11 @@ public class EntityCombatAttributes {
         return evasion;
     }
 
-    /**
-     * Calculate if an attack hits based on attacker's accuracy and defender's evasion
-     * @param defender The defending entity's combat attributes
-     * @return true if the attack hits, false if it misses
-     */
     public boolean calculateHit(EntityCombatAttributes defender) {
         double hitChance = getAccuracy().calculateHitChance(defender.getEvasion(), defender.entity.getArmor());
         return Math.random() < hitChance;
     }
 
-    /**
-     * Get the entity associated with these combat attributes
-     * @return The LivingEntity
-     */
     public LivingEntity getEntity() {
         return entity;
     }
