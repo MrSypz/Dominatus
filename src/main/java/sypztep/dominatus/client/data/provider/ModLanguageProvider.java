@@ -43,6 +43,8 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("attribute.name.accuracy", "Accuracy");
         translate.add("attribute.name.crit_chance", "Critical Chance");
         translate.add("attribute.name.crit_damage", "Critical Damage");
+        translate.add("attribute.name.player_vers_entity_damage", "PvE Damage");
+        translate.add("attribute.name.player_vers_player_damage", "PvP Damage");
         // Miscellaneous
         translate.add("item.dominatus.loss_fragment", "Loss Fragment");
         translate.add("item.dominatus.loss_fragment.desc", "Combine to obtain Refined Armor Enforge.");
@@ -70,7 +72,6 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add( "tooltip.dominatus.hit_chance", "Hit Chance: %d%%");
         //Jade Config
         translate.add("config.jade.plugin_dominatus.stats_config", "Stats Config");
-
         //Stats Screen
         generateStatsScreenTranslations(translate);
     }
