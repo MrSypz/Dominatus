@@ -20,7 +20,9 @@ public class LivingEntityMixin {
                 .add(ModEntityAttributes.CRIT_DAMAGE)
                 .add(ModEntityAttributes.BACK_ATTACK)
                 .add(ModEntityAttributes.AIR_ATTACK)
-                .add(ModEntityAttributes.DOWN_ATTACK);
+                .add(ModEntityAttributes.DOWN_ATTACK)
+                .add(ModEntityAttributes.PLAYER_VERS_ENTITY_DAMAGE)
+                .add(ModEntityAttributes.PLAYER_VERS_PLAYER_DAMAGE);
         cir.setReturnValue(builder);
     }
 }
