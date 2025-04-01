@@ -17,12 +17,12 @@ public class EntityAttributesMixin {
     @Inject(method = "register", at = @At("HEAD"), cancellable = true)
     private static void maxRange(String id, EntityAttribute attribute, CallbackInfoReturnable<RegistryEntry<EntityAttribute>> info) {
         switch (id) {
-            case "max_health" -> info.setReturnValue(
-                    Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), new ClampedEntityAttribute("attribute.name.max_health", 20.0, 1.0, 10000000.0).setTracked(true)));
-            case "armor" -> info.setReturnValue(
-                    Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), new ClampedEntityAttribute("attribute.name.armor", 0.0, 0.0, 1000000.0).setTracked(true)));
-            case "attack_damage" -> info.setReturnValue(
-                    Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), new ClampedEntityAttribute("attribute.name.attack_damage", 2.0, 0.0, 1000000.0)));
+            case "generic.max_health" -> info.setReturnValue(
+                    Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), new ClampedEntityAttribute("attribute.name.generic.max_health", 20.0, 1.0, 10000000.0).setTracked(true)));
+            case "generic.armor" -> info.setReturnValue(
+                    Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), new ClampedEntityAttribute("attribute.name.generic.armor", 0.0, 0.0, 1000000.0).setTracked(true)));
+            case "generic.attack_damage" -> info.setReturnValue(
+                    Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), new ClampedEntityAttribute("attribute.name.generic.attack_damage", 2.0, 0.0, 1000000.0)));
         }
     }
 }

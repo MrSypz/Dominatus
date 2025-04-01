@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sypztep.dominatus.common.init.ModDataComponents;
-import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
+import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
 import java.util.function.Consumer;
 
@@ -46,7 +46,7 @@ public abstract class ItemStackMixin {
         if (!stack.contains(ModDataComponents.REFINEMENT)) return;
         double d = computeDamageValue(modifier, player);
         int protection = RefinementManager.getRefinement(stack).protection();
-        if (stack.isIn(ItemTags.ARMOR_ENCHANTABLE) && attribute.matches(EntityAttributes.ARMOR) && RefinementManager.getRefinement(stack).refine() > 0) {
+        if (stack.isIn(ItemTags.ARMOR_ENCHANTABLE) && attribute.matches(EntityAttributes.GENERIC_ARMOR) && RefinementManager.getRefinement(stack).refine() > 0) {
             textConsumer.accept(createText("dominatus.attribute.modifier.armor",attribute, d, protection));
             ci.cancel();
         }
@@ -54,7 +54,7 @@ public abstract class ItemStackMixin {
 
     @Unique
     private double computeDamageValue(EntityAttributeModifier modifier, PlayerEntity player) {
-        double baseValue = player.getAttributeBaseValue(EntityAttributes.ATTACK_DAMAGE) + modifier.value();
+        double baseValue = player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) + modifier.value();
         return modifier.operation() == EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE ||
                 modifier.operation() == EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
                 ? baseValue * 100.0

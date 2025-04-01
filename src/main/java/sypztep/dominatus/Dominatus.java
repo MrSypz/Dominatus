@@ -9,10 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sypztep.dominatus.common.command.RefineSetCommand;
 import sypztep.dominatus.common.event.PreventItemUsed;
-import sypztep.dominatus.common.init.ModDataComponents;
-import sypztep.dominatus.common.init.ModItems;
-import sypztep.dominatus.common.init.ModPayload;
-import sypztep.dominatus.common.init.ModScreenHandler;
+import sypztep.dominatus.common.init.*;
+import sypztep.dominatus.common.reloadlistener.DominatusEntityStatsReloadListener;
 import sypztep.dominatus.common.reloadlistener.DominatusItemReloadListener;
 
 public class Dominatus implements ModInitializer {
@@ -31,8 +29,10 @@ public class Dominatus implements ModInitializer {
 
         ModItems.init();
         ModPayload.init();
-// In your main mod class initialization method
+        ModLootableModify.init();
         PreventItemUsed.register();
+
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusItemReloadListener());
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusEntityStatsReloadListener());
     }
 }

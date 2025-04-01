@@ -7,8 +7,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.screen.*;
-import net.minecraft.screen.slot.ForgingSlotsManager;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sypztep.dominatus.common.init.ModDataComponents;
-import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
+import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
 @Mixin(AnvilScreenHandler.class)
 public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
@@ -28,8 +26,8 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     @Shadow private int repairItemUsage;
 
-    public AnvilScreenHandlerMixin(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context, ForgingSlotsManager forgingSlotsManager) {
-        super(type, syncId, playerInventory, context, forgingSlotsManager);
+    public AnvilScreenHandlerMixin(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
+        super(type, syncId, playerInventory, context);
     }
 
     @Inject(method = "canTakeOutput", at = @At("HEAD"), cancellable = true)
@@ -56,7 +54,7 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
         ItemStack repairMaterial = this.input.getStack(1);
 
         if (!itemToRepair.isEmpty() && itemToRepair.contains(ModDataComponents.REFINEMENT)) {
-            if (!repairMaterial.isEmpty() && itemToRepair.canRepairWith(repairMaterial)) {
+            if (!repairMaterial.isEmpty() && itemToRepair.copy().getItem().canRepair(itemToRepair, repairMaterial)) {
                 int damage = itemToRepair.getDamage();
                 if (damage <= 0) {
                     this.output.setStack(0, ItemStack.EMPTY);

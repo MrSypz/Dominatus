@@ -16,6 +16,9 @@
     "main": [
       "sypztep.dominatus.Dominatus"
     ],
+    "jade": [
+      "sypztep.dominatus.common.compat.JadePlugin"
+    ],
     "modmenu": [
       "sypztep.dominatus.common.compat.ModMenuIntegration"
     ],
@@ -23,7 +26,7 @@
       "sypztep.dominatus.common.init.ModEntityComponents"
     ],
     "fabric-datagen": [
-      "sypztep.dominatus.data.ModDataGenerator"
+      "sypztep.dominatus.client.data.ModDataGenerator"
     ]
   },
   "mixins": [
@@ -32,7 +35,7 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
-    "minecraft": "${minecraft_version}"
+    "minecraft": ">=1.21 <=1.21.1"
   },
   "accessWidener": "dominatus.accesswidener",
   "custom": {

@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import sypztep.dominatus.common.data.DominatusItemEntry;
-import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
+import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
 public class RefineSetCommand implements CommandRegistrationCallback {
     @Override

@@ -12,7 +12,7 @@ import sypztep.dominatus.client.screen.RefineScreen;
 public record RefinePayloadS2C(boolean flag) implements CustomPayload {
     public static final Id<RefinePayloadS2C> ID = CustomPayload.id("can_refine");
     public static final PacketCodec<PacketByteBuf, RefinePayloadS2C> CODEC = PacketCodec.tuple(
-            PacketCodecs.BOOLEAN,
+            PacketCodecs.BOOL,
             RefinePayloadS2C::flag,
             RefinePayloadS2C::new
     );

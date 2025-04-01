@@ -31,15 +31,9 @@ public class DominatusItemReloadListener implements SimpleSynchronousResourceRel
                 try (InputStream stream = resource.getInputStream()) {
                     JsonObject object = JsonParser.parseReader(new JsonReader(new InputStreamReader(stream))).getAsJsonObject();
 
-                    JsonObject arg = object.getAsJsonObject("arg");
-                    boolean isVanilla = arg.has("vanilla") && arg.get("vanilla").getAsBoolean();
-
-                    String namespace = identifier.getNamespace(); // e.g., "minecraft" or "pointblank"
-                    String pathStr = identifier.getPath().substring(identifier.getPath().indexOf("/") + 1, identifier.getPath().length() - 5).replace("/", ":");
-                    Identifier itemId = Identifier.of(namespace,pathStr);
-                    if (isVanilla) { // if true it will use the vanilla namespace
-                        itemId = Identifier.ofVanilla(itemId.getPath());
-                    }
+                    String filePath = identifier.getPath();
+                    String itemIdStr = filePath.substring(filePath.indexOf("/") + 1, filePath.length() - 5).replace("/", ":");
+                    Identifier itemId = Identifier.of(itemIdStr);
                     Item item = Registries.ITEM.get(itemId);
 
                     // Log the processing
@@ -80,9 +74,13 @@ public class DominatusItemReloadListener implements SimpleSynchronousResourceRel
 
                     DominatusItemEntry.DOMINATUS_ITEM_ENTRY_MAP.put(Registries.ITEM.getEntry(item), entry);
 
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    Dominatus.LOGGER.error("Failed to load item data from '{}': {}", identifier, e.getMessage());
+                    Dominatus.LOGGER.error("Exception details: ", e);
                 }
             }
         });
+
+        Dominatus.LOGGER.info("Loaded refinement data for {} items", DominatusItemEntry.DOMINATUS_ITEM_ENTRY_MAP.size());
     }
 }

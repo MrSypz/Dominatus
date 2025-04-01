@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -13,7 +12,7 @@ import sypztep.dominatus.Dominatus;
 
 import java.util.List;
 
-public abstract class  TabWidgetButton extends ClickableWidget {
+public abstract class TabWidgetButton extends ClickableWidget {
     protected final MinecraftClient client;
     private final Identifier buttonTexture;
     private final Identifier buttonHoverTexture;
@@ -33,12 +32,12 @@ public abstract class  TabWidgetButton extends ClickableWidget {
 
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawGuiTexture(RenderLayer::getGuiTextured,buttonTexture, getX(), getY(), getWidth(), getHeight());
-        context.drawGuiTexture(RenderLayer::getGuiTextured,icon, getX() + 10, getY() + 4,18,18);
+        context.drawGuiTexture(buttonTexture, getX(), getY(), getWidth(), getHeight());
+        context.drawGuiTexture(icon, getX() + 10, getY() + 4,18,18);
 
         if (isHovered()) {
-            context.drawGuiTexture(RenderLayer::getGuiTextured, buttonHoverTexture, getX(), getY(), getWidth(), getHeight());
-            context.drawGuiTexture(RenderLayer::getGuiTextured, icon, getX() + 8, getY() + 4,18,18);
+            context.drawGuiTexture(buttonHoverTexture, getX(), getY(), getWidth(), getHeight());
+            context.drawGuiTexture(icon, getX() + 8, getY() + 4,18,18);
 
             boolean isShiftHeld = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT);
             if (isShiftHeld) {

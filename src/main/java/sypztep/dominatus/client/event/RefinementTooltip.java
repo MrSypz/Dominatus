@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModDataComponents;
+import sypztep.tyrannus.common.util.ItemStackHelper;
 
 import java.util.List;
 
@@ -19,18 +20,18 @@ public final class RefinementTooltip implements ItemTooltipCallback {
             Refinement refinement = stack.get(ModDataComponents.REFINEMENT);
             if (refinement == null) return;
 
-            boolean isArmor = stack.isIn(ItemTags.ARMOR_ENCHANTABLE);
+            if (refinement.accuracy() > 0) lines.add(Text.literal(" ▶ ").formatted(Formatting.GOLD)
+                    .append(Text.literal(" Accuracy: " + refinement.accuracy()).formatted(Formatting.GRAY)));
+            if (refinement.evasion() > 0)  lines.add(Text.literal(" ▶ ").formatted(Formatting.GOLD)
+                    .append(Text.literal(" Evasion: " + refinement.evasion()).formatted(Formatting.GRAY)));
+            if (refinement.durability() > 0) lines.add(Text.literal(" ▶ ").formatted(Formatting.GOLD)
+                    .append(Text.literal(" Durability: " + refinement.durability()).formatted(Formatting.GRAY)));
 
-            if (refinement.accuracy() > 0) addStatTooltip(lines, "Accuracy", refinement.accuracy(), isArmor);
-            if (refinement.evasion() > 0) addStatTooltip(lines, "Evasion", refinement.evasion(), isArmor);
-            if (refinement.durability() > 0) addStatTooltip(lines, "Durability", refinement.durability(), isArmor);
+            if (refinement.durability() <= 0)
+                lines.add(Text.literal("Broken ✗").formatted(Formatting.RED));
+            if (refinement.durability() <= 20)
+                lines.add(Text.literal("Durability too low ✗").formatted(Formatting.RED));
+            else lines.add(Text.literal("Can Refine ✔").formatted(Formatting.GREEN));
         }
-    }
-
-    private void addStatTooltip(List<Text> lines, String label, int value, boolean isArmor) {
-        if (isArmor) lines.add(Text.literal("+" + String.format("%d", value) + " " + label)
-                    .formatted(Formatting.BLUE));
-         else lines.add(Text.literal(" " + String.format("%d", value) + " " + label)
-                    .formatted(Formatting.DARK_GREEN));
     }
 }

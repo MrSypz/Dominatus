@@ -6,7 +6,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -21,8 +20,8 @@ import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.payload.RefinePayloadC2S;
 import sypztep.dominatus.common.screen.RefineScreenHandler;
-import sypztep.dominatus.common.util.RefineSystem.RefinementCalculator;
-import sypztep.dominatus.common.util.RefineSystem.RefinementManager;
+import sypztep.dominatus.common.util.refinesystem.RefinementCalculator;
+import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
 @Environment(EnvType.CLIENT)
 public final class RefineScreen
@@ -156,9 +155,8 @@ public final class RefineScreen
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0, 0,175,166, 256,256);
-        // Small box area for hold extra like EVA ACC DMG DEF
-        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE,i - 23,j + 24, 176,54,24,57, 256,256);
+        context.drawTexture(TEXTURE, i, j, 0, 0,175,166, 256,256);
+        context.drawTexture(TEXTURE,i - 23,j + 24, 176,54,24,57, 256,256);
     }
 
     @Override
@@ -192,7 +190,7 @@ public final class RefineScreen
                 v += this.height;
             }
 
-            context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, this.getX() - 1, this.getY(), 176, v, 18,18,256, 256);
+            context.drawTexture(TEXTURE, this.getX() - 1, this.getY(), 176, v, 18,18,256, 256);
         }
 
         public void setDisabled(boolean disable) {
