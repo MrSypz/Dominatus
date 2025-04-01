@@ -1,8 +1,5 @@
 package sypztep.dominatus.common.util.combatsystem;
 
-/**
- * Base abstract class for all combat-related attributes
- */
 public abstract class CombatAttribute {
     protected double baseValue;
     protected double bonusValue;

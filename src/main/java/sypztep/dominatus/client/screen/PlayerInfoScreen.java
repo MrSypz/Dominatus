@@ -3,13 +3,10 @@ package sypztep.dominatus.client.screen;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import sypztep.dominatus.client.screen.base.DominatusScreen;
-import sypztep.dominatus.client.screen.base.ProgressBar;
 import sypztep.dominatus.client.screen.base.TabManager;
-import sypztep.dominatus.client.screen.tab.QuestsTab;
-import sypztep.dominatus.client.screen.tab.SkillsTab;
 import sypztep.dominatus.client.screen.tab.StatsTab;
 
-public class PlayerInfoScreen extends DominatusScreen {
+public final class PlayerInfoScreen extends DominatusScreen {
 //    private ProgressBar xpBar;
 
     public PlayerInfoScreen() {
@@ -36,8 +33,8 @@ public class PlayerInfoScreen extends DominatusScreen {
      */
     private void updateXpBar() {
         if (client.player != null) {
-            float xpProgress = client.player.experienceProgress;
-            int xpLevel = client.player.experienceLevel;
+//            float xpProgress = client.player.experienceProgress;
+//            int xpLevel = client.player.experienceLevel;
 
 //            xpBar.setProgress(xpProgress);
 //            xpBar.setValueText("Level " + xpLevel);
@@ -47,7 +44,7 @@ public class PlayerInfoScreen extends DominatusScreen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         // Update XP bar each frame
-        updateXpBar();
+//        updateXpBar();
 
         // Continue with normal render
         super.render(context, mouseX, mouseY, delta);

@@ -1,17 +1,14 @@
 package sypztep.dominatus.client.screen.tab;
 
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.screen.base.ScrollablePanel;
 import sypztep.dominatus.client.screen.base.Tab;
-import sypztep.dominatus.client.screen.base.UIPanel;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Tab for displaying and managing player skills in a Dark Souls-like stat allocation system.
@@ -112,7 +109,6 @@ public class SkillsTab extends Tab {
         }
 
         private void initContent() {
-            // Calculate content height
             int itemHeight = 40;
             int headerHeight = 60;
             int contentHeight = headerHeight + (attributes.size() * itemHeight) + 20; // Extra padding

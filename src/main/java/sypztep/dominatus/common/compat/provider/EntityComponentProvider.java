@@ -17,35 +17,25 @@ public enum EntityComponentProvider implements IEntityComponentProvider {
     @Override
     public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
         Entity targetEntity = entityAccessor.getEntity();
-        // Only proceed if the target is a LivingEntity
         if (!(targetEntity instanceof LivingEntity livingTarget)) return;
 
         EntityCombatAttributes playerAttributes = new EntityCombatAttributes(entityAccessor.getPlayer());
         EntityCombatAttributes targetAttributes = new EntityCombatAttributes(livingTarget);
 
-        // Get the hit chance as a percentage
         double hitChance = playerAttributes.getAccuracy().calculateHitChance(targetAttributes.getEvasion(), livingTarget.getArmor());
         int hitChancePercent = (int) (hitChance * 100);
 
-        // Add the hit chance information to the tooltip
         iTooltip.add(Text.translatable("tooltip.dominatus.hit_chance", hitChancePercent)
                 .formatted(getColorForHitChance(hitChancePercent)));
-        iTooltip.add(Text.literal("Target Evasion: " + targetAttributes.getEvasion().getTotalValue()));
     }
     private Formatting getColorForHitChance(int hitChancePercent) {
-        if (hitChancePercent >= 90) {
-            return Formatting.GREEN;
-        } else if (hitChancePercent >= 70) {
-            return Formatting.YELLOW;
-        } else if (hitChancePercent >= 50) {
-            return Formatting.GOLD;
-        } else if (hitChancePercent >= 30) {
-            return Formatting.RED;
-        } else {
-            return Formatting.DARK_RED;
-        }
+        int bucket = hitChancePercent >> 4;
+        if (bucket >= 6) return Formatting.GREEN;
+        if (bucket >= 4) return Formatting.YELLOW;
+        if (bucket >= 3) return Formatting.GOLD;
+        if (bucket >= 2) return Formatting.RED;
+        return Formatting.DARK_RED;
     }
-
 
     @Override
     public Identifier getUid() {
