@@ -27,12 +27,12 @@ public class CombatUtil {
     }
     private static float calculatePlayerVersPlayer(LivingEntity attacker, float value) {
         float pvpAttackMultiplier = (float) attacker.getAttributeValue(ModEntityAttributes.PLAYER_VERS_PLAYER_DAMAGE);
-        return Math.max(value * (1 + pvpAttackMultiplier/100), 0);
+        return Math.max(value * (1 + pvpAttackMultiplier * 0.01f), 0);
     }
 
     private static float calculatePlayerVersEntity(LivingEntity attacker, float value) {
         float pveAttackMultiplier = (float) attacker.getAttributeValue(ModEntityAttributes.PLAYER_VERS_ENTITY_DAMAGE);
-        return Math.max(value * (1 + pveAttackMultiplier/100), 0);
+        return Math.max(value * (1 + pveAttackMultiplier * 0.01f), 0);
     }
     private static float applyBackAttackModifier(LivingEntity target, LivingEntity attacker, float value) {
         float angleDifference = Math.abs(MathHelper.subtractAngles(target.getHeadYaw(), attacker.getYaw()));
