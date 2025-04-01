@@ -7,16 +7,7 @@ import net.minecraft.util.Identifier;
  * Represents a text element in a list.
  * Can have an optional icon and supports variable substitution.
  */
-public class ListElement {
-    private final Text text;
-    private final Identifier icon;
-    private final boolean isHeader;
-
-    private ListElement(Text text, Identifier icon, boolean isHeader) {
-        this.text = text;
-        this.icon = icon;
-        this.isHeader = isHeader;
-    }
+public record ListElement(Text text, Identifier icon, boolean isHeader) {
 
     /**
      * Create a text element.
@@ -37,17 +28,5 @@ public class ListElement {
      */
     public static ListElement withIcon(Text text, Identifier icon) {
         return new ListElement(text, icon, false);
-    }
-
-    public Text text() {
-        return text;
-    }
-
-    public Identifier icon() {
-        return icon;
-    }
-
-    public boolean isHeader() {
-        return isHeader;
     }
 }
