@@ -85,24 +85,23 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         // Section headers
         translate.add("header.dominatus.combat_stats", "COMBAT STATISTICS");
         translate.add("header.dominatus.player_attributes", "PLAYER ATTRIBUTES");
-
         // Accuracy stat
         translate.add("stat.dominatus.accuracy", "Accuracy");
         translate.add("stat.dominatus.accuracy.label", "Accuracy %s");
         translate.add("stat.dominatus.accuracy.desc",
                 "Increases your chance to hit enemies, especially those with high evasion. Each point of accuracy counteracts an opponent's evasion.");
         translate.add("stat.dominatus.accuracy.details",
-                "Each point of Accuracy improves your hit chance by approximately 0.125% against enemies with equal level.");
+                "Each point of Accuracy improves your hit chance by approximately 0.5% against enemies with equal level.");
         // Evasion stat
         translate.add("stat.dominatus.evasion", "Evasion");
         translate.add("stat.dominatus.evasion.label", "Evasion %s");
         translate.add("stat.dominatus.evasion.desc",
                 "Improves your chance to dodge incoming attacks. Effective against enemies with low accuracy.");
         translate.add("stat.dominatus.evasion.details",
-                "Each point of Evasion grants approximately 0.15% chance to completely avoid damage from attacks.");
+                "Each point of Evasion grants approximately 0.5% chance to completely avoid damage from attacks.");
         // Critical Hit Chance stat
-        translate.add("stat.dominatus.crit_chance", "Critical Hit Chance");
-        translate.add("stat.dominatus.crit_chance.label", "Critical Hit Chance %s");
+        translate.add("stat.dominatus.crit_chance", "Critical Chance");
+        translate.add("stat.dominatus.crit_chance.label", "Critical Chance %s");
         translate.add("stat.dominatus.crit_chance.desc",
                 "Determines the probability of landing a critical hit, which deals extra damage.");
         translate.add("stat.dominatus.crit_chance.details",
