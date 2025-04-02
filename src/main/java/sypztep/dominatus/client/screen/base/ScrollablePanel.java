@@ -91,6 +91,16 @@ public abstract class ScrollablePanel extends UIPanel {
         this.contentTotalHeight = height;
         updateMaxScroll();
     }
+    protected boolean isScrollbarClicked(double mouseX, double mouseY) {
+        if (!enableScrollbar || maxScroll <= 0) {
+            return false;
+        }
+        int scrollbarX = x + width - scrollbarWidth - scrollbarPadding;
+        int scrollbarY = getContentY();
+        int scrollbarHeight = getContentHeight();
+        return mouseX >= scrollbarX && mouseX <= scrollbarX + scrollbarWidth &&
+                mouseY >= scrollbarY && mouseY <= scrollbarY + scrollbarHeight;
+    }
 
     /**
      * Render the scrollbar with hover animation.
@@ -170,20 +180,15 @@ public abstract class ScrollablePanel extends UIPanel {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         // Check if clicking on the scrollbar
-        if (enableScrollbar && maxScroll > 0) {
-            int scrollbarX = x + width - scrollbarWidth - scrollbarPadding;
+        if (isScrollbarClicked(mouseX, mouseY)) {
+            isDragging = true;
+            // Calculate new scroll position
             int scrollbarY = getContentY();
             int scrollbarHeight = getContentHeight();
-
-            if (mouseX >= scrollbarX && mouseX <= scrollbarX + scrollbarWidth &&
-                    mouseY >= scrollbarY && mouseY <= scrollbarY + scrollbarHeight) {
-                isDragging = true;
-                // Calculate new scroll position
-                double scrollRatio = (mouseY - scrollbarY) / (double)scrollbarHeight;
-                scrollAmount = scrollRatio * maxScroll;
-                scrollAmount = MathHelper.clamp(scrollAmount, 0, maxScroll);
-                return true;
-            }
+            double scrollRatio = (mouseY - scrollbarY) / (double)scrollbarHeight;
+            scrollAmount = scrollRatio * maxScroll;
+            scrollAmount = MathHelper.clamp(scrollAmount, 0, maxScroll);
+            return true;
         }
 
         // Handle normal clicks
@@ -206,16 +211,10 @@ public abstract class ScrollablePanel extends UIPanel {
         return false;
     }
 
-    /**
-     * Handle mouse release to end dragging.
-     */
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public void mouseReleased(double mouseX, double mouseY, int button) {
         isDragging = false;
-        return false;
     }
-    /**
-     * Wrap text to fit within a given width.
-     */
+
     protected List<String> wrapText(String text, int maxWidth) {
         List<String> lines = new ArrayList<>();
         String[] words = text.split(" ");
