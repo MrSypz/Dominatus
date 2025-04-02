@@ -43,14 +43,20 @@ public class RefinementDataProvider implements DataProvider {
     private List<CompletableFuture<?>> generateWeapons(DataWriter writer) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
 
-        // Swords - Balanced weapons (adjusted for tier progression)
-        futures.add(generateWeaponData(writer, Items.WOODEN_SWORD.toString(), 20, 15, 45, 0, 0, 100, 2, 8, 0, 0, 10));    // Green
-        futures.add(generateWeaponData(writer, Items.STONE_SWORD.toString(), 20, 20, 60, 0, 0, 100, 3, 10, 0, 0, 10));    // Green
-        futures.add(generateWeaponData(writer, Items.IRON_SWORD.toString(), 20, 30, 85, 0, 0, 100, 2, 8, 0, 0, 5));    // Blue
-        futures.add(generateWeaponData(writer, Items.DIAMOND_SWORD.toString(), 20, 50, 120, 0, 0, 100, 4, 12, 0, 0, 5));      // Blue
-        futures.add(generateWeaponData(writer, Items.GOLDEN_SWORD.toString(), 20, 40, 100, 0, 0, 100, 5, 15, 0, 0, 2));  // Yellow
-        futures.add(generateWeaponData(writer, Items.NETHERITE_SWORD.toString(), 20, 65, 150, 0, 0, 100, 6, 20, 0, 0, 1)); // Boss
+        // Swords - Balanced weapons (ADJUSTED)
+        futures.add(generateWeaponData(writer, Items.WOODEN_SWORD.toString(), 20, 15, 45, 0, 0, 100, 4, 12, 0, 0, 10));    // Green
+        futures.add(generateWeaponData(writer, Items.STONE_SWORD.toString(), 20, 20, 60, 0, 0, 100, 5, 15, 0, 0, 10));    // Green
+        futures.add(generateWeaponData(writer, Items.IRON_SWORD.toString(), 20, 30, 85, 0, 0, 100, 6, 18, 0, 0, 5));     // Blue
+        futures.add(generateWeaponData(writer, Items.DIAMOND_SWORD.toString(), 20, 50, 120, 0, 0, 100, 8, 24, 0, 0, 5));   // Blue
+        futures.add(generateWeaponData(writer, Items.GOLDEN_SWORD.toString(), 20, 40, 100, 0, 0, 100, 10, 30, 0, 0, 2));  // Yellow
+        futures.add(generateWeaponData(writer, Items.NETHERITE_SWORD.toString(), 20, 65, 150, 0, 0, 100, 12, 40, 0, 0, 1)); // Boss
 
+// Axes - Higher damage, lower accuracy (ADJUSTED)
+        futures.add(generateWeaponData(writer, Items.WOODEN_AXE.toString(), 20, 10, 35, 0, 0, 100, 6, 18, 0, 0, 10));     // Green
+        futures.add(generateWeaponData(writer, Items.STONE_AXE.toString(), 20, 15, 45, 0, 0, 100, 8, 21, 0, 0, 10));      // Green
+        futures.add(generateWeaponData(writer, Items.IRON_AXE.toString(), 20, 25, 70, 0, 0, 100, 10, 27, 0, 0, 5));       // Blue
+        futures.add(generateWeaponData(writer, Items.DIAMOND_AXE.toString(), 20, 40, 100, 0, 0, 100, 12, 33, 0, 0, 2));   // Yellow
+        futures.add(generateWeaponData(writer, Items.NETHERITE_AXE.toString(), 20, 55, 130, 0, 0, 100, 14, 42, 0, 0, 1)); // Boss
 // Ranged weapons
         futures.add(generateWeaponData(writer, Items.CROSSBOW.toString(), 20, 45, 115, 0, 0, 100, 0, 0, 0, 0, 5));        // Blue
         futures.add(generateWeaponData(writer, Items.BOW.toString(), 20, 40, 110, 0, 0, 100, 0, 0, 0, 0, 5));             // Blue
@@ -60,12 +66,6 @@ public class RefinementDataProvider implements DataProvider {
         futures.add(generateWeaponData(writer, Items.TRIDENT.toString(), 20, 55, 130, 0, 0, 100, 5, 18, 0, 0, 1));        // Yellow
         futures.add(generateWeaponData(writer, Items.SHIELD.toString(), 20, 5, 40, 15, 50, 100, 0, 0, 8, 20, 5));          // Defensive
 
-// Axes - Higher damage, lower accuracy
-        futures.add(generateWeaponData(writer, Items.WOODEN_AXE.toString(), 20, 10, 35, 0, 0, 100, 3, 12, 0, 0, 10));     // Green
-        futures.add(generateWeaponData(writer, Items.STONE_AXE.toString(), 20, 15, 45, 0, 0, 100, 4, 14, 0, 0, 10));      // Green
-        futures.add(generateWeaponData(writer, Items.IRON_AXE.toString(), 20, 25, 70, 0, 0, 100, 5, 18, 0, 0, 5));        // Blue
-        futures.add(generateWeaponData(writer, Items.DIAMOND_AXE.toString(), 20, 40, 100, 0, 0, 100, 6, 22, 0, 0, 2));    // Yellow
-        futures.add(generateWeaponData(writer, Items.NETHERITE_AXE.toString(), 20, 55, 130, 0, 0, 100, 7, 28, 0, 0, 1));  // Boss
         return futures;
     }
 
