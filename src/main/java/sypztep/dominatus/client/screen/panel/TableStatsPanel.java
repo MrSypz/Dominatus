@@ -7,8 +7,8 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
-import sypztep.dominatus.client.screen.base.ScrollablePanel;
 import sypztep.dominatus.common.init.ModEntityAttributes;
+import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
 
 import java.util.ArrayList;
 import java.util.HashMap;

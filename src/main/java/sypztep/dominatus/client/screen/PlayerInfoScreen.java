@@ -2,21 +2,18 @@ package sypztep.dominatus.client.screen;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
-import sypztep.dominatus.client.screen.base.DominatusScreen;
-import sypztep.dominatus.client.screen.base.TabManager;
 import sypztep.dominatus.client.screen.tab.StatsTab;
+import sypztep.tyrannus.client.screen.BaseScreen;
+import sypztep.tyrannus.client.screen.tab.TabManager;
 
-public final class PlayerInfoScreen extends DominatusScreen {
+public final class PlayerInfoScreen extends BaseScreen {
 //    private ProgressBar xpBar;
 
     public PlayerInfoScreen() {
         super(Text.translatable("screen.dominatus.player_info"));
         tabManager = new TabManager(this);
 
-        // Register tabs
         tabManager.registerTab(new StatsTab());
-//        tabManager.registerTab(new SkillsTab());
-//        tabManager.registerTab(new QuestsTab());
     }
 
     @Override

@@ -3,9 +3,9 @@ package sypztep.dominatus.client.screen.tab;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import sypztep.dominatus.client.screen.base.ScrollablePanel;
-import sypztep.dominatus.client.screen.base.Tab;
 import sypztep.dominatus.client.screen.panel.TableStatsPanel;
+import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
+import sypztep.tyrannus.client.screen.tab.Tab;
 
 import java.util.HashMap;
 import java.util.List;

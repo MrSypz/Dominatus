@@ -4,10 +4,11 @@
   "package": "sypztep.dominatus.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "core.combat.backattack.LivingEntityMixin",
+    "core.combat.specialattack.LivingEntityMixin",
     "core.combat.critevasion.LivingEntityMixin",
     "core.combat.critevasion.PlayerEntityMixin",
-rem    "core.combat.newdamage.LivingEntityMixin",
+    "core.combat.multihit.PlayerEntityMixin",
+    "core.combat.newdamage.LivingEntityMixin",
     "core.combat.projectileclipthrough.PersistentProjectileEntityMixin",
     "core.combat.projectileclipthrough.TridentEntityMixin",
     "core.item.applyrefinestats.LivingEntityMixin",
@@ -20,8 +21,7 @@ rem    "core.combat.newdamage.LivingEntityMixin",
     "core.registry.attribute.apply.ServerWorldMixin"
   ],
   "client": [
-    "core.item.refinement.refinelevel.DrawContextMixin",
-    "core.tabs.inventory.InventoryScreenMixin"
+    "core.item.refinement.refinelevel.DrawContextMixin"
   ],
   "injectors": {
     "defaultRequire": 1
