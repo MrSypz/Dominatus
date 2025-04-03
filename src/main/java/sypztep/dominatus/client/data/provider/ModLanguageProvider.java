@@ -17,6 +17,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("dominatus.text.missing", "Missing");
         translate.add("dominatus.text.critical", "Critical");
         translate.add("dominatus.text.back", "Back Attack");
+        translate.add("dominatus.text.air", "Air Attack");
         // Config
         translate.add("text.autoconfig.dominatus.title", "Dominatus Config");
         translate.add("text.autoconfig.dominatus.option.damageCritIndicator", "Crit Indicator");
