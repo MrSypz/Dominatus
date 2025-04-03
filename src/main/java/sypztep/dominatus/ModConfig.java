@@ -18,4 +18,9 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.ColorPicker()
     @Comment("Color of the crit indicator")
     public static int critDamageColor = 0xFF4F00;
+
+    @ConfigEntry.Category("combat")
+    @Comment("the delay damage to appile after player attack")
+    public static float hitdelay = 0.25f;
+
 }
