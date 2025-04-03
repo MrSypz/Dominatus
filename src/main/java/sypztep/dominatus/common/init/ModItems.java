@@ -10,8 +10,6 @@ import net.minecraft.util.Rarity;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.item.WristItem;
 import sypztep.dominatus.common.item.RefinementStoneItem;
-import sypztep.hawsamoot.common.data.RarityBorder;
-import sypztep.hawsamoot.common.init.ModDataComponents;
 
 public class ModItems {
     public static Item REFINE_WEAPON_STONE;
@@ -35,7 +33,7 @@ public class ModItems {
         REFINE_WEAPONENFORGE_STONE = registerItem("refine_weapon_enforge_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.EPIC)));
         REFINE_ARMORENFORGE_STONE = registerItem("refine_armor_enforge_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.EPIC).fireproof()));
         MAHILNANT = registerItem("mahilnant", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE)));
-        MOONLIGHT_CRESCENT = registerItem("moonlight_crescent", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE).component(ModDataComponents.RARITY_BORDER, RarityBorder.LEGENDARY)));
+        MOONLIGHT_CRESCENT = registerItem("moonlight_crescent", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE)));
 
         // Register BD-style offhand items
         KUTUM_BRACKET = registerItem("kutum_bracket", new WristItem(new Item.Settings().fireproof().rarity(Rarity.EPIC)));
