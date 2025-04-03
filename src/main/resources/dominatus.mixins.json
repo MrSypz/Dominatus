@@ -7,7 +7,7 @@
     "core.combat.backattack.LivingEntityMixin",
     "core.combat.critevasion.LivingEntityMixin",
     "core.combat.critevasion.PlayerEntityMixin",
-    "core.combat.unlimitarmorcap.LivingEntityMixin",
+rem    "core.combat.newdamage.LivingEntityMixin",
     "core.combat.projectileclipthrough.PersistentProjectileEntityMixin",
     "core.combat.projectileclipthrough.TridentEntityMixin",
     "core.item.applyrefinestats.LivingEntityMixin",
