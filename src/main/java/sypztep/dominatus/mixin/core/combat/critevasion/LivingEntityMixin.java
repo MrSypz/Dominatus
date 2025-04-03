@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sypztep.dominatus.client.init.ModParticle;
-import sypztep.dominatus.client.payload.AddTextParticlesPayload;
+import sypztep.dominatus.client.payload.AddTextParticlesPayloadS2C;
 import sypztep.dominatus.common.api.combat.CriticalOverhaul;
 import sypztep.dominatus.common.util.combatsystem.EntityCombatAttributes;
 import sypztep.dominatus.common.init.ModEntityAttributes;
@@ -55,8 +55,8 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
         return !isHit;
     }
 
-    @ModifyVariable(method = "applyDamage", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    private float applyDamageFirst(float amount, DamageSource source) {
+    @ModifyVariable(method = "applyDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;applyArmorToDamage(Lnet/minecraft/entity/damage/DamageSource;F)F"), ordinal = 0, argsOnly = true)
+    private float modifyDamageAfterInvulnerabilityCheck(float amount, DamageSource source) {
         if (this.getWorld().isClient()) {
             return amount;
         }
@@ -186,7 +186,7 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
         }
         if (target != null) {
             PlayerLookup.tracking((ServerWorld) target.getWorld(), target.getChunkPos())
-                    .forEach(foundPlayer -> AddTextParticlesPayload.send(
+                    .forEach(foundPlayer -> AddTextParticlesPayloadS2C.send(
                             foundPlayer, target.getId(),
                             ModParticle.CRITICAL
                     ));
@@ -202,7 +202,7 @@ public abstract class LivingEntityMixin extends Entity implements CriticalOverha
 
     @Unique
     private void sendMissingParticles(LivingEntity attacker) {
-        PlayerLookup.tracking((ServerWorld) target.getWorld(), target.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayload.send(foundPlayer, this.getId(), ModParticle.MISSING));
-        PlayerLookup.tracking((ServerWorld) attacker.getWorld(), attacker.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayload.send(foundPlayer, this.getId(), ModParticle.MISSING));
+        PlayerLookup.tracking((ServerWorld) target.getWorld(), target.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayloadS2C.send(foundPlayer, this.getId(), ModParticle.MISSING));
+        PlayerLookup.tracking((ServerWorld) attacker.getWorld(), attacker.getChunkPos()).forEach(foundPlayer -> AddTextParticlesPayloadS2C.send(foundPlayer, this.getId(), ModParticle.MISSING));
     }
 }
