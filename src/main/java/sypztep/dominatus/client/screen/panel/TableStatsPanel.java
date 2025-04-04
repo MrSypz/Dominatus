@@ -5,6 +5,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import sypztep.dominatus.common.init.ModEntityAttributes;
@@ -118,18 +119,17 @@ public class TableStatsPanel extends ScrollablePanel {
                 /* base */ 0,
                 /* addition */ player.getArmor()));
 
-        // For movement speed, we can simulate a negative addition in some cases (for demonstration)
-        int movementBase = (int) (0.1 * 100); // Base movement speed (0.1) * 100 for display
-        int movementAddition = (int) ((player.getMovementSpeed() - 0.1) * 100);
+        double baseSpeed = player.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        double currentSpeed = player.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 
         values.put("movement_speed", new StatValue(
-                /* base */ movementBase,
-                /* addition */ movementAddition));
+                /* base */ (int) (baseSpeed * 43.17),
+                /* addition */ (int) ((currentSpeed - baseSpeed) * 43.17)
+        ));
 
         values.put("attack_damage", new StatValue(
                 /* base */ 1,
-                /* addition */ (int) (player.getAttributeValue(net.minecraft.entity.attribute.EntityAttributes.GENERIC_ATTACK_DAMAGE) - 1)));
-
+                /* addition */ (int) (player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) - 1)));
         return values;
     }
 
@@ -321,15 +321,12 @@ public class TableStatsPanel extends ScrollablePanel {
                     int totalValueColor = TOTAL_VALUE_COLOR;
 
                     if (selectAlpha > 0.001f) {
-                        // Brighten values for selected item
                         baseValueColor = interpolateColor(baseValueColor, 0xFFFFFFFF, selectAlpha * 0.3f);
                         totalValueColor = interpolateColor(totalValueColor, 0xFFFFFFFF, selectAlpha * 0.2f);
                     }
 
-                    // Draw base value (centered in column)
                     drawCenteredTextWithShadow(context, baseText, columnCenters[1], adjustedTextY, baseValueColor);
 
-                    // Draw addition value (centered, colored green for positive, red for negative)
                     int addColor = statValue.addition() > 0 ? ADDITION_COLOR : statValue.addition() < 0 ? 0xFFFF7777 : ADDITION_COLOR;
                     drawCenteredTextWithShadow(context, additionText, columnCenters[2], adjustedTextY, addColor);
 
@@ -337,13 +334,11 @@ public class TableStatsPanel extends ScrollablePanel {
                     drawCenteredTextWithShadow(context, totalText, columnCenters[3], adjustedTextY, totalValueColor);
                 }
 
-                // Draw column separators
                 for (int colIdx = 1; colIdx < 4; colIdx++) {
                     context.fill(columnStarts[colIdx], elementY, columnStarts[colIdx] + 1, elementY + lineHeight, 0x50777777);
                 }
             }
 
-            // Draw horizontal separator between rows
             context.fill(x, elementY + lineHeight - 1, x + contentWidth, elementY + lineHeight, 0x30777777);
         }
     }
