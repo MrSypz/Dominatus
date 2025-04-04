@@ -77,6 +77,12 @@ public class EntityAttributesDataProvider implements DataProvider {
         futures.add(generateEntityData(writer, EntityType.GUARDIAN, 260.0, 100.0, 0.15, 2.0, 0.0, 0.0, 0.0));
         futures.add(generateEntityData(writer, EntityType.ELDER_GUARDIAN, 320.0, 140.0, 0.25, 3.0, 0.0, 0.0, 0.0));
 
+        // Trial Chamber Mobs (1.21) - Late Game Zone
+        // Breeze - Wind-based ranged attacker
+        futures.add(generateEntityData(writer, EntityType.BREEZE, 285.0, 125.0, 0.18, 2.3, 0.0, 0.55, 0.0));
+        // Bogged - ranged attacker
+        futures.add(generateEntityData(writer, EntityType.BOGGED, 295.0, 120.0, 0.22, 2.5, 0.30, 0.0, 0.0));
+
         return futures;
     }
 
@@ -151,10 +157,7 @@ public class EntityAttributesDataProvider implements DataProvider {
         return futures;
     }
 
-    private CompletableFuture<?> generateEntityData(DataWriter writer, EntityType<?> entityType,
-                                                    double accuracy, double evasion, double critChance,
-                                                    double critDamage, double backAttack,
-                                                    double airAttack, double downAttack) {
+    private CompletableFuture<?> generateEntityData(DataWriter writer, EntityType<?> entityType, double accuracy, double evasion, double critChance, double critDamage, double backAttack, double airAttack, double downAttack) {
         JsonObject json = new JsonObject();
 
         // Create the combat_stats object
@@ -179,8 +182,7 @@ public class EntityAttributesDataProvider implements DataProvider {
         Identifier outputId = Dominatus.id("entity_stats/" + namespace + "/" + path);
 
         // Write the JSON file
-        return DataProvider.writeToPath(writer, json,
-                output.getPath().resolve("data/" + outputId.getNamespace() + "/" + outputId.getPath() + ".json"));
+        return DataProvider.writeToPath(writer, json, output.getPath().resolve("data/" + outputId.getNamespace() + "/" + outputId.getPath() + ".json"));
     }
 
     @Override
