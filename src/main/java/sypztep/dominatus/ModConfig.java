@@ -20,7 +20,10 @@ public class ModConfig implements ConfigData {
     public static int critDamageColor = 0xFF4F00;
 
     @ConfigEntry.Category("combat")
+    @Comment("multiple hit in one attack for balance accuracy")
+    public static boolean multihit = true;
+    @ConfigEntry.Category("combat")
     @Comment("the delay damage to appile after player attack")
-    public static float hitdelay = 0.25f;
+    public static float hitDelay = 0.25f;
 
 }
