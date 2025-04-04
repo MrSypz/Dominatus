@@ -4,6 +4,7 @@
   "package": "sypztep.dominatus.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "core.combat.aircombo.LivingEntityMixin",
     "core.combat.critevasion.LivingEntityMixin",
     "core.combat.critevasion.PlayerEntityMixin",
     "core.combat.multihit.PlayerEntityMixin",

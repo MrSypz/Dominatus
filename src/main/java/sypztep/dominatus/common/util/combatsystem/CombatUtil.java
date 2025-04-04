@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
+import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.init.ModParticle;
 import sypztep.dominatus.client.payload.AddTextParticlesPayloadS2C;
 import sypztep.dominatus.client.util.TextParticleProvider;
@@ -17,6 +18,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CombatUtil {
+    private static final boolean DEBUG = false;
+
+    private static void debugLog(String message, Object... args) {
+        if (DEBUG) {
+            Dominatus.LOGGER.info("[CombatUtil]{} {}%n", message, args);
+        }
+    }
+
     @FunctionalInterface
     private interface DamageModifier {
         float modify(LivingEntity attacker, LivingEntity target, float damage);
@@ -32,7 +41,15 @@ public class CombatUtil {
                 return damage * ((float) attacker.getAttributeValue(ModEntityAttributes.BACK_ATTACK) + 1);
             }
             return damage;
+        }),
+        AIR_ATTACK((attacker, target, damage) -> {
+            if (isAirBorne(target)) {
+                sendCombatParticles(target, attacker, ModParticle.AIRATTACK);
+                return damage * ((float) attacker.getAttributeValue(ModEntityAttributes.AIR_ATTACK) + 1);
+            }
+            return damage;
         });
+
 
         private final DamageModifier modifier;
 
@@ -43,6 +60,14 @@ public class CombatUtil {
         float apply(LivingEntity attacker, LivingEntity target, float damage) {
             return modifier.modify(attacker, target, damage);
         }
+    }
+    public static boolean isAirBorne(LivingEntity target) {
+        return !target.isOnGround()
+                && !target.isTouchingWater()
+                && !target.isInLava()
+                && !target.hasNoGravity()
+                && !target.isClimbing()
+                && target.fallDistance > 0;
     }
 
     public static float damageModifier(LivingEntity target, float amount, DamageSource source) {
