@@ -16,6 +16,6 @@ public class PlayerEntityMixin {
     private void injectMultiHit(Entity target, CallbackInfo ci) {
         if (!ModConfig.multihit) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
-        MultiHitPayloadC2S.send(player, target, 2);
+        if (player.getWorld().isClient()) MultiHitPayloadC2S.send(player, target, 2);
     }
 }
