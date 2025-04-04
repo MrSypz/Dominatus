@@ -18,11 +18,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("dominatus.text.critical", "Critical");
         translate.add("dominatus.text.back", "Back Attack");
         translate.add("dominatus.text.air", "Air Attack");
-        // Config
-        translate.add("text.autoconfig.dominatus.title", "Dominatus Config");
-        translate.add("text.autoconfig.dominatus.option.damageCritIndicator", "Crit Indicator");
-        translate.add("text.autoconfig.dominatus.option.missingIndicator", "Missing Indicator");
-        translate.add("text.autoconfig.dominatus.option.critDamageColor", "Crit Damage Color");
+        generateConfig(translate);
         // Refinement Stone
         translate.add("item.dominatus.refine_weapon_stone", "Refinement Weapon Stone");
         translate.add("item.dominatus.refine_weapon_stone.desc", "A stone used to refine weapons.");
@@ -75,6 +71,19 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("config.jade.plugin_dominatus.stats_config", "Stats Config");
         //Stats Screen
         generateStatsScreenTranslations(translate);
+    }
+    private void generateConfig(TranslationBuilder translate) {
+        translate.add("text.autoconfig.dominatus.title", "Dominatus Config");
+
+        translate.add("text.autoconfig.dominatus.category.feature-client", "Client Config");
+        translate.add("text.autoconfig.dominatus.category.combat", "Combat Config");
+
+        translate.add("text.autoconfig.dominatus.option.damageCritIndicator", "Crit Indicator");
+        translate.add("text.autoconfig.dominatus.option.missingIndicator", "Missing Indicator");
+        translate.add("text.autoconfig.dominatus.option.critDamageColor", "Crit Damage Color");
+
+        translate.add("text.autoconfig.dominatus.option.hitDelay", "Hit Delay");
+        translate.add("text.autoconfig.dominatus.option.multihit", "Multihit System");
     }
     private void generateStatsScreenTranslations(TranslationBuilder translate) {
         translate.add("screen.dominatus.player_info","Player Information");
@@ -138,7 +147,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("stat.dominatus.movement_speed.desc",
                 "Determines how quickly you can move around the world.");
         translate.add("stat.dominatus.movement_speed.details",
-                "The base movement speed is 0.10. Values above this will make you move faster.");
+                "Base movement speed is 4 blocks/sec. Values above this will increase your travel speed.");
 
         // Attack Damage stat
         translate.add("stat.dominatus.attack_damage", "Attack Damage");
