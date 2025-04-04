@@ -59,7 +59,7 @@ public class MultiHitSystem {
                 player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_WEAK, player.getSoundCategory(), 1.0F, 1.0F);
 
                 data.currentHit++;
-                data.nextHitTick = currentTick + ModConfig.hitdelay;
+                data.nextHitTick = currentTick + ModConfig.hitDelay;
 
                 if (data.currentHit >= data.totalHits) iterator.remove();
             }
