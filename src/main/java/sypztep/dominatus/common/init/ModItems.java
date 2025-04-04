@@ -21,9 +21,7 @@ public class ModItems {
     public static Item MOONLIGHT_CRESCENT;
     public static Item MAHILNANT;
 
-    public static Item YURIA_BRACKET;   // Balanced stats
-    public static Item KUTUM_BRACKET;   // Accuracy focused
-    public static Item NOUVER_BRACKET;  // Evasion focused
+    public static Item YURIA_BRACKET;
 
     public static void init() {
         REFINE_WEAPON_STONE = registerItem("refine_weapon_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE)));
@@ -36,8 +34,6 @@ public class ModItems {
         MOONLIGHT_CRESCENT = registerItem("moonlight_crescent", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE)));
 
         // Register BD-style offhand items
-        KUTUM_BRACKET = registerItem("kutum_bracket", new WristItem(new Item.Settings().fireproof().rarity(Rarity.EPIC)));
-        NOUVER_BRACKET = registerItem("nouver_bracket", new WristItem(new Item.Settings().fireproof().rarity(Rarity.EPIC)));
         YURIA_BRACKET = registerItem("yuria_bracket", new WristItem(new Item.Settings()
                 .rarity(Rarity.RARE)
 
