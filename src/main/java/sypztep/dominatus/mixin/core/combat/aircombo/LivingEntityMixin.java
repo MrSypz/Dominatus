@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.common.util.combatsystem.CombatUtil;
 
 @Mixin(LivingEntity.class)
@@ -14,6 +15,7 @@ public class LivingEntityMixin {
 
     @Inject(method = "takeKnockback", at = @At("HEAD"), cancellable = true)
     private void modifyAirKnockback(double strength, double x, double z, CallbackInfo ci) {
+        if (!ModConfig.airborneCombat) return;
         LivingEntity entity = (LivingEntity) (Object) this;
 
         if (CombatUtil.isAirBorne(entity)) {
