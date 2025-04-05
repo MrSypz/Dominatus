@@ -25,4 +25,6 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Category("combat")
     @Comment("the delay damage to appile after player attack")
     public static float hitDelay = 0.25f;
+    @ConfigEntry.Category("combat")
+    public static boolean airborneCombat = true;
 }
