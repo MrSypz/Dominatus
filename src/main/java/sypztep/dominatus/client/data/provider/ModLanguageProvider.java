@@ -35,6 +35,9 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("item.dominatus.reform_stone_grade_mid.desc", "A stone used to reform items.");
         translate.add("item.dominatus.reform_stone_grade_high", "Reform Stone Grade 3");
         translate.add("item.dominatus.reform_stone_grade_high.desc", "A stone used to reform items.");
+        translate.add("item.dominatus.gem", "Gem");
+        translate.add("item.dominatus.gem.accuracy", "Accuracy");
+        translate.add("item.dominatus.gem.ruby", "Ruby");
         // Attributes
         translate.add("attribute.name.evasion", "Evasion");
         translate.add("attribute.name.accuracy", "Accuracy");

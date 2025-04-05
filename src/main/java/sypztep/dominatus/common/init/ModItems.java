@@ -3,13 +3,18 @@ package sypztep.dominatus.common.init;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import sypztep.dominatus.Dominatus;
+import sypztep.dominatus.common.data.GemComponent;
+import sypztep.dominatus.common.item.GemItem;
 import sypztep.dominatus.common.item.WristItem;
 import sypztep.dominatus.common.item.RefinementStoneItem;
+import sypztep.dominatus.common.reloadlistener.GemItemDataReloadListener;
 
 public class ModItems {
     public static Item REFINE_WEAPON_STONE;
@@ -20,6 +25,8 @@ public class ModItems {
     public static Item REFINE_ARMORENFORGE_STONE;
     public static Item MOONLIGHT_CRESCENT;
     public static Item MAHILNANT;
+
+    public static Item GEM;
 
     public static Item YURIA_BRACKET;
 
@@ -33,6 +40,7 @@ public class ModItems {
         MAHILNANT = registerItem("mahilnant", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE)));
         MOONLIGHT_CRESCENT = registerItem("moonlight_crescent", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE)));
 
+        GEM = registerItem("gem", new GemItem());
         // Register BD-style offhand items
         YURIA_BRACKET = registerItem("yuria_bracket", new WristItem(new Item.Settings()
                 .rarity(Rarity.RARE)
@@ -52,5 +60,12 @@ public class ModItems {
     public static <T extends Item> T registerItem(String name, T item) {
         Registry.register(Registries.ITEM, Dominatus.id(name), item);
         return item;
+    }
+    public static ItemStack createGem(Identifier type) {
+        ItemStack stack = new ItemStack(GEM);
+        GemItemDataReloadListener.getGemType(type).ifPresent(component ->
+                GemComponent.apply(stack, component)
+        );
+        return stack;
     }
 }
