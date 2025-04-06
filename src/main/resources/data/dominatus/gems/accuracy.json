@@ -2,7 +2,7 @@
   "type": "dominatus:accuracy",
   "attributes": {
     "dominatus:accuracy": {
-      "id": "accuracy",
+      "id": "dominatus:accuracy",
       "amount": 20.0,
       "operation": "add_value"
     }

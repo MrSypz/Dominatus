@@ -9,7 +9,7 @@ import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.item.GemItem;
 
 public final class GemInventory implements Inventory {
-    private final DefaultedList<ItemStack> items = DefaultedList.ofSize(9, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> items = DefaultedList.ofSize(8, ItemStack.EMPTY);
     private final PlayerEntity player;
 
     public GemInventory(PlayerEntity player) {
@@ -59,6 +59,7 @@ public final class GemInventory implements Inventory {
     @Override
     public void markDirty() {
         if (!player.getWorld().isClient()) {
+            GemManager.updateEntityStats(player);
             ModEntityComponents.GEM_INVENTORY_COMPONENT.sync(player);
         }
     }
@@ -76,5 +77,9 @@ public final class GemInventory implements Inventory {
 
     DefaultedList<ItemStack> getItems() {
         return items;
+    }
+
+    public PlayerEntity getPlayer() {
+        return this.player;
     }
 }

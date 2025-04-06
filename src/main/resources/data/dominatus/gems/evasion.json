@@ -1,0 +1,10 @@
+{
+  "type": "dominatus:evasion",
+  "attributes": {
+    "dominatus:evasion": {
+      "id": "ebasion",
+      "amount": 20.0,
+      "operation": "add_value"
+    }
+  }
+}

@@ -12,12 +12,10 @@ import sypztep.dominatus.common.util.gemsystem.GemInventory;
 
 import java.util.Optional;
 
-public class GemInventoryComponent implements AutoSyncedComponent {
-    private final PlayerEntity player;
+public final class GemInventoryComponent implements AutoSyncedComponent {
     private final GemInventory inventory;
 
     public GemInventoryComponent(PlayerEntity player) {
-        this.player = player;
         this.inventory = new GemInventory(player);
     }
 
@@ -48,8 +46,7 @@ public class GemInventoryComponent implements AutoSyncedComponent {
                     NbtElement stackNbt = stack.encode(registryLookup);
                     slotTag.put("Stack", stackNbt);
                     itemsList.add(slotTag);
-                } catch (IllegalStateException e) {
-                    // Handle empty stack case if needed
+                } catch (IllegalStateException ignored) {
                 }
             }
         }
@@ -63,7 +60,7 @@ public class GemInventoryComponent implements AutoSyncedComponent {
         return ModEntityComponents.GEM_INVENTORY_COMPONENT.get(player).getInventory();
     }
 
-    public ItemStack getGem(int slot) {
+    private ItemStack getGem(int slot) {
         return this.inventory.getStack(slot);
     }
 
@@ -71,19 +68,18 @@ public class GemInventoryComponent implements AutoSyncedComponent {
         return ModEntityComponents.GEM_INVENTORY_COMPONENT.get(player).getGem(slot);
     }
 
-    public boolean setGem(int slot, ItemStack stack) {
-        this.inventory.setStack(slot, stack);
-        ModEntityComponents.GEM_INVENTORY_COMPONENT.sync(this.player);
-        return true;
+    private void setGem(int slot, ItemStack stack) {
+        ItemStack previous = this.inventory.getStack(slot);
+        if (!ItemStack.areEqual(previous, stack)) {
+            this.inventory.setStack(slot, stack);
+        }
     }
 
-    public static boolean setGem(PlayerEntity player, int slot, ItemStack stack) {
-        return ModEntityComponents.GEM_INVENTORY_COMPONENT.get(player).setGem(slot, stack);
+    public static void setGem(PlayerEntity player, int slot, ItemStack stack) {
+        ModEntityComponents.GEM_INVENTORY_COMPONENT.get(player).setGem(slot, stack);
     }
-
-    public void clear() {
+    private void clear() {
         this.inventory.clear();
-        ModEntityComponents.GEM_INVENTORY_COMPONENT.sync(this.player);
     }
 
     public static void clear(PlayerEntity player) {

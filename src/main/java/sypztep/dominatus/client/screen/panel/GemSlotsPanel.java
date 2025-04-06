@@ -18,7 +18,6 @@ public class GemSlotsPanel extends UIPanel {
             {48, 48},  // Bottom-Right
             {-48, 48}, // Bottom-Left
             {-48, -48},// Top-Left
-            {0, 0}     // Center (Extra slot)
     };
 
     // Animation properties
@@ -40,7 +39,7 @@ public class GemSlotsPanel extends UIPanel {
         // Process which slot is currently being hovered
         int hoveredSlotIndex = -1;
         for (int i = 0; i < SLOT_POSITIONS.length; i++) {
-            int size = (i == 8) ? CENTER_EXTRA_SIZE : SLOT_SIZE;
+            int size = SLOT_SIZE;
             int slotX = centerX + SLOT_POSITIONS[i][0] - size/2;
             int slotY = centerY + SLOT_POSITIONS[i][1] - size/2;
 

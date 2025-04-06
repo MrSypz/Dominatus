@@ -34,10 +34,10 @@ public final class GemItem extends Item {
             GemComponent gem = gemComponent.get();
 
             // Add gem name with grade color (you might want to add grade to your GemComponent)
-            tooltip.add(Text.literal("◈ ")
-                    .formatted(Formatting.YELLOW)
-                    .append(Text.translatable("gem." + gem.type().getNamespace() + "." + gem.type().getPath())
-                            .formatted(Formatting.YELLOW)));
+//            tooltip.add(Text.literal("◈ ")
+//                    .formatted(Formatting.YELLOW)
+//                    .append(Text.translatable("gem." + gem.type().getNamespace() + "." + gem.type().getPath())
+//                            .formatted(Formatting.YELLOW)));
 
             // Spacer
             tooltip.add(Text.empty());

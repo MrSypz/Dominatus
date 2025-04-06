@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
+import sypztep.dominatus.client.screen.panel.GemInventoryPanel;
 import sypztep.dominatus.client.screen.panel.GemSlotsPanel;
 import sypztep.dominatus.client.screen.panel.HotbarPanel;
 import sypztep.dominatus.common.screen.GemScreenHandler;
@@ -18,7 +19,7 @@ public class GemScreen extends BaseHandledScreen<GemScreenHandler> {
     private static final int HOTBAR_WIDTH = 22;
 
     public GemScreen(GemScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, inventory, Text.empty());
+        super(handler, inventory, Text.literal("Gem Inventory"));
         this.backgroundWidth = PANEL_WIDTH;
         this.backgroundHeight = PANEL_HEIGHT;
     }
@@ -35,19 +36,28 @@ public class GemScreen extends BaseHandledScreen<GemScreenHandler> {
                 backgroundHeight - 34
         ));
 
-//        addPanel(new GemInventoryPanel(
-//                x + INVENTORY_START_X + 1,
-//                y + 24,
-//                INVENTORY_WIDTH,
-//                backgroundHeight - 34
-//        ));
-//
+        addPanel(new GemInventoryPanel(
+                x + INVENTORY_START_X + 1,
+                y + 24,
+                INVENTORY_WIDTH,
+                backgroundHeight - 34
+        ));
+
         addPanel(new HotbarPanel(
                 x + INVENTORY_START_X + INVENTORY_WIDTH + 5,
                 y + 24,
                 HOTBAR_WIDTH,
                 backgroundHeight - 34
         ));
+    }
+
+    @Override
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 0xFFFFFF, false);
+    }
+
+    @Override
+    protected void renderTitle(DrawContext context) {
     }
 
     @Override
