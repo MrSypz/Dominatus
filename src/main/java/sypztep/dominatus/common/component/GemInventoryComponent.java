@@ -5,7 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
@@ -30,7 +29,6 @@ public class GemInventoryComponent implements AutoSyncedComponent {
                 NbtCompound slotTag = listTag.getCompound(i);
                 int slot = slotTag.getInt("Slot");
                 if (slot >= 0 && slot < inventory.size()) {
-                    // Use the new codec-based fromNbt method
                     Optional<ItemStack> itemStack = ItemStack.fromNbt(registryLookup, slotTag.get("Stack"));
                     itemStack.ifPresent(stack -> inventory.setStack(slot, stack));
                 }
@@ -47,7 +45,6 @@ public class GemInventoryComponent implements AutoSyncedComponent {
                 NbtCompound slotTag = new NbtCompound();
                 slotTag.putInt("Slot", i);
                 try {
-                    // Use encode directly since it returns NbtElement
                     NbtElement stackNbt = stack.encode(registryLookup);
                     slotTag.put("Stack", stackNbt);
                     itemsList.add(slotTag);

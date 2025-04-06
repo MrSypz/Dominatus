@@ -12,7 +12,7 @@ import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModItems;
 
-public class RefinementManager {
+public final class RefinementManager {
     public static final int MAX_NORMAL_LEVEL = 15;
     public static final int MAX_ENHANCED_LEVEL = 20;
     public static final int BASE_DURABILITY_LOSS = 10;

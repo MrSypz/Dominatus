@@ -18,14 +18,13 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.common.data.GemComponent;
 import sypztep.dominatus.common.init.ModDataComponents;
-import sypztep.dominatus.common.init.ModItems;
 import sypztep.dominatus.common.reloadlistener.GemItemDataReloadListener;
 import sypztep.dominatus.common.util.gemsystem.GemManager;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class GemCommand implements CommandRegistrationCallback {
+public final class GemCommand implements CommandRegistrationCallback {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(

@@ -1,10 +1,6 @@
 package sypztep.dominatus.common.util.refinesystem;
 
-import io.wispforest.accessories.api.AccessoriesContainer;
 import io.wispforest.accessories.api.slot.SlotEntryReference;
-import io.wispforest.accessories.api.slot.SlotReference;
-import io.wispforest.accessories.api.slot.SlotType;
-import io.wispforest.accessories.menu.SlotAccessContainer;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -12,7 +8,6 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
@@ -25,7 +20,7 @@ import sypztep.tyrannus.common.util.ItemStackHelper;
 
 import java.util.*;
 
-public class RefinementItemManager {
+public final class RefinementItemManager {
     private static final Map<Pair<ItemStack, EquipmentSlot>, Boolean> SLOT_VALIDITY_CACHE = new WeakHashMap<>();
 
     private static final Identifier DAMAGE_MODIFIER_ID = Dominatus.id("extra.damage_stats");

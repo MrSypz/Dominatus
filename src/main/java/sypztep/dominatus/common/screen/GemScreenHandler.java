@@ -13,7 +13,6 @@ import sypztep.dominatus.common.util.gemsystem.GemInventory;
 import sypztep.dominatus.common.util.gemsystem.GemSlot;
 
 public final class GemScreenHandler extends ScreenHandler {
-    // Slot index ranges for reference and clarity
     private static final int GEM_SLOTS_START = 0;
     private static final int GEM_SLOTS_END = 8;    // 9 slots total (0-8)
     private static final int INVENTORY_START = 9;
@@ -95,7 +94,6 @@ public final class GemScreenHandler extends ScreenHandler {
         }
     }
 
-    // Locked slot that doesn't accept items by default
     private static class LockedGemSlot extends GemSlot {
         public LockedGemSlot(GemInventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
@@ -112,10 +110,6 @@ public final class GemScreenHandler extends ScreenHandler {
         }
     }
 
-    /**
-     * A special slot in the player inventory intended for gem storage but allowing all items.
-     * This is different from FilteredGemSlot which was too restrictive.
-     */
     private static class GemStorageSlot extends Slot {
         public GemStorageSlot(PlayerInventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
@@ -139,11 +133,6 @@ public final class GemScreenHandler extends ScreenHandler {
         return true;
     }
 
-    /**
-     * Handles shift-clicking items between slots.
-     * This method ensures that only GemItems are moved to gem slots,
-     * while allowing other items to be moved normally within the inventory.
-     */
     @Override
     public ItemStack quickMove(PlayerEntity player, int fromIndex) {
         ItemStack newStack = ItemStack.EMPTY;

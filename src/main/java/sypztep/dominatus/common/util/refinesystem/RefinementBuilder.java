@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import sypztep.dominatus.common.data.Refinement;
 import sypztep.dominatus.common.init.ModDataComponents;
 
-public class RefinementBuilder {
+public final class RefinementBuilder {
     private int refine;
     private int accuracy;
     private int evasion;
