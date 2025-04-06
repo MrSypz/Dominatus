@@ -1,0 +1,15 @@
+{
+  "type": "dominatus:swift",
+  "attributes": {
+    "minecraft:generic.movement_speed": {
+      "id": "gem_swift_speed",
+      "amount": 0.15,
+      "operation": "add_multiplied_total"
+    },
+    "minecraft:generic.attack_speed": {
+      "id": "gem_swift_attack",
+      "amount": 0.1,
+      "operation": "add_multiplied_total"
+    }
+  }
+}

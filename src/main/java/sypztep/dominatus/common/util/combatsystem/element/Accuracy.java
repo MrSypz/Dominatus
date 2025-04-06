@@ -3,7 +3,7 @@ package sypztep.dominatus.common.util.combatsystem.element;
 import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.common.util.combatsystem.CombatAttribute;
 
-public class Accuracy extends CombatAttribute {
+public final class Accuracy extends CombatAttribute {
     private static final double BASE_HIT_CHANCE = 0.65;
     private static final double ACCURACY_SCALING = 0.005;
 

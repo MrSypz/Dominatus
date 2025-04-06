@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
-public class MultiHitSystem {
+public final class MultiHitSystem {
     private static final Map<UUID, MultiHitData> activeHits = new HashMap<>();
 
     private static class MultiHitData {

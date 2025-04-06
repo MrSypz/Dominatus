@@ -20,6 +20,7 @@ import sypztep.dominatus.common.data.GemComponent;
 import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.dominatus.common.init.ModItems;
 import sypztep.dominatus.common.reloadlistener.GemItemDataReloadListener;
+import sypztep.dominatus.common.util.gemsystem.GemManager;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -72,7 +73,7 @@ public class GemCommand implements CommandRegistrationCallback {
     }
 
     private static int giveGem(ServerCommandSource source, ServerPlayerEntity player, Identifier type) {
-        ItemStack gemStack = ModItems.createGem(type);
+        ItemStack gemStack = GemManager.createGem(type);
 
         if (!gemStack.contains(ModDataComponents.GEM)) {
             source.sendError(Text.literal("Unknown gem type: " + type));

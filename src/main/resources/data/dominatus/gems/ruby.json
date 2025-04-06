@@ -1,0 +1,10 @@
+{
+  "type": "dominatus:ruby",
+  "attributes": {
+    "minecraft:generic.attack_damage": {
+      "id": "gem_damage",
+      "amount": 5.0,
+      "operation": "add_value"
+    }
+  }
+}

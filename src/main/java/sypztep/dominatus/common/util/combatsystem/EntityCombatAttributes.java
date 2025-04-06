@@ -5,7 +5,7 @@ import sypztep.dominatus.common.util.combatsystem.element.Accuracy;
 import sypztep.dominatus.common.util.combatsystem.element.Evasion;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 
-public class EntityCombatAttributes {
+public final class EntityCombatAttributes {
     private final LivingEntity entity;
     private final Accuracy accuracy;
     private final Evasion evasion;

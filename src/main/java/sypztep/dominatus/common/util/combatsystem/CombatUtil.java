@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CombatUtil {
+public final class CombatUtil {
     private static final boolean DEBUG = false;
 
     private static void debugLog(String message, Object... args) {

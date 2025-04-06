@@ -7,7 +7,7 @@ import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.data.GemComponent;
 import sypztep.dominatus.common.data.Refinement;
 
-public class ModDataComponents {
+public final class ModDataComponents {
     public static final ComponentType<Refinement> REFINEMENT = new ComponentType.Builder<Refinement>().codec(Refinement.CODEC).build();
     public static final ComponentType<GemComponent> GEM = new ComponentType.Builder<GemComponent>().codec(GemComponent.CODEC).build();
 

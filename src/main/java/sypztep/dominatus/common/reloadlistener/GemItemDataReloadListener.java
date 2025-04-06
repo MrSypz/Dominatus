@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class GemItemDataReloadListener implements SimpleSynchronousResourceReloadListener {
+public final class GemItemDataReloadListener implements SimpleSynchronousResourceReloadListener {
     private static final Map<Identifier, GemComponent> GEM_TYPES = new HashMap<>();
     private static final Identifier ID = Dominatus.id("gem_data");
 

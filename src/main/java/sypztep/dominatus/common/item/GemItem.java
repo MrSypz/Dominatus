@@ -1,11 +1,11 @@
 package sypztep.dominatus.common.item;
 
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import sypztep.dominatus.common.data.GemComponent;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public class GemItem extends Item {
+public final class GemItem extends Item {
     public GemItem() {
         super(new Item.Settings().maxCount(1));
     }
@@ -33,7 +33,23 @@ public class GemItem extends Item {
         if (gemComponent.isPresent()) {
             GemComponent gem = gemComponent.get();
 
-            // Show attributes
+            // Add gem name with grade color (you might want to add grade to your GemComponent)
+            tooltip.add(Text.literal("◈ ")
+                    .formatted(Formatting.YELLOW)
+                    .append(Text.translatable("gem." + gem.type().getNamespace() + "." + gem.type().getPath())
+                            .formatted(Formatting.YELLOW)));
+
+            // Spacer
+            tooltip.add(Text.empty());
+
+            // Show "Effects" header
+            tooltip.add(Text.literal("【 ")
+                    .formatted(Formatting.GRAY)
+                    .append(Text.translatable("item.dominatus.gem.effects"))
+                    .append(" 】")
+                    .formatted(Formatting.GRAY));
+
+            // Show attributes with BDO-style formatting
             gem.attributeModifiers().forEach((attributeId, modifier) -> {
                 EntityAttribute attribute = Registries.ATTRIBUTE.get(attributeId);
                 if (attribute != null) {
@@ -43,10 +59,16 @@ public class GemItem extends Item {
                         case ADD_MULTIPLIED_TOTAL -> "%";
                     };
 
-                    tooltip.add(Text.literal(operation + " " +
-                                    (modifier.value()) + " " +
-                                    Text.translatable(attribute.getTranslationKey()).getString())
-                            .formatted(Formatting.BLUE));
+                    // Create the effect box with colored symbol and value
+                    MutableText effectText = Text.literal("▣ ")
+                            .formatted(Formatting.AQUA)
+                            .append(Text.literal(operation + String.format("%.1f", modifier.value()))
+                                    .formatted(Formatting.GREEN))
+                            .append(" ")
+                            .append(Text.translatable(attribute.getTranslationKey())
+                                    .formatted(Formatting.WHITE));
+
+                    tooltip.add(effectText);
                 }
             });
         }

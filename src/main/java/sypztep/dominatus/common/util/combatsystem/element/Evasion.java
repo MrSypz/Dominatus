@@ -2,7 +2,7 @@ package sypztep.dominatus.common.util.combatsystem.element;
 
 import sypztep.dominatus.common.util.combatsystem.CombatAttribute;
 
-public class Evasion extends CombatAttribute {
+public final class Evasion extends CombatAttribute {
     private static final double BASE_EVASION = 0.0;
     private static final double EVASION_SCALING = 0.005;
 

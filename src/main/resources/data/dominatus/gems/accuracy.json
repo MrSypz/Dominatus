@@ -1,0 +1,10 @@
+{
+  "type": "dominatus:accuracy",
+  "attributes": {
+    "dominatus:accuracy": {
+      "id": "accuracy",
+      "amount": 20.0,
+      "operation": "add_value"
+    }
+  }
+}

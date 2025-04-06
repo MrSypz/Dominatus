@@ -29,7 +29,7 @@ public class StatsTab extends Tab {
 
         statDescriptions.put("crit_damage", new TableStatsPanel.StatDescription("stat.dominatus.crit_damage", "stat.dominatus.crit_damage.desc", "stat.dominatus.crit_damage.details"));
 
-        statDescriptions.put("health", new TableStatsPanel.StatDescription("stat.dominatus.health", "stat.dominatus.health.desc", "stat.dominatus.health.details"));
+        statDescriptions.put("max_health", new TableStatsPanel.StatDescription("stat.dominatus.max_health", "stat.dominatus.max_health.desc", "stat.dominatus.max_health.details"));
 
         statDescriptions.put("armor", new TableStatsPanel.StatDescription("stat.dominatus.armor", "stat.dominatus.armor.desc", "stat.dominatus.armor.details"));
 
@@ -80,7 +80,7 @@ public class StatsTab extends Tab {
                     selectedStat = "crit_damage";
                     break;
                 case 6:
-                    selectedStat = "health";
+                    selectedStat = "max_health";
                     break;
                 case 7:
                     selectedStat = "armor";

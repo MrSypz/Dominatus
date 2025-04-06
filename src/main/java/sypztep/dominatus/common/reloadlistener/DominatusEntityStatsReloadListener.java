@@ -15,7 +15,7 @@ import sypztep.dominatus.common.data.DominatusEntityEntry;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class DominatusEntityStatsReloadListener implements SimpleSynchronousResourceReloadListener {
+public final class DominatusEntityStatsReloadListener implements SimpleSynchronousResourceReloadListener {
     private static final Identifier ID = Dominatus.id("entity_stats");
 
     @Override

@@ -7,7 +7,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import sypztep.dominatus.common.data.DominatusEntityEntry;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 
-public class MobEntityApplyAttribute {
+public final class MobEntityApplyAttribute {
     public static void applyEntityAttributes(LivingEntity entity) {
         DominatusEntityEntry entry = DominatusEntityEntry.BASEMOBSTATS_MAP.get(entity.getType());
         if (entry == null) return;

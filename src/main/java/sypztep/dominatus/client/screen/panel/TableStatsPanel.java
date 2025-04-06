@@ -74,7 +74,7 @@ public class TableStatsPanel extends ScrollablePanel {
         items.add(new StatItem(Text.translatable("header.dominatus.player_attributes").getString(), true));
 
         // Player attributes
-        items.add(new StatItem(Text.translatable("stat.dominatus.health").getString(), "health", false));
+        items.add(new StatItem(Text.translatable("stat.dominatus.max_health").getString(), "max_health", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.armor").getString(), "armor", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.movement_speed").getString(), "movement_speed", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.attack_damage").getString(), "attack_damage", false));
@@ -111,8 +111,8 @@ public class TableStatsPanel extends ScrollablePanel {
                 /* addition */ Math.round((getAttributeValue(player, ModEntityAttributes.CRIT_DAMAGE) - getAttributeBaseValue(player, ModEntityAttributes.CRIT_DAMAGE)) * 100f)));
 
         // Player attributes
-        values.put("health", new StatValue(
-                /* base */ 20,
+        values.put("max_health", new StatValue(
+                /* base */ player.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH),
                 /* addition */ Math.round(player.getMaxHealth() - 20)));
 
         values.put("armor", new StatValue(
@@ -446,8 +446,8 @@ public class TableStatsPanel extends ScrollablePanel {
         }
     }
 
-    public record StatValue(long base, long addition) {
-        public long getTotal() {
+    public record StatValue(double base, long addition) {
+        public double getTotal() {
             return base + addition;
         }
 

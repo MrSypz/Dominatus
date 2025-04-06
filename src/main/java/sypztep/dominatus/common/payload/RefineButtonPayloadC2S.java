@@ -32,7 +32,6 @@ public record RefineButtonPayloadC2S() implements CustomPayload {
             if (context.player() != null) {
                 ServerPlayerEntity player = context.player();
                 player.openHandledScreen(createScreenHandlerFactory(player.getWorld(), player.getBlockPos()));
-
             }
         }
     }

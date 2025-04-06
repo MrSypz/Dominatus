@@ -43,7 +43,8 @@
   "accessWidener": "dominatus.accesswidener",
   "custom": {
     "cardinal-components": [
-      "dominatus:failstack"
+      "dominatus:failstack",
+      "dominatus:geminv"
     ]
   }
 }

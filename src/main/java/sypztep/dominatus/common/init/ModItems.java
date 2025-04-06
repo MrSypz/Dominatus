@@ -16,7 +16,7 @@ import sypztep.dominatus.common.item.WristItem;
 import sypztep.dominatus.common.item.RefinementStoneItem;
 import sypztep.dominatus.common.reloadlistener.GemItemDataReloadListener;
 
-public class ModItems {
+public final class ModItems {
     public static Item REFINE_WEAPON_STONE;
     public static Item REFINE_ARMOR_STONE;
     public static Item LOSS_FRAGMENT;
@@ -60,12 +60,5 @@ public class ModItems {
     public static <T extends Item> T registerItem(String name, T item) {
         Registry.register(Registries.ITEM, Dominatus.id(name), item);
         return item;
-    }
-    public static ItemStack createGem(Identifier type) {
-        ItemStack stack = new ItemStack(GEM);
-        GemItemDataReloadListener.getGemType(type).ifPresent(component ->
-                GemComponent.apply(stack, component)
-        );
-        return stack;
     }
 }

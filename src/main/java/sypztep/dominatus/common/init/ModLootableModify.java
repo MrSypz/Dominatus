@@ -13,7 +13,7 @@ import net.minecraft.registry.RegistryKey;
 
 import java.util.List;
 
-public class ModLootableModify {
+public final class ModLootableModify {
     public static void init() {
         LootTableEvents.MODIFY.register((id, tableBuilder, source, registries) -> {
             if (source.isBuiltin()) {

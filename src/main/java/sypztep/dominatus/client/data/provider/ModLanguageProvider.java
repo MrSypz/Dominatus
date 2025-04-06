@@ -36,6 +36,8 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("item.dominatus.reform_stone_grade_high", "Reform Stone Grade 3");
         translate.add("item.dominatus.reform_stone_grade_high.desc", "A stone used to reform items.");
         translate.add("item.dominatus.gem", "Gem");
+        translate.add("item.dominatus.gem.effect", "Effect");
+
         translate.add("item.dominatus.gem.accuracy", "Accuracy");
         translate.add("item.dominatus.gem.ruby", "Ruby");
         // Attributes
@@ -129,12 +131,12 @@ public class ModLanguageProvider extends FabricLanguageProvider {
                 "The default critical hit multiplier is 150%. This stat increases that multiplier.");
 
         // Health stat
-        translate.add("stat.dominatus.health", "Health");
-        translate.add("stat.dominatus.health.label", "Health %s");
-        translate.add("stat.dominatus.health.desc",
-                "Your total health points. When this reaches zero, you die.");
-        translate.add("stat.dominatus.health.details",
-                "Health can be increased through leveling, equipment, and certain foods.");
+        translate.add("stat.dominatus.max_health", "Max Health");
+        translate.add("stat.dominatus.max_health.label", "Max Health %s");
+        translate.add("stat.dominatus.max_health.desc",
+                "Your total max health points. How much your fully health you have.");
+        translate.add("stat.dominatus.max_health.details",
+                "Max Health can be increased through, command etc..");
 
         // Armor stat
         translate.add("stat.dominatus.armor", "Armor");

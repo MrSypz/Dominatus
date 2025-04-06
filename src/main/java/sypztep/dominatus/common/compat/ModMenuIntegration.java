@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import sypztep.dominatus.ModConfig;
 
 @Environment(EnvType.CLIENT)
-public class ModMenuIntegration implements ModMenuApi {
+public final class ModMenuIntegration implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return parent -> AutoConfig.getConfigScreen(ModConfig.class, parent).get();

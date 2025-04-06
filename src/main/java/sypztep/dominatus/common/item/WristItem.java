@@ -22,7 +22,7 @@ import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
 import java.util.List;
 
-public class WristItem extends AccessoryItem {
+public final class WristItem extends AccessoryItem {
     Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiers = HashMultimap.create();
 
     public WristItem(Settings properties) {
