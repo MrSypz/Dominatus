@@ -6,6 +6,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import sypztep.dominatus.client.screen.panel.ContextMenuPanel;
 import sypztep.dominatus.client.screen.panel.GemSlotPanel;
 import sypztep.dominatus.common.component.GemDataComponent;
 import sypztep.dominatus.common.data.GemComponent;
@@ -49,10 +50,13 @@ public class GemTab extends Tab {
 
     private class InventoryPanel extends ScrollablePanel {
         private final List<GemSlotPanel> gemSlots = new ArrayList<>();
+        private final ContextMenuPanel contextMenu; // Add context menu field
+        private int selectedGemIndex = -1; // Track which gem is right-clicked
 
         public InventoryPanel(int x, int y, int width, int height, Text title) {
             super(x, y, width, height, title);
             updateContentHeight();
+            contextMenu = new ContextMenuPanel(0, 0); // Position will be set dynamically
         }
 
         private void updateContentHeight() {
@@ -62,11 +66,12 @@ public class GemTab extends Tab {
             setContentHeight(totalHeight);
         }
 
-        /**
-         * Updates the enabled state of all gem slots based on preset capacity
-         */
         public void updateSlotsState() {
             gemSlots.clear();
+            if (contextMenu != null) {
+                contextMenu.clearItems();
+                selectedGemIndex = -1;
+            }
         }
 
         @Override
@@ -75,34 +80,24 @@ public class GemTab extends Tab {
             int y = getContentY() - (int) scrollAmount;
             int width = getContentWidth() - (enableScrollbar ? scrollbarWidth + scrollbarPadding + 10 : 5);
 
-            // Check if presets are full
             int activeGems = (int) gemData.getGemPresets().values().stream().filter(Objects::nonNull).count();
             int maxGems = GemDataComponent.getMaxPresetSlots(client.player);
             boolean presetsAreFull = activeGems >= maxGems;
 
-            // Draw inventory count with appropriate color
             String inventoryCount = String.format("Inventory (%d/%d)",
                     gemData.getGemInventory().size(),
                     GemDataComponent.getMaxInventorySize(client.player));
-            int countColor = presetsAreFull ? 0xFFAAAAAA : 0xFFFFD700; // Gray if presets full, otherwise gold
+            int countColor = presetsAreFull ? 0xFFAAAAAA : 0xFFFFD700;
             context.drawTextWithShadow(textRenderer, inventoryCount,
                     x + (width - textRenderer.getWidth(inventoryCount)) / 2, y + 10, countColor);
 
-            // Draw status message if presets are full
             if (presetsAreFull) {
                 String warningText = "⚠ All preset slots are full! Unequip a gem first.";
                 for (String text : wrapText(warningText, width)) {
-                    int textWidth = textRenderer.getWidth(text); // use current line's width
-                    context.drawTextWithShadow(
-                            textRenderer,
-                            text,
-                            x + (width - textWidth) / 2,
-                            y + 26,
-                            0xFFFF5555
-                    );
-                    y += textRenderer.fontHeight; // move to next line
+                    int textWidth = textRenderer.getWidth(text);
+                    context.drawTextWithShadow(textRenderer, text, x + (width - textWidth) / 2, y + 26, 0xFFFF5555);
+                    y += textRenderer.fontHeight;
                 }
-
             }
 
             y += 40;
@@ -117,14 +112,11 @@ public class GemTab extends Tab {
                 int bgColor = (i & 1) == 0 ? 0x20000000 : 0x20FFFFFF;
                 context.fill(x, slotY, x + width, slotY + 50, bgColor);
 
-                // Check if this specific gem can be equipped
                 boolean canEquipThisGem = !presetsAreFull && gemData.canAddGemToPresets(gem);
-
-                // Get appropriate gem texture
                 Identifier gemTexture = GemManagerHelper.getGemTexture(gem);
                 GemSlotPanel slot = new GemSlotPanel(x + 10, slotY + 5, 40, 40, gem, gemTexture,
                         canEquipThisGem ? slotPanel -> equipGem(gem) : null, gemData, false);
-                // Visual indication that the slot is disabled
+
                 if (!canEquipThisGem) {
                     slot.setEnabled(false);
                     slot.setGlowIntensity(0.0f);
@@ -134,13 +126,11 @@ public class GemTab extends Tab {
                 slot.render(context, mouseX, mouseY, delta);
                 gemSlots.add(slot);
 
-                // Render gem info
                 String gemName = gem.type().toString().split(":")[1];
                 context.drawTextWithShadow(textRenderer,
                         Text.translatable("item.dominatus.gem." + gemName).getString(),
                         x + 60, slotY + 5, canEquipThisGem ? 0xFFFFD700 : 0xFFAAAAAA);
 
-                // Render attributes more compactly
                 int textY = slotY + 20;
                 for (Map.Entry<Identifier, EntityAttributeModifier> entry : gem.attributeModifiers().entrySet()) {
                     EntityAttribute attribute = Registries.ATTRIBUTE.get(entry.getKey());
@@ -153,37 +143,38 @@ public class GemTab extends Tab {
                         };
                         String effectText = operation + String.format(" %.1f ", modifier.value()) +
                                 Text.translatable(attribute.getTranslationKey()).getString();
-                        int attributeColor = canEquipThisGem ? 0xFF55FF55 : 0xFF559955; // Dimmed green if disabled
+                        int attributeColor = canEquipThisGem ? 0xFF55FF55 : 0xFF559955;
                         context.drawTextWithShadow(textRenderer, effectText, x + 60, textY, attributeColor);
                         textY += textRenderer.fontHeight + 2;
                     }
                 }
 
-                // Add preset count status under attributes
                 int equippedCount = (int) gemData.getGemPresets().values().stream()
                         .filter(g -> g != null && g.type().equals(gem.type()))
                         .count();
                 int maxPresets = gem.maxPresets();
-
-                // Create the preset count text with appropriate icons
                 String presetText = String.format("Equipped: %d/%d", equippedCount, maxPresets);
                 int presetColor;
                 String statusText;
 
                 if (equippedCount >= maxPresets) {
-                    presetColor = 0xFFFF5555; // Red
-                    statusText = "✘ Maxed";  // Cross mark for maxed
+                    presetColor = 0xFFFF5555;
+                    statusText = "✘ Maxed";
                 } else if (presetsAreFull) {
-                    presetColor = 0xFFFF9955; // Orange
-                    statusText = "⚠ No Slots";  // Warning for no available slots
+                    presetColor = 0xFFFF9955;
+                    statusText = "⚠ No Slots";
                 } else {
-                    presetColor = 0xFF55FF55; // Green
-                    statusText = "✔ Available";  // Check mark for available
+                    presetColor = 0xFF55FF55;
+                    statusText = "✔ Available";
                 }
 
-                // Draw the equipped count and status
                 context.drawTextWithShadow(textRenderer, presetText, x + 60, textY, presetColor);
                 context.drawTextWithShadow(textRenderer, statusText, x + 60 + textRenderer.getWidth(presetText) + 5, textY, presetColor);
+            }
+
+            // Render context menu if active
+            if (selectedGemIndex != -1 && contextMenu != null) {
+                contextMenu.render(context, mouseX, mouseY, delta);
             }
         }
 
@@ -195,18 +186,46 @@ public class GemTab extends Tab {
                     GemActionPayloadC2S.sendEquipGem(availableSlot.get(), inventoryIndex);
                     updateContentHeight();
                     presetPanel.updateContentHeight();
-                    // Update the enabled state of all slots after equipping
                     updateSlotsState();
                 }
             }
         }
 
+        private void showContextMenu(int gemIndex, int mouseX, int mouseY) {
+            selectedGemIndex = gemIndex;
+            contextMenu.clearItems();
+            contextMenu.addItem(Text.literal("  \uD83D\uDDD1 Delete"), menu -> {
+                gemData.removeFromInventory(selectedGemIndex); // Remove gem using public method
+                updateContentHeight();
+                presetPanel.updateContentHeight();
+                updateSlotsState();
+                selectedGemIndex = -1; // Hide menu after action
+            });
+            // Position menu near the click, ensuring it stays within screen bounds
+            contextMenu.setX(Math.min(mouseX, client.getWindow().getScaledWidth() - contextMenu.getContentWidth()));
+            contextMenu.setY(Math.min(mouseY, client.getWindow().getScaledHeight() - contextMenu.getContentHeight()));
+        }
+
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isMouseOver(mouseX, mouseY)) {
-                for (GemSlotPanel slot : gemSlots) {
-                    if (slot.mouseClicked(mouseX, mouseY, button)) {
-                        return true;
+                if (button == 1 && selectedGemIndex == -1) { // Right-click to show context menu
+                    for (int i = 0; i < gemSlots.size(); i++) {
+                        GemSlotPanel slot = gemSlots.get(i);
+                        if (slot.isMouseOver(mouseX, mouseY)) { // Check hover first
+                            if (slot.mouseClicked(mouseX, mouseY, 1)) { // Pass right-click to slot
+                                showContextMenu(i, (int) mouseX, (int) mouseY);
+                                return true;
+                            }
+                        }
+                    }
+                } else if (selectedGemIndex != -1) { // Context menu is open
+                    if (contextMenu.mouseClicked(mouseX, mouseY, button)) return true;
+                    selectedGemIndex = -1; // Close menu if clicked outside
+                    return true;
+                } else { // Normal left-click handling (button == 0)
+                    for (GemSlotPanel slot : gemSlots) {
+                        if (slot.mouseClicked(mouseX, mouseY, button)) return true;
                     }
                 }
             }
@@ -230,12 +249,10 @@ public class GemTab extends Tab {
             int totalHeight = 70; // Header space
 
             // Calculate based on the cross pattern
-            // For a cross pattern, we need at least 5 slots in the layout plus padding
             int slotsInPattern = Math.min(gemData.getGemPresets().size(), GemDataComponent.getMaxPresetSlots(client.player));
             int rowsNeeded = (slotsInPattern > 5) ? 3 : 2; // Basic cross needs 2 rows, more complex needs 3
 
             totalHeight += (rowsNeeded * (SLOT_SIZE + SLOT_SPACING)) + CROSS_PADDING;
-//            totalHeight -= 50; // Extra space for status indicators and instructions
 
             setContentHeight(totalHeight);
         }
@@ -310,7 +327,7 @@ public class GemTab extends Tab {
 
                 // Calculate slot position with inverted direction
                 int slotX = centerX + invertedPosX * (SLOT_SIZE + SLOT_SPACING) - SLOT_SIZE / 2;
-                int slotY = centerY + 30 + invertedPosY * (SLOT_SIZE + SLOT_SPACING) - SLOT_SIZE / 2;
+                int slotY = centerY + 14 + invertedPosY * (SLOT_SIZE + SLOT_SPACING) - SLOT_SIZE / 2;
 
                 // Get corresponding preset if available
                 Identifier slotId = i < presetEntries.size() ? presetEntries.get(i).getKey() : null;

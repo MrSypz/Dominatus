@@ -1,8 +1,10 @@
 package sypztep.dominatus.client.screen.panel;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.registry.Registries;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -46,6 +48,21 @@ public class GemSlotPanel extends Button {
             setBounceIntensity(1.0f);   // Standard bounce
             setShadowIntensity(1.0f);   // Standard shadow
         }
+    }
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!isMouseOver(mouseX, mouseY) || !isEnabled()) {
+            return false;
+        }
+
+        if (button == 0 && getOnClick() != null) { // Left-click triggers the onClick action (equip/unequip)
+            this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            getOnClick().accept(this);
+            return true;
+        } else if (button == 1) { // Right-click just signals detection (for context menu)
+            return true;
+        }
+        return false;
     }
 
     @Override
