@@ -63,16 +63,12 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
                     return;
                 }
 
-                // Calculate how much durability each repair material restores
                 int repairPerItem = itemToRepair.getMaxDamage() / 4; // Each material repairs 25% of max durability
 
-                // Calculate how many items needed for full repair
                 int materialsNeeded = (int) Math.ceil((double) damage / repairPerItem);
 
-                // Limit by available materials
                 materialsNeeded = Math.min(materialsNeeded, repairMaterial.getCount());
 
-                // Calculate actual repair amount
                 int repairAmount = Math.min(damage, repairPerItem * materialsNeeded);
 
                 if (repairAmount > 0) {

@@ -32,10 +32,8 @@ public record RefineButtonPayloadC2S() implements CustomPayload {
             if (context.player() != null) {
                 ServerPlayerEntity player = context.player();
                 player.openHandledScreen(createScreenHandlerFactory(player.getWorld(), player.getBlockPos()));
-
             }
         }
-
     }
     private static @NotNull NamedScreenHandlerFactory createScreenHandlerFactory(World world, BlockPos pos) {
         return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new RefineScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), Text.of("refiner"));

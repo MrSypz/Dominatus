@@ -1,6 +1,5 @@
 package sypztep.dominatus.common.reloadlistener;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
@@ -16,7 +15,7 @@ import sypztep.dominatus.common.data.DominatusItemEntry;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class DominatusItemReloadListener implements SimpleSynchronousResourceReloadListener {
+public final class DominatusItemReloadListener implements SimpleSynchronousResourceReloadListener {
     private static final Identifier ID = Dominatus.id("penomioritemdata");
     @Override
     public Identifier getFabricId() {

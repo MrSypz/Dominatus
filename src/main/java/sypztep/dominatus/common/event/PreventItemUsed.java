@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.tyrannus.common.util.ItemStackHelper;
 
-public class PreventItemUsed implements UseItemCallback, AttackEntityCallback, AttackBlockCallback, UseBlockCallback {
+public final class PreventItemUsed implements UseItemCallback, AttackEntityCallback, AttackBlockCallback, UseBlockCallback {
     public static void register() {
         PreventItemUsed handler = new PreventItemUsed();
         UseItemCallback.EVENT.register(handler);

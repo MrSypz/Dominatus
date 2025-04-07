@@ -19,7 +19,7 @@ import sypztep.dominatus.common.init.ModScreenHandler;
 import sypztep.dominatus.common.util.refinesystem.RefinementCalculator;
 import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
-public class RefineScreenHandler extends ScreenHandler {
+public final class RefineScreenHandler extends ScreenHandler {
     private final Inventory inventory = new SimpleInventory(3) {
         @Override
         public void markDirty() {

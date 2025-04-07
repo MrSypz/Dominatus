@@ -4,15 +4,17 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.client.screen.PlayerInfoScreen;
-import sypztep.dominatus.client.screen.exampleimlpement.PlayerStatsScreen;
-import sypztep.dominatus.client.widget.TabWidgetButton;
+import sypztep.tyrannus.client.widget.TabWidgetButton;
 
 import java.util.Collections;
 
 public class StatButtonWidget extends TabWidgetButton {
+    public static final TabWidgetButton STATS_TAB = new StatButtonWidget(
+            Text.literal("stats"), MinecraftClient.getInstance(), Identifier.ofVanilla("icon/info")
+    );
 
-    public StatButtonWidget(int x, int y, int width, int height, Text message, MinecraftClient player, Identifier icon) {
-        super(x, y, width, height, message, player, icon,
+    public StatButtonWidget(Text message, MinecraftClient player, Identifier icon) {
+        super(message, player, icon,
                 Collections.singletonList(Text.literal("Stat Information")),
                 Collections.singletonList(Text.literal("Information about yourself :)")));
     }

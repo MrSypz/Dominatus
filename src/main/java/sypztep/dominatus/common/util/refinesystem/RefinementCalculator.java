@@ -2,7 +2,7 @@ package sypztep.dominatus.common.util.refinesystem;
 
 import net.minecraft.util.math.MathHelper;
 
-public class RefinementCalculator {
+public final class RefinementCalculator {
     // Base success rates for each enhancement level (0-20)
     private static final double[] SUCCESS_RATES = {
             1.0,    // 0

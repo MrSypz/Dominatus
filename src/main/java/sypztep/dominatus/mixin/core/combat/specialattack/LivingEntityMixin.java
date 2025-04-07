@@ -1,11 +1,11 @@
-package sypztep.dominatus.mixin.core.combat.backattack;
+package sypztep.dominatus.mixin.core.combat.specialattack;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import sypztep.dominatus.common.util.CombatUtil;
+import sypztep.dominatus.common.util.combatsystem.CombatUtil;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {

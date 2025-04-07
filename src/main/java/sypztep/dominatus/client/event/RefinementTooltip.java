@@ -27,9 +27,9 @@ public final class RefinementTooltip implements ItemTooltipCallback {
             if (refinement.durability() > 0) lines.add(Text.literal(" ▶ ").formatted(Formatting.GOLD)
                     .append(Text.literal(" Durability: " + refinement.durability()).formatted(Formatting.GRAY)));
 
-            if (refinement.durability() <= 0)
+            if (refinement.durability() <= 0 || ItemStackHelper.willBreakNextUse(stack))
                 lines.add(Text.literal("Broken ✗").formatted(Formatting.RED));
-            if (refinement.durability() <= 20)
+            if (refinement.durability() <= 20 || ItemStackHelper.willBreakNextUse(stack))
                 lines.add(Text.literal("Durability too low ✗").formatted(Formatting.RED));
             else lines.add(Text.literal("Can Refine ✔").formatted(Formatting.GREEN));
         }

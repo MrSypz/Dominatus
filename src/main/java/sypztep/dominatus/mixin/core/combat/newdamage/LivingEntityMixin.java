@@ -1,4 +1,4 @@
-package sypztep.dominatus.mixin.core.combat.unlimitarmorcap;
+package sypztep.dominatus.mixin.core.combat.newdamage;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;

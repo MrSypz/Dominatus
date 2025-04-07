@@ -7,7 +7,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import sypztep.dominatus.common.screen.RefineScreenHandler;
 
-public class ModScreenHandler {
+public final class ModScreenHandler {
     public static ScreenHandlerType<RefineScreenHandler> REFINE_SCREEN_HANDLER_TYPE;
     public static void init() {
         REFINE_SCREEN_HANDLER_TYPE = Registry.register(Registries.SCREEN_HANDLER, "refiner",

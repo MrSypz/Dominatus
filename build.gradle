@@ -66,7 +66,6 @@ dependencies {
     modImplementation include("org.ladysnake.cardinal-components-api:cardinal-components-entity:${cardinal_components_version}")
 
     modApi "com.github.MrSypz:Knumber:${knumber_version}"
-    modApi "com.github.MrSypz:hawsamoot:${hawsamoot_version}"
     modImplementation include("com.github.MrSypz:Tyrannus:${tyranus_version}")
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
@@ -89,7 +88,10 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
                 "minecraft_version": project.minecraft_version,
-                "loader_version": project.loader_version
+                "loader_version": project.loader_version,
+                "cloth_config_version": project.cloth_version,
+                "accessories_version" : project.accessories_version,
+                "knumber_veriosn": project.knumber_version
     }
 }
 

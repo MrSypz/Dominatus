@@ -39,6 +39,8 @@ public abstract class DrawContextMixin {
         if (!stack.contains(ModDataComponents.REFINEMENT)) return;
         DrawContext context = ((DrawContext) (Object) this);
         int lvl = RefinementManager.getRefinement(stack).refine();
+        if (lvl <= 0) return; // ✨ ข้ามไหวชิว
+
         String string = "+" + lvl;
         int stringWidth = renderer.getWidth(string);
 
@@ -50,7 +52,7 @@ public abstract class DrawContextMixin {
         this.matrices.push();
         this.matrices.scale(scale, scale, scale);
         this.matrices.translate(0.0F, 0.0F, 180.0F);
-        if (lvl > 0 && lvl < 16)
+        if (lvl < 16)
             drawBoldText(context, renderer, string, x, y, color, bordercolor);
         else {
             String romanString = RefinementManager.toRoman(lvl);

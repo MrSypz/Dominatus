@@ -8,7 +8,7 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 
-public class RefinementStoneItem extends Item {
+public final class RefinementStoneItem extends Item {
 
     public RefinementStoneItem(Settings settings) {
         super(settings);

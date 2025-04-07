@@ -22,7 +22,7 @@ import sypztep.dominatus.common.util.refinesystem.RefinementManager;
 
 import java.util.List;
 
-public class WristItem extends AccessoryItem {
+public final class WristItem extends AccessoryItem {
     Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiers = HashMultimap.create();
 
     public WristItem(Settings properties) {
@@ -62,7 +62,6 @@ public class WristItem extends AccessoryItem {
     public void onUnequip(ItemStack stack, SlotReference reference) {
         super.onUnequip(stack, reference);
         if (!stack.contains(ModDataComponents.REFINEMENT)) return;
-
         reference.entity().getAttributes().removeModifiers(modifiers);
     }
 

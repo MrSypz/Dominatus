@@ -3,17 +3,20 @@ package sypztep.dominatus.common.init;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import sypztep.dominatus.Dominatus;
+import sypztep.dominatus.common.data.GemComponent;
+import sypztep.dominatus.common.item.GemItem;
 import sypztep.dominatus.common.item.WristItem;
 import sypztep.dominatus.common.item.RefinementStoneItem;
-import sypztep.hawsamoot.common.data.RarityBorder;
-import sypztep.hawsamoot.common.init.ModDataComponents;
+import sypztep.dominatus.common.reloadlistener.GemItemDataReloadListener;
 
-public class ModItems {
+public final class ModItems {
     public static Item REFINE_WEAPON_STONE;
     public static Item REFINE_ARMOR_STONE;
     public static Item LOSS_FRAGMENT;
@@ -23,9 +26,9 @@ public class ModItems {
     public static Item MOONLIGHT_CRESCENT;
     public static Item MAHILNANT;
 
-    public static Item YURIA_BRACKET;   // Balanced stats
-    public static Item KUTUM_BRACKET;   // Accuracy focused
-    public static Item NOUVER_BRACKET;  // Evasion focused
+    public static Item GEM;
+
+    public static Item YURIA_BRACKET;
 
     public static void init() {
         REFINE_WEAPON_STONE = registerItem("refine_weapon_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE)));
@@ -35,11 +38,10 @@ public class ModItems {
         REFINE_WEAPONENFORGE_STONE = registerItem("refine_weapon_enforge_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.EPIC)));
         REFINE_ARMORENFORGE_STONE = registerItem("refine_armor_enforge_stone", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.EPIC).fireproof()));
         MAHILNANT = registerItem("mahilnant", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE)));
-        MOONLIGHT_CRESCENT = registerItem("moonlight_crescent", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE).component(ModDataComponents.RARITY_BORDER, RarityBorder.LEGENDARY)));
+        MOONLIGHT_CRESCENT = registerItem("moonlight_crescent", new RefinementStoneItem(new Item.Settings().maxCount(99).rarity(Rarity.RARE)));
 
+        GEM = registerItem("gem", new GemItem());
         // Register BD-style offhand items
-        KUTUM_BRACKET = registerItem("kutum_bracket", new WristItem(new Item.Settings().fireproof().rarity(Rarity.EPIC)));
-        NOUVER_BRACKET = registerItem("nouver_bracket", new WristItem(new Item.Settings().fireproof().rarity(Rarity.EPIC)));
         YURIA_BRACKET = registerItem("yuria_bracket", new WristItem(new Item.Settings()
                 .rarity(Rarity.RARE)
 

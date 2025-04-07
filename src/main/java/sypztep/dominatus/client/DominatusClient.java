@@ -14,31 +14,39 @@ import org.lwjgl.glfw.GLFW;
 import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.client.event.RefinementTooltip;
 import sypztep.dominatus.client.payload.AddRefineSoundPayloadS2C;
-import sypztep.dominatus.client.payload.AddTextParticlesPayload;
+import sypztep.dominatus.client.payload.AddTextParticlesPayloadS2C;
 import sypztep.dominatus.client.payload.RefinePayloadS2C;
 import sypztep.dominatus.client.screen.PlayerInfoScreen;
 import sypztep.dominatus.client.screen.RefineScreen;
+import sypztep.dominatus.client.widget.tab.RefineButtonWidget;
+import sypztep.dominatus.client.widget.tab.StatButtonWidget;
 import sypztep.dominatus.common.init.ModScreenHandler;
+import sypztep.tyrannus.client.widget.TabWidgetRegistry;
 
 public class DominatusClient implements ClientModInitializer {
-    public static KeyBinding stats_screen = new KeyBinding("key.dominatus.debug", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_I, "category.dominatus.keybind");
+    public static KeyBinding stats_screen = new KeyBinding("key.dominatus.info", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.dominatus.keybind");
     public static ModConfig config = new ModConfig();
 
     @Override
     public void onInitializeClient() {
         HandledScreens.register(ModScreenHandler.REFINE_SCREEN_HANDLER_TYPE, RefineScreen::new);
+//        HandledScreens.register(ModScreenHandler.GEM_SCREEN_HANDLER_TYPE, GemScreen::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(DominatusClient::onEndTick);
 
         ClientPlayNetworking.registerGlobalReceiver(RefinePayloadS2C.ID, new RefinePayloadS2C.Receiver());
-        ClientPlayNetworking.registerGlobalReceiver(AddTextParticlesPayload.ID, new AddTextParticlesPayload.Receiver());
+        ClientPlayNetworking.registerGlobalReceiver(AddTextParticlesPayloadS2C.ID, new AddTextParticlesPayloadS2C.Receiver());
         ClientPlayNetworking.registerGlobalReceiver(AddRefineSoundPayloadS2C.ID, new AddRefineSoundPayloadS2C.Receiver());
 
         AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
         ItemTooltipCallback.EVENT.register(new RefinementTooltip());
+
+        TabWidgetRegistry.registerTab(RefineButtonWidget.REFINE_TAB);
+        TabWidgetRegistry.registerTab(StatButtonWidget.STATS_TAB);
     }
+
     private static void onEndTick(MinecraftClient client) {
         if (stats_screen.wasPressed()) client.setScreen(new PlayerInfoScreen());
     }
