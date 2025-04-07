@@ -1,6 +1,7 @@
 package sypztep.dominatus.common.item;
 
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -8,7 +9,11 @@ import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
 import sypztep.dominatus.common.data.GemComponent;
+import sypztep.dominatus.common.util.gemsystem.GemManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,13 +37,6 @@ public final class GemItem extends Item {
 
         if (gemComponent.isPresent()) {
             GemComponent gem = gemComponent.get();
-
-            // Add gem name with grade color (you might want to add grade to your GemComponent)
-//            tooltip.add(Text.literal("◈ ")
-//                    .formatted(Formatting.YELLOW)
-//                    .append(Text.translatable("gem." + gem.type().getNamespace() + "." + gem.type().getPath())
-//                            .formatted(Formatting.YELLOW)));
-
             // Spacer
             tooltip.add(Text.empty());
 
@@ -72,5 +70,11 @@ public final class GemItem extends Item {
                 }
             });
         }
+    }
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
+        GemManager.consumeGem(user, stack);
+        return TypedActionResult.success(stack, world.isClient());
     }
 }
