@@ -22,7 +22,6 @@ import java.util.*;
 
 public final class GemManagerHelper {
     public static void readGemDataFromNbt(GemDataComponent component, NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        // Clear and populate gemInventory
         List<GemComponent> inventory = component.getMutableGemInventory();
         inventory.clear();
         if (tag.contains("GemInventory", NbtElement.LIST_TYPE)) {
@@ -33,24 +32,21 @@ public final class GemManagerHelper {
             }
         }
 
-        // Clear and populate gemPresets
-        Map<Identifier, GemComponent> presets = component.getMutableGemPresets();
+        Map<String, GemComponent> presets = component.getMutableGemPresets();
         presets.clear();
         if (tag.contains("GemPresets", NbtElement.COMPOUND_TYPE)) {
             NbtCompound presetsTag = tag.getCompound("GemPresets");
             for (String key : presetsTag.getKeys()) {
-                Identifier slot = Dominatus.id(key);
                 if (presetsTag.contains(key, NbtElement.COMPOUND_TYPE)) {
                     GemComponent.CODEC.parse(registryLookup.getOps(net.minecraft.nbt.NbtOps.INSTANCE), presetsTag.getCompound(key))
-                            .result().ifPresent(gem -> presets.put(slot, gem));
+                            .result().ifPresent(gem -> presets.put(key, gem));
                 } else {
-                    presets.put(slot, null);
+                    presets.put(key, null);
                 }
             }
         }
-        // Ensure all 8 slots are present
         for (int i = 0; i < 8; i++) {
-            presets.putIfAbsent(Dominatus.id("slot_" + i), null);
+            presets.putIfAbsent("slot_" + i, null);
         }
     }
 
@@ -67,12 +63,12 @@ public final class GemManagerHelper {
         tag.put("GemInventory", inventoryList);
 
         NbtCompound presetsTag = new NbtCompound();
-        for (Map.Entry<Identifier, GemComponent> entry : component.getGemPresets().entrySet()) {
+        for (Map.Entry<String, GemComponent> entry : component.getMutableGemPresets().entrySet()) {
             if (entry.getValue() != null) {
                 GemComponent.CODEC.encodeStart(registryLookup.getOps(net.minecraft.nbt.NbtOps.INSTANCE), entry.getValue())
                         .result().ifPresent(encoded -> {
                             if (encoded instanceof NbtElement nbtElement) {
-                                presetsTag.put(entry.getKey().toString(), nbtElement);
+                                presetsTag.put(entry.getKey(), nbtElement); // Key is already "slot_0"
                             }
                         });
             }
@@ -80,6 +76,7 @@ public final class GemManagerHelper {
         tag.put("GemPresets", presetsTag);
     }
 
+    // Rest of the class remains unchanged...
     private static void clearExistingModifiers(LivingEntity entity) {
         Set<EntityAttributeInstance> trackedAttributes = entity.getAttributes().getTracked();
         Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersToRemove = ArrayListMultimap.create();
@@ -120,11 +117,12 @@ public final class GemManagerHelper {
     }
 
     public static void updateEntityStats(PlayerEntity player) {
-        if (player.getWorld().isClient()) return;
+        Dominatus.LOGGER.info("Updating stats for player: {}", player.getName().getString());
         Collection<GemComponent> equippedGems = GemDataComponent.get(player).getGemPresets().values().stream()
                 .filter(Objects::nonNull)
                 .toList();
         clearExistingModifiers(player);
         applyGemModifiers(player, equippedGems);
+        Dominatus.LOGGER.info("Applied {} gem modifiers to player", equippedGems.size());
     }
 }

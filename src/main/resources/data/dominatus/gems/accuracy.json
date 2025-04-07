@@ -6,5 +6,6 @@
       "amount": 20.0,
       "operation": "add_value"
     }
-  }
+  },
+  "max_presets": 2
 }

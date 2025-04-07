@@ -24,8 +24,7 @@ import sypztep.dominatus.common.init.ModScreenHandler;
 import sypztep.tyrannus.client.widget.TabWidgetRegistry;
 
 public class DominatusClient implements ClientModInitializer {
-    public static KeyBinding stats_screen = new KeyBinding("key.dominatus.debug", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_I, "category.dominatus.keybind");
-    public static KeyBinding gem_screen = new KeyBinding("key.dominatus.gem", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.dominatus.keybind");
+    public static KeyBinding stats_screen = new KeyBinding("key.dominatus.info", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.dominatus.keybind");
     public static ModConfig config = new ModConfig();
 
     @Override

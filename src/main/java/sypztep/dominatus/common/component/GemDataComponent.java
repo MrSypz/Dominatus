@@ -16,18 +16,18 @@ import java.util.*;
 public class GemDataComponent implements AutoSyncedComponent {
     private final PlayerEntity player;
     private List<GemComponent> gemInventory = new ArrayList<>();
-    private Map<Identifier, GemComponent> gemPresets = new HashMap<>();
+    private Map<String, GemComponent> gemPresets = new HashMap<>(); // Use String keys (path only)
     private static final int MAX_INVENTORY_SIZE = 50;
     private static final int MAX_PRESET_SLOTS = 8;
 
     public GemDataComponent(PlayerEntity player) {
         this.player = player;
         for (int i = 0; i < MAX_PRESET_SLOTS; i++) {
-            gemPresets.put(Dominatus.id("slot_" + i), null);
+            gemPresets.put("slot_" + i, null); // Store just "slot_0", etc.
         }
     }
 
-    // Inventory Methods
+    // Inventory Methods (unchanged)
     public boolean canAddToInventory(GemComponent gem) {
         return gem != null && !isInventoryFull();
     }
@@ -65,16 +65,17 @@ public class GemDataComponent implements AutoSyncedComponent {
         sync();
     }
 
-    // Preset Methods
+    // Preset Methods (updated to use String keys)
     public boolean isPresetSlotValid(Identifier slot) {
-        return slot != null && gemPresets.containsKey(slot);
+        return slot != null && gemPresets.containsKey(slot.getPath());
     }
 
     public boolean setPresetSlot(Identifier slot, GemComponent gem) {
-        if (!isPresetSlotValid(slot) || (gem != null && !canAddGemToPresets(gem))) {
+        String slotKey = slot.getPath();
+        if (!gemPresets.containsKey(slotKey) || (gem != null && !canAddGemToPresets(gem))) {
             return false;
         }
-        gemPresets.put(slot, gem);
+        gemPresets.put(slotKey, gem);
         GemManagerHelper.updateEntityStats(player);
         sync();
         return true;
@@ -87,16 +88,18 @@ public class GemDataComponent implements AutoSyncedComponent {
     public Optional<Identifier> getAvailablePresetSlot() {
         return gemPresets.entrySet().stream()
                 .filter(entry -> entry.getValue() == null)
-                .map(Map.Entry::getKey)
+                .map(entry -> Dominatus.id(entry.getKey()))
                 .findFirst();
     }
 
     public Optional<GemComponent> getPresetSlot(Identifier slot) {
-        return Optional.ofNullable(gemPresets.get(slot));
+        return Optional.ofNullable(gemPresets.get(slot.getPath()));
     }
 
     public Map<Identifier, GemComponent> getGemPresets() {
-        return Collections.unmodifiableMap(gemPresets);
+        Map<Identifier, GemComponent> result = new HashMap<>();
+        gemPresets.forEach((key, value) -> result.put(Dominatus.id(key), value));
+        return Collections.unmodifiableMap(result);
     }
 
     public void clearPresets() {
@@ -106,7 +109,7 @@ public class GemDataComponent implements AutoSyncedComponent {
     }
 
     public boolean canAddGemToPresets(GemComponent gem) {
-        if (gem == null) return true; // Null is allowed to clear a slot
+        if (gem == null) return true;
         int count = (int) gemPresets.values().stream()
                 .filter(g -> g != null && g.type().equals(gem.type()))
                 .count();
@@ -118,7 +121,7 @@ public class GemDataComponent implements AutoSyncedComponent {
         return gemInventory;
     }
 
-    public Map<Identifier, GemComponent> getMutableGemPresets() {
+    public Map<String, GemComponent> getMutableGemPresets() {
         return gemPresets;
     }
 
@@ -137,7 +140,11 @@ public class GemDataComponent implements AutoSyncedComponent {
         ModEntityComponents.GEM_DATA_COMPONENT.sync(player);
     }
 
-    // Static Accessors
+    public static void sync(PlayerEntity player) {
+        ModEntityComponents.GEM_DATA_COMPONENT.sync(player);
+    }
+
+    // Static Accessors (updated)
     public static GemDataComponent get(PlayerEntity player) {
         return ModEntityComponents.GEM_DATA_COMPONENT.get(player);
     }
