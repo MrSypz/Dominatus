@@ -2,9 +2,10 @@
   "type": "dominatus:evasion",
   "attributes": {
     "dominatus:evasion": {
-      "id": "ebasion",
+      "id": "evasion",
       "amount": 20.0,
       "operation": "add_value"
     }
-  }
+  },
+  "texture": "dominatus:hud/gem/moonlight_crescent"
 }

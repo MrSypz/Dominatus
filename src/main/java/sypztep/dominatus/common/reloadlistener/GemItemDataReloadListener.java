@@ -39,9 +39,11 @@ public final class GemItemDataReloadListener implements SimpleSynchronousResourc
                 String gemPath = identifier.getPath().substring("gems/".length()).replace(".json", "");
                 Identifier gemType = Identifier.of(identifier.getNamespace(), gemPath);
 
-                GemComponent.CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(error -> Dominatus.LOGGER.error("Failed to parse gem {}: {}", identifier, error)).ifPresent(gemComponent -> {
+                GemComponent.CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(error ->
+                        Dominatus.LOGGER.error("Failed to parse gem {}: {}", identifier, error)).ifPresent(gemComponent -> {
+                    Dominatus.LOGGER.info("Loaded gem type: {} with texture: {}",
+                            gemType, gemComponent.texture().orElse(null));
                     GEM_TYPES.put(gemType, gemComponent);
-                    Dominatus.LOGGER.info("Loaded gem type: {}", gemType);
                 });
 
             } catch (Exception e) {

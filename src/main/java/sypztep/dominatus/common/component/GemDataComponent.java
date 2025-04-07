@@ -16,14 +16,14 @@ import java.util.*;
 public class GemDataComponent implements AutoSyncedComponent {
     private final PlayerEntity player;
     private List<GemComponent> gemInventory = new ArrayList<>();
-    private Map<String, GemComponent> gemPresets = new HashMap<>(); // Use String keys (path only)
+    private Map<String, GemComponent> gemPresets = new HashMap<>();
     private static final int MAX_INVENTORY_SIZE = 50;
     private static final int MAX_PRESET_SLOTS = 8;
 
     public GemDataComponent(PlayerEntity player) {
         this.player = player;
         for (int i = 0; i < MAX_PRESET_SLOTS; i++) {
-            gemPresets.put("slot_" + i, null); // Store just "slot_0", etc.
+            gemPresets.put("slot_" + i, null);
         }
     }
 
@@ -44,7 +44,12 @@ public class GemDataComponent implements AutoSyncedComponent {
     public boolean isInventoryFull() {
         return gemInventory.size() >= MAX_INVENTORY_SIZE;
     }
-
+    public int getMaxInventorySize() {
+        return MAX_INVENTORY_SIZE;
+    }
+    public int getMaxPresetSlots() {
+        return MAX_PRESET_SLOTS;
+    }
     public boolean hasGemInInventory(Identifier gemType) {
         return gemInventory.stream().anyMatch(gem -> gem.type().equals(gemType));
     }
@@ -148,7 +153,12 @@ public class GemDataComponent implements AutoSyncedComponent {
     public static GemDataComponent get(PlayerEntity player) {
         return ModEntityComponents.GEM_DATA_COMPONENT.get(player);
     }
-
+    public static int getMaxInventorySize(PlayerEntity player) {
+        return get(player).getMaxInventorySize();
+    }
+    public static int getMaxPresetSlots(PlayerEntity player) {
+        return get(player).getMaxPresetSlots();
+    }
     public static boolean addToInventory(PlayerEntity player, GemComponent gem) {
         return get(player).addToInventory(gem);
     }

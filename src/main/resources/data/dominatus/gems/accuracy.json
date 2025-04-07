@@ -7,5 +7,6 @@
       "operation": "add_value"
     }
   },
-  "max_presets": 2
+  "max_presets": 2,
+  "texture": "dominatus:hud/gem/gem"
 }

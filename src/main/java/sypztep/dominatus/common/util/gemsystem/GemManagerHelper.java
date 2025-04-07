@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -17,6 +18,7 @@ import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.component.GemDataComponent;
 import sypztep.dominatus.common.data.GemComponent;
+import sypztep.dominatus.common.reloadlistener.GemItemDataReloadListener;
 
 import java.util.*;
 
@@ -27,7 +29,7 @@ public final class GemManagerHelper {
         if (tag.contains("GemInventory", NbtElement.LIST_TYPE)) {
             NbtList inventoryList = tag.getList("GemInventory", NbtElement.COMPOUND_TYPE);
             for (int i = 0; i < inventoryList.size() && inventory.size() < 50; i++) {
-                GemComponent.CODEC.parse(registryLookup.getOps(net.minecraft.nbt.NbtOps.INSTANCE), inventoryList.getCompound(i))
+                GemComponent.CODEC.parse(registryLookup.getOps(NbtOps.INSTANCE), inventoryList.getCompound(i))
                         .result().ifPresent(inventory::add);
             }
         }
@@ -38,7 +40,7 @@ public final class GemManagerHelper {
             NbtCompound presetsTag = tag.getCompound("GemPresets");
             for (String key : presetsTag.getKeys()) {
                 if (presetsTag.contains(key, NbtElement.COMPOUND_TYPE)) {
-                    GemComponent.CODEC.parse(registryLookup.getOps(net.minecraft.nbt.NbtOps.INSTANCE), presetsTag.getCompound(key))
+                    GemComponent.CODEC.parse(registryLookup.getOps(NbtOps.INSTANCE), presetsTag.getCompound(key))
                             .result().ifPresent(gem -> presets.put(key, gem));
                 } else {
                     presets.put(key, null);
@@ -53,7 +55,7 @@ public final class GemManagerHelper {
     public static void writeGemDataToNbt(GemDataComponent component, NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         NbtList inventoryList = new NbtList();
         for (GemComponent gem : component.getGemInventory()) {
-            GemComponent.CODEC.encodeStart(registryLookup.getOps(net.minecraft.nbt.NbtOps.INSTANCE), gem)
+            GemComponent.CODEC.encodeStart(registryLookup.getOps(NbtOps.INSTANCE), gem)
                     .result().ifPresent(encoded -> {
                         if (encoded instanceof NbtElement nbtElement) {
                             inventoryList.add(nbtElement);
@@ -76,7 +78,6 @@ public final class GemManagerHelper {
         tag.put("GemPresets", presetsTag);
     }
 
-    // Rest of the class remains unchanged...
     private static void clearExistingModifiers(LivingEntity entity) {
         Set<EntityAttributeInstance> trackedAttributes = entity.getAttributes().getTracked();
         Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersToRemove = ArrayListMultimap.create();
@@ -117,12 +118,19 @@ public final class GemManagerHelper {
     }
 
     public static void updateEntityStats(PlayerEntity player) {
-        Dominatus.LOGGER.info("Updating stats for player: {}", player.getName().getString());
         Collection<GemComponent> equippedGems = GemDataComponent.get(player).getGemPresets().values().stream()
                 .filter(Objects::nonNull)
                 .toList();
         clearExistingModifiers(player);
         applyGemModifiers(player, equippedGems);
-        Dominatus.LOGGER.info("Applied {} gem modifiers to player", equippedGems.size());
+    }
+    public static Identifier getGemTexture(GemComponent gem) {
+        if (gem == null) return Dominatus.id("hud/gem/gem");
+
+        Optional<GemComponent> registeredGem = GemItemDataReloadListener.getGemType(gem.type());
+        if (registeredGem.isPresent() && registeredGem.get().texture().isPresent()) return registeredGem.get().texture().get();
+
+        Optional<Identifier> customTexture = gem.texture();
+        return customTexture.orElseGet(() -> Dominatus.id("hud/gem/gem"));
     }
 }
