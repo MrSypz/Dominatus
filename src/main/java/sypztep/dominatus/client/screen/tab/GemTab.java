@@ -16,7 +16,7 @@ import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
 import sypztep.tyrannus.client.screen.tab.Tab;
 
 import java.util.*;
-
+//TODO: ทำให้อัพเดท StatsTab โดยไม่ต้องปิดเปิดใหม่
 public class GemTab extends Tab {
     private final GemDataComponent gemData;
     private InventoryPanel inventoryPanel;
