@@ -51,23 +51,12 @@ public class GemSlotPanel extends Button {
     }
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!isMouseOver(mouseX, mouseY) || !isEnabled()) {
-            return false;
-        }
-
+        if (!isMouseOver(mouseX, mouseY) || !isEnabled()) return false;
         if (button == 0 && getOnClick() != null) { // Left-click triggers the onClick action (equip/unequip)
             this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             getOnClick().accept(this);
             return true;
-        } else if (button == 1) { // Right-click just signals detection (for context menu)
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void handleHoverSound() {
-        // ว่างไว้ ไม่เอาเสียง แม่งบัคโง่ๆ
+        } else return button == 1;
     }
 
     @Override

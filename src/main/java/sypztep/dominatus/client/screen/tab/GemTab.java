@@ -49,24 +49,46 @@ public class GemTab extends Tab {
 
     private class InventoryPanel extends ScrollablePanel {
         private final List<GemSlotPanel> gemSlots = new ArrayList<>();
-        private final ContextMenuPanel contextMenu; // Add context menu field
-        private int selectedGemIndex = -1; // Track which gem is right-clicked
+        private final ContextMenuPanel contextMenu;
+        private int selectedGemIndex = -1;
 
         public InventoryPanel(int x, int y, int width, int height, Text title) {
             super(x, y, width, height, title);
+            contextMenu = new ContextMenuPanel(0, 0);
+            initSlots();
             updateContentHeight();
-            contextMenu = new ContextMenuPanel(0, 0); // Position will be set dynamically
+        }
+
+        private void initSlots() {
+            gemSlots.clear();
+            List<GemComponent> gemInventory = gemData.getGemInventory();
+            int activeGems = (int) gemData.getGemPresets().values().stream().filter(Objects::nonNull).count();
+            int maxGems = GemDataComponent.getMaxPresetSlots(client.player);
+            boolean presetsAreFull = activeGems >= maxGems;
+            for (GemComponent gem : gemInventory) {
+                Identifier gemTexture = GemManagerHelper.getGemTexture(gem);
+                boolean canEquipThisGem = !presetsAreFull && gemData.canAddGemToPresets(gem);
+                GemSlotPanel slot = new GemSlotPanel(x + 10, 0, 40, 40, gem, gemTexture,
+                        canEquipThisGem ? slotPanel -> equipGem(gem) : null, gemData, false);
+                if (!canEquipThisGem) {
+                    slot.setEnabled(false);
+                    slot.setGlowIntensity(0.0f);
+                    slot.setBounceIntensity(0.0f);
+                }
+                gemSlots.add(slot);
+            }
         }
 
         private void updateContentHeight() {
             List<GemComponent> gemInventory = gemData.getGemInventory();
-            int totalHeight = 70; // Header space
+            int totalHeight = 70;
             totalHeight += gemInventory.size() * 60;
             setContentHeight(totalHeight);
         }
 
         public void updateSlotsState() {
-            gemSlots.clear();
+            initSlots();
+            updateContentHeight();
             if (contextMenu != null) {
                 contextMenu.clearItems();
                 selectedGemIndex = -1;
@@ -102,30 +124,38 @@ public class GemTab extends Tab {
             y += 40;
 
             List<GemComponent> gemInventory = gemData.getGemInventory();
-            gemSlots.clear();
+            // Adjust gemSlots to match gemInventory size
+            while (gemSlots.size() > gemInventory.size()) {
+                gemSlots.removeLast();
+            }
+            while (gemSlots.size() < gemInventory.size()) {
+                GemComponent gem = gemInventory.get(gemSlots.size());
+                Identifier gemTexture = GemManagerHelper.getGemTexture(gem);
+                boolean canEquipThisGem = !presetsAreFull && gemData.canAddGemToPresets(gem);
+                GemSlotPanel slot = new GemSlotPanel(x + 10, 0, 40, 40, gem, gemTexture,
+                        canEquipThisGem ? slotPanel -> equipGem(gem) : null, gemData, false);
+                if (!canEquipThisGem) {
+                    slot.setEnabled(false);
+                    slot.setGlowIntensity(0.0f);
+                    slot.setBounceIntensity(0.0f);
+                }
+                gemSlots.add(slot);
+            }
 
-            for (int i = 0; i < gemInventory.size(); i++) {
+            for (int i = 0; i < gemSlots.size(); i++) {
                 GemComponent gem = gemInventory.get(i);
                 int slotY = y + (i * 60);
 
                 int bgColor = (i & 1) == 0 ? 0x20000000 : 0x20FFFFFF;
                 context.fill(x, slotY, x + width, slotY + 50, bgColor);
 
-                boolean canEquipThisGem = !presetsAreFull && gemData.canAddGemToPresets(gem);
-                Identifier gemTexture = GemManagerHelper.getGemTexture(gem);
-                GemSlotPanel slot = new GemSlotPanel(x + 10, slotY + 5, 40, 40, gem, gemTexture,
-                        canEquipThisGem ? slotPanel -> equipGem(gem) : null, gemData, false);
-
-                if (!canEquipThisGem) {
-                    slot.setEnabled(false);
-                    slot.setGlowIntensity(0.0f);
-                    slot.setBounceIntensity(0.0f);
-                }
-
+                GemSlotPanel slot = gemSlots.get(i);
+                slot.setX(x + 10);
+                slot.setY(slotY + 5);
                 slot.render(context, mouseX, mouseY, delta);
-                gemSlots.add(slot);
 
                 String gemName = gem.type().toString().split(":")[1];
+                boolean canEquipThisGem = !presetsAreFull && gemData.canAddGemToPresets(gem);
                 context.drawTextWithShadow(textRenderer,
                         Text.translatable("item.dominatus.gem." + gemName).getString(),
                         x + 60, slotY + 5, canEquipThisGem ? 0xFFFFD700 : 0xFFAAAAAA);
@@ -171,7 +201,6 @@ public class GemTab extends Tab {
                 context.drawTextWithShadow(textRenderer, statusText, x + 60 + textRenderer.getWidth(presetText) + 5, textY, presetColor);
             }
 
-            // Render context menu if active
             if (selectedGemIndex != -1 && contextMenu != null) {
                 contextMenu.render(context, mouseX, mouseY, delta);
             }
@@ -183,10 +212,11 @@ public class GemTab extends Tab {
                 if (availableSlot.isPresent()) {
                     int inventoryIndex = gemData.getGemInventory().indexOf(gem);
                     GemActionPayloadC2S.sendEquipGem(availableSlot.get(), inventoryIndex);
-                    gemData.setPresetSlot(availableSlot.get(), gem); // Ensure client-side update
+                    gemData.setPresetSlot(availableSlot.get(), gem);
                     updateContentHeight();
                     presetPanel.updateContentHeight();
                     updateSlotsState();
+                    presetPanel.updateSlotsState();
                 }
             }
         }
@@ -196,11 +226,11 @@ public class GemTab extends Tab {
             contextMenu.clearItems();
             contextMenu.addItem(Text.literal("  \uD83D\uDDD1 Delete"), menu -> {
                 GemActionPayloadC2S.sendRemoveGem(selectedGemIndex);
-//                gemData.removeFromInventory(selectedGemIndex); // Remove gem ClientSide
                 updateContentHeight();
                 presetPanel.updateContentHeight();
                 updateSlotsState();
-                selectedGemIndex = -1; // Hide menu after action
+                presetPanel.updateSlotsState();
+                selectedGemIndex = -1;
             });
             contextMenu.setX(Math.min(mouseX, client.getWindow().getScaledWidth() - contextMenu.getContentWidth()));
             contextMenu.setY(Math.min(mouseY, client.getWindow().getScaledHeight() - contextMenu.getContentHeight()));
@@ -209,21 +239,21 @@ public class GemTab extends Tab {
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isMouseOver(mouseX, mouseY)) {
-                if (button == 1 && selectedGemIndex == -1) { // Right-click to show context menu
+                if (button == 1 && selectedGemIndex == -1) {
                     for (int i = 0; i < gemSlots.size(); i++) {
                         GemSlotPanel slot = gemSlots.get(i);
-                        if (slot.isMouseOver(mouseX, mouseY)) { // Check hover first
-                            if (slot.mouseClicked(mouseX, mouseY, 1)) { // Pass right-click to slot
+                        if (slot.isMouseOver(mouseX, mouseY)) {
+                            if (slot.mouseClicked(mouseX, mouseY, 1)) {
                                 showContextMenu(i, (int) mouseX, (int) mouseY);
                                 return true;
                             }
                         }
                     }
-                } else if (selectedGemIndex != -1) { // Context menu is open
+                } else if (selectedGemIndex != -1) {
                     if (contextMenu.mouseClicked(mouseX, mouseY, button)) return true;
-                    selectedGemIndex = -1; // Close menu if clicked outside
+                    selectedGemIndex = -1;
                     return true;
-                } else { // Normal left-click handling (button == 0)
+                } else {
                     for (GemSlotPanel slot : gemSlots) {
                         if (slot.mouseClicked(mouseX, mouseY, button)) return true;
                     }
@@ -235,109 +265,27 @@ public class GemTab extends Tab {
 
     private class PresetPanel extends ScrollablePanel {
         private final List<GemSlotPanel> presetSlots = new ArrayList<>();
-        private static final int SLOT_SIZE = 50; // Increased for better visibility
-        private static final int SLOT_SPACING = 10; // Space between slots
-        private static final int CROSS_PADDING = 20; // Padding for cross pattern
+        private static final int SLOT_SIZE = 50;
+        private static final int SLOT_SPACING = 10;
+        private static final int CROSS_PADDING = 20;
 
         public PresetPanel(int x, int y, int width, int height, Text title) {
             super(x, y, width, height, title);
+            initSlots();
             updateContentHeight();
         }
 
-        private void updateContentHeight() {
-            // We need enough height for the title, cross pattern, and some padding
-            int totalHeight = 70; // Header space
-
-            // Calculate based on the cross pattern
-            int slotsInPattern = Math.min(gemData.getGemPresets().size(), GemDataComponent.getMaxPresetSlots(client.player));
-            int rowsNeeded = (slotsInPattern > 5) ? 3 : 2; // Basic cross needs 2 rows, more complex needs 3
-
-            totalHeight += (rowsNeeded * (SLOT_SIZE + SLOT_SPACING)) + CROSS_PADDING;
-
-            setContentHeight(totalHeight);
-        }
-
-        @Override
-        protected void renderScrollableContent(DrawContext context, int mouseX, int mouseY, float delta) {
-            int x = getContentX();
-            int y = getContentY() - (int) scrollAmount;
-            int width = getContentWidth() - (enableScrollbar ? scrollbarWidth + scrollbarPadding + 10 : 5);
-
-            // Draw preset title with count
-            int activeGems = (int) gemData.getGemPresets().values().stream().filter(Objects::nonNull).count();
-            int maxGems = GemDataComponent.getMaxPresetSlots(client.player);
-            boolean isFull = activeGems >= maxGems;
-
-            String presetCount = String.format("Equipped Gems (%d/%d)", activeGems, maxGems);
-            int countColor = isFull ? 0xFFFF5555 : 0xFFFFD700; // Red if full, gold otherwise
-            context.drawTextWithShadow(textRenderer, presetCount,
-                    x + (width - textRenderer.getWidth(presetCount)) / 2, y + 10, countColor);
-
-            // Draw instructions/status
-            String statusText = isFull ? "Maximum gems equipped!" : "Click a gem in inventory to equip";
-            int statusColor = isFull ? 0xFFFF5555 : 0xFF55FF55;
-            context.drawTextWithShadow(textRenderer, statusText,
-                    x + (width - textRenderer.getWidth(statusText)) / 2, y + 26, statusColor);
-
-            // Draw divider
-            drawGradientDivider(context, x + 10, y + 44, width - 20, 1.0f);
-
-            // Calculate center for the cross/star pattern
-            int centerX = x + width / 2;
-            int centerY = y + 80 + SLOT_SIZE; // Position below header with some margin
-
-            Map<Identifier, GemComponent> presets = gemData.getGemPresets();
+        private void initSlots() {
             presetSlots.clear();
-
-            // Draw slots in a cross/star pattern
-            renderCrossPattern(context, centerX, centerY, presets, mouseX, mouseY, delta);
-        }
-
-        private void renderCrossPattern(DrawContext context, int centerX, int centerY,
-                                        Map<Identifier, GemComponent> presets, int mouseX, int mouseY, float delta) {
-            List<Map.Entry<Identifier, GemComponent>> presetEntries = new ArrayList<>(presets.entrySet());
             int maxSlots = GemDataComponent.getMaxPresetSlots(client.player);
-
-            // Define positions relative to center
-            List<int[]> positions = new ArrayList<>();
-
-            // Center position
-            positions.add(new int[]{0, 0}); // Center
-
-            // Cross arms positions
-            positions.add(new int[]{0, -1}); // Top
-            positions.add(new int[]{1, 0});  // Right
-            positions.add(new int[]{0, 1});  // Bottom
-            positions.add(new int[]{-1, 0}); // Left
-
-            // Extended pattern for more slots
-            if (maxSlots > 5) {
-                positions.add(new int[]{1, -1}); // Top-Right
-                positions.add(new int[]{1, 1});  // Bottom-Right
-                positions.add(new int[]{-1, 1}); // Bottom-Left
-                positions.add(new int[]{-1, -1}); // Top-Left
-            }
-
-            // Draw the slots
-            for (int i = 0; i < Math.min(positions.size(), maxSlots); i++) {
-                int[] pos = positions.get(i);
-
-                int invertedPosX = pos[0] * -1; // Invert horizontal position
-                int invertedPosY = pos[1] * -1; // Invert vertical position
-
-                // Calculate slot position with inverted direction
-                int slotX = centerX + invertedPosX * (SLOT_SIZE + SLOT_SPACING) - SLOT_SIZE / 2;
-                int slotY = centerY + 14 + invertedPosY * (SLOT_SIZE + SLOT_SPACING) - SLOT_SIZE / 2;
-
-                // Get corresponding preset if available
+            Map<Identifier, GemComponent> presets = gemData.getGemPresets();
+            List<Map.Entry<Identifier, GemComponent>> presetEntries = new ArrayList<>(presets.entrySet());
+            for (int i = 0; i < maxSlots; i++) {
                 Identifier slotId = i < presetEntries.size() ? presetEntries.get(i).getKey() : null;
                 GemComponent gem = i < presetEntries.size() ? presetEntries.get(i).getValue() : null;
-
-                // Create gem slot
-                GemSlotPanel slot = new GemSlotPanel(slotX, slotY, SLOT_SIZE, SLOT_SIZE, gem,
+                GemSlotPanel slot = new GemSlotPanel(0, 0, SLOT_SIZE, SLOT_SIZE, gem,
                         GemManagerHelper.getGemTexture(gem),
                         gem != null ? slotPanel -> unequipGem(slotId) : null, gemData, true);
-
                 if (gem == null) {
                     slot.setEnabled(true);
                     slot.setGlowIntensity(0.5f);
@@ -346,30 +294,120 @@ public class GemTab extends Tab {
                     slot.setGlowIntensity(2.0f);
                     slot.setBounceIntensity(1.5f);
                 }
+                presetSlots.add(slot);
+            }
+        }
 
-                slot.render(context, mouseX, mouseY, delta);
+        private void updateContentHeight() {
+            int totalHeight = 70;
+            int slotsInPattern = Math.min(gemData.getGemPresets().size(), GemDataComponent.getMaxPresetSlots(client.player));
+            int rowsNeeded = (slotsInPattern > 5) ? 3 : 2;
+            totalHeight += (rowsNeeded * (SLOT_SIZE + SLOT_SPACING)) + CROSS_PADDING;
+            setContentHeight(totalHeight);
+        }
+
+        public void updateSlotsState() {
+            initSlots();
+            updateContentHeight();
+        }
+
+        @Override
+        protected void renderScrollableContent(DrawContext context, int mouseX, int mouseY, float delta) {
+            int x = getContentX();
+            int y = getContentY() - (int) scrollAmount;
+            int width = getContentWidth() - (enableScrollbar ? scrollbarWidth + scrollbarPadding + 10 : 5);
+
+            int activeGems = (int) gemData.getGemPresets().values().stream().filter(Objects::nonNull).count();
+            int maxGems = GemDataComponent.getMaxPresetSlots(client.player);
+            boolean isFull = activeGems >= maxGems;
+
+            String presetCount = String.format("Equipped Gems (%d/%d)", activeGems, maxGems);
+            int countColor = isFull ? 0xFFFF5555 : 0xFFFFD700;
+            context.drawTextWithShadow(textRenderer, presetCount,
+                    x + (width - textRenderer.getWidth(presetCount)) / 2, y + 10, countColor);
+
+            String statusText = isFull ? "Maximum gems equipped!" : "Click a gem in inventory to equip";
+            int statusColor = isFull ? 0xFFFF5555 : 0xFF55FF55;
+            context.drawTextWithShadow(textRenderer, statusText,
+                    x + (width - textRenderer.getWidth(statusText)) / 2, y + 26, statusColor);
+
+            drawGradientDivider(context, x + 10, y + 44, width - 20, 1.0f);
+
+            int centerX = x + width / 2;
+            int centerY = y + 80 + SLOT_SIZE;
+
+            Map<Identifier, GemComponent> presets = gemData.getGemPresets();
+            renderCrossPattern(context, centerX, centerY, presets, mouseX, mouseY, delta);
+        }
+
+        private void renderCrossPattern(DrawContext context, int centerX, int centerY,
+                                        Map<Identifier, GemComponent> presets, int mouseX, int mouseY, float delta) {
+            List<Map.Entry<Identifier, GemComponent>> presetEntries = new ArrayList<>(presets.entrySet());
+            int maxSlots = GemDataComponent.getMaxPresetSlots(client.player);
+
+            // Adjust presetSlots to match presetEntries and maxSlots
+            while (presetSlots.size() > maxSlots) {
+                presetSlots.removeLast();
+            }
+            while (presetSlots.size() < maxSlots) {
+                Identifier slotId = presetSlots.size() < presetEntries.size() ? presetEntries.get(presetSlots.size()).getKey() : null;
+                GemComponent gem = presetSlots.size() < presetEntries.size() ? presetEntries.get(presetSlots.size()).getValue() : null;
+                GemSlotPanel slot = new GemSlotPanel(0, 0, SLOT_SIZE, SLOT_SIZE, gem,
+                        GemManagerHelper.getGemTexture(gem),
+                        gem != null ? slotPanel -> unequipGem(slotId) : null, gemData, true);
+                if (gem == null) {
+                    slot.setEnabled(true);
+                    slot.setGlowIntensity(0.5f);
+                    slot.setBounceIntensity(0.8f);
+                } else {
+                    slot.setGlowIntensity(2.0f);
+                    slot.setBounceIntensity(1.5f);
+                }
                 presetSlots.add(slot);
             }
 
+            List<int[]> positions = new ArrayList<>();
+            positions.add(new int[]{0, 0});
+            positions.add(new int[]{0, -1});
+            positions.add(new int[]{1, 0});
+            positions.add(new int[]{0, 1});
+            positions.add(new int[]{-1, 0});
+            if (maxSlots > 5) {
+                positions.add(new int[]{1, -1});
+                positions.add(new int[]{1, 1});
+                positions.add(new int[]{-1, 1});
+                positions.add(new int[]{-1, -1});
+            }
+
+            for (int i = 0; i < Math.min(positions.size(), presetSlots.size()); i++) {
+                int[] pos = positions.get(i);
+                int invertedPosX = pos[0] * -1;
+                int invertedPosY = pos[1] * -1;
+
+                int slotX = centerX + invertedPosX * (SLOT_SIZE + SLOT_SPACING) - SLOT_SIZE / 2;
+                int slotY = centerY + 14 + invertedPosY * (SLOT_SIZE + SLOT_SPACING) - SLOT_SIZE / 2;
+
+                GemSlotPanel slot = presetSlots.get(i);
+                slot.setX(slotX);
+                slot.setY(slotY);
+                slot.render(context, mouseX, mouseY, delta);
+            }
         }
 
         private void unequipGem(Identifier slot) {
             GemActionPayloadC2S.sendUnequipGem(slot);
-            gemData.setPresetSlot(slot, null); // Ensure client-side update
-
+            gemData.setPresetSlot(slot, null);
             updateContentHeight();
             inventoryPanel.updateContentHeight();
-            // Update the enabled state of inventory panel slots
             inventoryPanel.updateSlotsState();
+            updateSlotsState();
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isMouseOver(mouseX, mouseY)) {
                 for (GemSlotPanel slot : presetSlots) {
-                    if (slot.mouseClicked(mouseX, mouseY, button)) {
-                        return true;
-                    }
+                    if (slot.mouseClicked(mouseX, mouseY, button)) return true;
                 }
             }
             return super.mouseClicked(mouseX, mouseY, button);
