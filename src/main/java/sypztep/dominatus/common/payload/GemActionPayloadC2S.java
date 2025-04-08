@@ -1,9 +1,7 @@
 package sypztep.dominatus.common.payload;
 
-import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -38,6 +36,9 @@ public record GemActionPayloadC2S(Identifier action, Identifier slot, int invent
     public static void sendUnequipGem(Identifier slot) {
         ClientPlayNetworking.send(new GemActionPayloadC2S(Dominatus.id("unequip_gem"), slot, -1));
     }
+    public static void sendRemoveGem(int inventoryIndex) {
+        ClientPlayNetworking.send(new GemActionPayloadC2S(Dominatus.id("remove_gem"), Dominatus.id("none"), inventoryIndex));
+    }
 
     // Receiver class for server-side handling
     public static class Receiver implements ServerPlayNetworking.PlayPayloadHandler<GemActionPayloadC2S> {
@@ -66,8 +67,9 @@ public record GemActionPayloadC2S(Identifier action, Identifier slot, int invent
                         gemData.setPresetSlot(slot, null);
                         GemManagerHelper.updateEntityStats(context.player());
                     }
+                } else if (action.equals(Dominatus.id("remove_gem")) && inventoryIndex >= 0) {
+                    if (inventoryIndex < gemData.getGemInventory().size()) gemData.removeFromInventory(inventoryIndex);
                 }
-
                 GemDataComponent.sync(context.player());
             }
         }

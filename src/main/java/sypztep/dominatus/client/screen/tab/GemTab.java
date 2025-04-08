@@ -16,7 +16,6 @@ import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
 import sypztep.tyrannus.client.screen.tab.Tab;
 
 import java.util.*;
-//TODO: ทำให้อัพเดท StatsTab โดยไม่ต้องปิดเปิดใหม่
 public class GemTab extends Tab {
     private final GemDataComponent gemData;
     private InventoryPanel inventoryPanel;
@@ -184,6 +183,7 @@ public class GemTab extends Tab {
                 if (availableSlot.isPresent()) {
                     int inventoryIndex = gemData.getGemInventory().indexOf(gem);
                     GemActionPayloadC2S.sendEquipGem(availableSlot.get(), inventoryIndex);
+                    gemData.setPresetSlot(availableSlot.get(), gem); // Ensure client-side update
                     updateContentHeight();
                     presetPanel.updateContentHeight();
                     updateSlotsState();
@@ -195,13 +195,13 @@ public class GemTab extends Tab {
             selectedGemIndex = gemIndex;
             contextMenu.clearItems();
             contextMenu.addItem(Text.literal("  \uD83D\uDDD1 Delete"), menu -> {
-                gemData.removeFromInventory(selectedGemIndex); // Remove gem using public method
+                GemActionPayloadC2S.sendRemoveGem(selectedGemIndex);
+//                gemData.removeFromInventory(selectedGemIndex); // Remove gem ClientSide
                 updateContentHeight();
                 presetPanel.updateContentHeight();
                 updateSlotsState();
                 selectedGemIndex = -1; // Hide menu after action
             });
-            // Position menu near the click, ensuring it stays within screen bounds
             contextMenu.setX(Math.min(mouseX, client.getWindow().getScaledWidth() - contextMenu.getContentWidth()));
             contextMenu.setY(Math.min(mouseY, client.getWindow().getScaledHeight() - contextMenu.getContentHeight()));
         }
@@ -355,6 +355,8 @@ public class GemTab extends Tab {
 
         private void unequipGem(Identifier slot) {
             GemActionPayloadC2S.sendUnequipGem(slot);
+            gemData.setPresetSlot(slot, null); // Ensure client-side update
+
             updateContentHeight();
             inventoryPanel.updateContentHeight();
             // Update the enabled state of inventory panel slots
