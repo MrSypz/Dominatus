@@ -39,6 +39,8 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("item.dominatus.gem.effect", "Effect");
         // Gem Stone
         translate.add("item.dominatus.gem.accuracy", "Accuracy");
+        translate.add("item.dominatus.gem.evasion", "Evasion");
+        // tooltip gem
         translate.add("item.dominatus.gem.effects", "Effects");
         // Attributes
         translate.add("attribute.name.evasion", "Evasion");
@@ -76,6 +78,11 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("config.jade.plugin_dominatus.stats_config", "Stats Config");
         //Stats Screen
         generateStatsScreenTranslations(translate);
+        genetrateTabGem(translate);
+    }
+    private void genetrateTabGem(TranslationBuilder translate) {
+        translate.add("panel.dominatus.gem_inventory", "Gem Inventory");
+        translate.add("panel.dominatus.gem_presets", "Gem Presets");
     }
     private void generateConfig(TranslationBuilder translate) {
         translate.add("text.autoconfig.dominatus.title", "Dominatus Config");
@@ -165,7 +172,5 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         // Unknown stat fallback
         translate.add("stat.dominatus.unknown", "Unknown Stat");
         translate.add("stat.dominatus.unknown.desc", "No information available for this stat.");
-
-
     }
 }

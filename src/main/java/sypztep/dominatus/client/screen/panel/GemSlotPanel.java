@@ -49,6 +49,11 @@ public class GemSlotPanel extends Button {
             setShadowIntensity(1.0f);   // Standard shadow
         }
     }
+
+    @Override
+    protected void handleHoverSound() {
+    }
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!isMouseOver(mouseX, mouseY) || !isEnabled()) return false;
