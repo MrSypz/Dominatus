@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import sypztep.dominatus.client.payload.AddRefineSoundPayloadS2C;
 import sypztep.dominatus.client.payload.AddTextParticlesPayloadS2C;
+import sypztep.dominatus.client.payload.GemBreakPayloadS2C;
 import sypztep.dominatus.client.payload.RefinePayloadS2C;
 import sypztep.dominatus.common.payload.GemActionPayloadC2S;
 import sypztep.dominatus.common.payload.MultiHitPayloadC2S;
@@ -15,6 +16,7 @@ public final class ModPayload {
         PayloadTypeRegistry.playS2C().register(AddTextParticlesPayloadS2C.ID, AddTextParticlesPayloadS2C.CODEC); // Server to Client
         PayloadTypeRegistry.playS2C().register(AddRefineSoundPayloadS2C.ID, AddRefineSoundPayloadS2C.CODEC); // Server to Client
         PayloadTypeRegistry.playS2C().register(RefinePayloadS2C.ID, RefinePayloadS2C.CODEC); // Server to Client
+        PayloadTypeRegistry.playS2C().register(GemBreakPayloadS2C.ID, GemBreakPayloadS2C.CODEC);
 
         PayloadTypeRegistry.playC2S().register(RefinePayloadC2S.ID, RefinePayloadC2S.CODEC); // Client to Server
         PayloadTypeRegistry.playC2S().register(RefineButtonPayloadC2S.ID, RefineButtonPayloadC2S.CODEC); // Client to Server

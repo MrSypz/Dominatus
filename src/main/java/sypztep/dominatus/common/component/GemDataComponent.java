@@ -96,6 +96,15 @@ public class GemDataComponent implements AutoSyncedComponent {
                 .map(entry -> Dominatus.id(entry.getKey()))
                 .findFirst();
     }
+    public void deleteGemFromPreset(Identifier slot) {
+        String slotKey = slot.getPath();
+        if (!gemPresets.containsKey(slotKey) || gemPresets.get(slotKey) == null) {
+            return; // Slot doesn’t exist or is already empty
+        }
+        gemPresets.put(slotKey, null); // Remove the gem from the preset
+        GemManagerHelper.updateEntityStats(player); // Update player stats
+        sync(); // Sync the change to the client
+    }
 
     public Optional<GemComponent> getPresetSlot(Identifier slot) {
         return Optional.ofNullable(gemPresets.get(slot.getPath()));

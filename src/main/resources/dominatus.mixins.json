@@ -22,6 +22,7 @@
     "core.registry.attribute.apply.ServerWorldMixin"
   ],
   "client": [
+    "core.gem.DeathScreenMixin",
     "core.item.refinement.refinelevel.DrawContextMixin"
   ],
   "injectors": {

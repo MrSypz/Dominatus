@@ -21,7 +21,7 @@ import sypztep.dominatus.common.init.ModDataComponents;
 import sypztep.tyrannus.common.util.ItemStackHelper;
 
 public final class PreventItemUsed implements UseItemCallback, AttackEntityCallback, AttackBlockCallback, UseBlockCallback {
-    public static void register() {
+    public static void init() {
         PreventItemUsed handler = new PreventItemUsed();
         UseItemCallback.EVENT.register(handler);
         AttackEntityCallback.EVENT.register(handler);

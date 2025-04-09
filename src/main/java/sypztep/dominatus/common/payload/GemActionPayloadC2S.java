@@ -32,14 +32,12 @@ public record GemActionPayloadC2S(Identifier action, Identifier slot, int invent
         ClientPlayNetworking.send(new GemActionPayloadC2S(Dominatus.id("equip_gem"), slot, inventoryIndex));
     }
 
-    // Static method to send unequip action
     public static void sendUnequipGem(Identifier slot) {
         ClientPlayNetworking.send(new GemActionPayloadC2S(Dominatus.id("unequip_gem"), slot, -1));
     }
     public static void sendRemoveGem(int inventoryIndex) {
         ClientPlayNetworking.send(new GemActionPayloadC2S(Dominatus.id("remove_gem"), Dominatus.id("none"), inventoryIndex));
     }
-
     // Receiver class for server-side handling
     public static class Receiver implements ServerPlayNetworking.PlayPayloadHandler<GemActionPayloadC2S> {
         @Override

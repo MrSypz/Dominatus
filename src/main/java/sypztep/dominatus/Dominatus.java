@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import sypztep.dominatus.common.command.GemCommand;
 import sypztep.dominatus.common.command.RefineSetCommand;
 import sypztep.dominatus.common.component.GemDataComponent;
+import sypztep.dominatus.common.event.GemBreakEvent;
 import sypztep.dominatus.common.event.PreventItemUsed;
 import sypztep.dominatus.common.init.*;
 import sypztep.dominatus.common.reloadlistener.DominatusEntityStatsReloadListener;
@@ -38,7 +39,8 @@ public class Dominatus implements ModInitializer {
         ModItems.init();
         ModPayload.init();
         ModLootableModify.init();
-        PreventItemUsed.register();
+        PreventItemUsed.init();
+        GemBreakEvent.init();
 
         ServerTickEvents.START_SERVER_TICK.register(MultiHitSystem::tick);
 

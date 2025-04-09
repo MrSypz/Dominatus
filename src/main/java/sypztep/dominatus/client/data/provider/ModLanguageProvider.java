@@ -40,6 +40,9 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         // Gem Stone
         translate.add("item.dominatus.gem.accuracy", "Accuracy");
         translate.add("item.dominatus.gem.evasion", "Evasion");
+
+        // Death message
+        translate.add("dominatus:accuracy", "Accuracy");
         // tooltip gem
         translate.add("item.dominatus.gem.effects", "Effects");
         // Attributes

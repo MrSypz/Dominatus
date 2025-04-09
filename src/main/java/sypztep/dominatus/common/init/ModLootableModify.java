@@ -10,6 +10,7 @@ import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.registry.RegistryKey;
+import sypztep.dominatus.common.loot.RandomGemComponentLootFunction;
 
 import java.util.List;
 
@@ -106,8 +107,18 @@ public final class ModLootableModify {
                 tableBuilder.pool(refine_weapon);
                 tableBuilder.pool(refine_armor);
             }
+            if (source.isBuiltin()) {
+                if (LootTables.DESERT_PYRAMID_CHEST.equals(id)) {
+                    LootPool.Builder gemPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.25f)) // 25% chance
+                            .rolls(UniformLootNumberProvider.create(1, 3)) // 1-3 gems
+                            .with(ItemEntry.builder(ModItems.GEM).apply(new RandomGemComponentLootFunction.Builder())); // Use the builder
+                    tableBuilder.pool(gemPool);
+                }
+            }
         });
     }
+
     private static final List<EntityType<?>> HOSTILE_MOBS = List.of(
             EntityType.ZOMBIE,
             EntityType.SKELETON,

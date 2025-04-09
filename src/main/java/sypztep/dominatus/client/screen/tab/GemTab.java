@@ -195,7 +195,8 @@ public class GemTab extends Tab {
             selectedGemIndex = gemIndex;
             contextMenu.clearItems();
             contextMenu.addItem(Text.literal("  \uD83D\uDDD1 Delete"), menu -> {
-                gemData.removeFromInventory(selectedGemIndex); // Remove gem using public method
+                GemActionPayloadC2S.sendRemoveGem(selectedGemIndex);
+//                gemData.removeFromInventory(selectedGemIndex); // Remove gem using public method
                 updateContentHeight();
                 presetPanel.updateContentHeight();
                 updateSlotsState();
