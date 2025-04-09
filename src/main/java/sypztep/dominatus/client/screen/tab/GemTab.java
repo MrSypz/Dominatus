@@ -6,6 +6,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.screen.panel.ContextMenuPanel;
 import sypztep.dominatus.client.screen.panel.GemSlotPanel;
 import sypztep.dominatus.common.component.GemDataComponent;
@@ -23,7 +24,7 @@ public class GemTab extends Tab {
     private PresetPanel presetPanel;
 
     public GemTab() {
-        super("gems", Text.translatable("tab.dominatus.gems"));
+        super("gems", Text.translatable("tab.dominatus.gems"), Dominatus.id("hud/gem/gem"));
         this.gemData = GemDataComponent.get(client.player);
     }
 
