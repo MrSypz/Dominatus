@@ -22,6 +22,7 @@ public class GemSlotPanel extends Button {
     private final GemDataComponent gemData;
     private final Identifier texture;
     private final boolean isPresetSlot;
+    private List<Text> activeTooltip; // Store tooltip for parent to render
 
     public GemSlotPanel(int x, int y, int width, int height, GemComponent gem, Identifier texture,
                         Consumer<GemSlotPanel> onClick, GemDataComponent gemData, boolean isPresetSlot) {
@@ -30,23 +31,23 @@ public class GemSlotPanel extends Button {
         this.gemData = gemData;
         this.texture = texture;
         this.isPresetSlot = isPresetSlot;
+        this.activeTooltip = null;
 
         setDrawHeader(false);
         setDrawBorder(true);
         setPadding(2);
         setPlaySounds(true, true);
 
-        // Different visual appearances based on slot type
         if (isPresetSlot) {
-            setRoundedCorners(true, 6); // More rounded corners for preset slots
-            setGlowIntensity(2.0f);     // Stronger glow for preset slots
-            setBounceIntensity(1.5f);   // More bounce effect
-            setShadowIntensity(1.5f);   // Deeper shadow for 3D effect
+            setRoundedCorners(true, 6);
+            setGlowIntensity(2.0f);
+            setBounceIntensity(1.5f);
+            setShadowIntensity(1.5f);
         } else {
-            setRoundedCorners(true, 4); // Standard rounded corners
-            setGlowIntensity(1.2f);     // Standard glow
-            setBounceIntensity(1.0f);   // Standard bounce
-            setShadowIntensity(1.0f);   // Standard shadow
+            setRoundedCorners(true, 4);
+            setGlowIntensity(1.2f);
+            setBounceIntensity(1.0f);
+            setShadowIntensity(1.0f);
         }
     }
 
@@ -57,21 +58,22 @@ public class GemSlotPanel extends Button {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!isMouseOver(mouseX, mouseY) || !isEnabled()) return false;
-        if (button == 0 && getOnClick() != null) { // Left-click triggers the onClick action (equip/unequip)
+        if (button == 0 && getOnClick() != null) {
             this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             getOnClick().accept(this);
             return true;
-        } else return button == 1;
+        }
+        return button == 1;
     }
 
     @Override
     protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.renderContents(context, mouseX, mouseY, delta); // Render button background and effects
+        super.renderContents(context, mouseX, mouseY, delta);
 
         if (gem != null && texture != null) {
             int iconSize = Math.min(width - 4, height - 4);
             int iconX = x + (width - iconSize) / 2;
-            int iconY = y + (height - iconSize) / 2 + (int) (getPressAnimation() * 1.5f); // Apply press animation
+            int iconY = y + (height - iconSize) / 2 + (int) (getPressAnimation() * 1.5f);
             context.drawGuiTexture(texture, iconX, iconY, iconSize, iconSize);
 
             if (isPresetSlot) {
@@ -84,7 +86,7 @@ public class GemSlotPanel extends Button {
                         .count();
                 int maxPresets = gem.maxPresets();
                 String countText = equippedCount + "/" + maxPresets;
-                int countColor = equippedCount >= maxPresets ? 0xFFFF5555 : 0xFF55FF55; // Red if maxed, green if not
+                int countColor = equippedCount >= maxPresets ? 0xFFFF5555 : 0xFF55FF55;
 
                 int textWidth = textRenderer.getWidth(countText);
                 int textX = x + (width - textWidth) / 2;
@@ -100,56 +102,48 @@ public class GemSlotPanel extends Button {
                     y - 15 + (height - textRenderer.fontHeight) / 2 + (int) (getPressAnimation() * 1.5f),
                     textColor);
 
-            // For empty preset slots, draw a subtle indicator
             if (isPresetSlot) {
                 drawEmptySlotIndicator(context);
             }
         }
 
-        // Render tooltip if hovered
+        // Set tooltip for parent to render
         if (isHovered && isEnabled()) {
-            List<Text> tooltip = getTooltip();
-            if (!tooltip.isEmpty()) {
-                context.drawTooltip(textRenderer, tooltip, mouseX, mouseY);
-            }
+            activeTooltip = getTooltip();
+        } else {
+            activeTooltip = null;
         }
     }
+
+    public List<Text> getActiveTooltip() {
+        return activeTooltip;
+    }
+
     private void drawSlotHighlight(DrawContext context) {
         int borderWidth = 2;
-        int colorPrimary = 0xFFFFD700;   // Gold
+        int colorPrimary = 0xFFFFD700;
 
-        // Draw corner accents - this creates a subtle "star" feeling
         int cornerSize = 8;
-
-        // Top-left corner
         context.fill(x, y, x + cornerSize, y + borderWidth, colorPrimary);
         context.fill(x, y, x + borderWidth, y + cornerSize, colorPrimary);
-
-        // Top-right corner
         context.fill(x + width - cornerSize, y, x + width, y + borderWidth, colorPrimary);
         context.fill(x + width - borderWidth, y, x + width, y + cornerSize, colorPrimary);
-
-        // Bottom-left corner
         context.fill(x, y + height - borderWidth, x + cornerSize, y + height, colorPrimary);
         context.fill(x, y + height - cornerSize, x + borderWidth, y + height, colorPrimary);
-
-        // Bottom-right corner
         context.fill(x + width - cornerSize, y + height - borderWidth, x + width, y + height, colorPrimary);
         context.fill(x + width - borderWidth, y + height - cornerSize, x + width, y + height, colorPrimary);
 
-        // Draw subtle inner glow
         int glowAlpha = 0x33;
         int glowColor = (glowAlpha << 24) | 0xFFFFFF;
         context.fill(x + borderWidth, y + borderWidth, x + width - borderWidth, y + borderWidth * 2, glowColor);
     }
 
-    // Draw indicator for empty preset slots
     private void drawEmptySlotIndicator(DrawContext context) {
         int centerX = x + width / 2;
         int centerY = y + height / 2;
         int plusSize = 10;
         int plusThickness = 2;
-        int plusColor = 0x44FFFFFF; // Semi-transparent white
+        int plusColor = 0x44FFFFFF;
 
         context.fill(centerX - plusSize, centerY - plusThickness / 2,
                 centerX + plusSize, centerY + plusThickness / 2, plusColor);
@@ -160,52 +154,36 @@ public class GemSlotPanel extends Button {
     private List<Text> getTooltip() {
         List<Text> tooltip = new ArrayList<>();
         if (gem != null) {
-            // Gem name with rarity color
             String gemName = gem.type().toString().split(":")[1];
             tooltip.add(Text.translatable("item.dominatus.gem." + gemName).formatted(Formatting.GOLD));
-
-            // Show equip/unequip instruction
             if (isPresetSlot) {
                 tooltip.add(Text.literal("Left-click to unequip").formatted(Formatting.YELLOW));
             } else {
                 tooltip.add(Text.literal("Click to equip").formatted(Formatting.GREEN));
-
-                // Show inventory count
                 int inventoryCount = (int) gemData.getGemInventory().stream()
                         .filter(g -> g.type().equals(gem.type()))
                         .count();
                 tooltip.add(Text.literal("In Inventory: " + inventoryCount).formatted(Formatting.AQUA));
             }
-
             tooltip.add(Text.empty());
-
-            // Effects header with fancy formatting
-            tooltip.add(Text.literal("✧ ").formatted(Formatting.GOLD)
-                    .append(Text.translatable("item.dominatus.gem.effects").formatted(Formatting.YELLOW))
-                    .append(" ✧").formatted(Formatting.GOLD));
-
-            // Attribute modifiers with improved formatting
+            tooltip.add(Text.literal("✧ Effects ✧").formatted(Formatting.YELLOW));
             gem.attributeModifiers().forEach((attributeId, modifier) -> {
                 EntityAttribute attribute = Registries.ATTRIBUTE.get(attributeId);
                 if (attribute != null) {
                     String operation = switch (modifier.operation()) {
-                        case ADD_VALUE -> "➕";
-                        case ADD_MULTIPLIED_BASE -> "✕";
-                        case ADD_MULTIPLIED_TOTAL -> "⚝";
+                        case ADD_VALUE -> "+";
+                        case ADD_MULTIPLIED_BASE -> "×";
+                        case ADD_MULTIPLIED_TOTAL -> "★";
                     };
-                    MutableText effectText = Text.literal(operation + " ")
-                            .formatted(Formatting.AQUA)
-                            .append(Text.literal(String.format("%.1f", modifier.value()))
-                                    .formatted(Formatting.GREEN))
-                            .append(" ")
-                            .append(Text.translatable(attribute.getTranslationKey())
-                                    .formatted(Formatting.WHITE));
+                    MutableText effectText = Text.literal(operation + String.format(" %.1f ", modifier.value()))
+                            .formatted(Formatting.GREEN)
+                            .append(Text.translatable(attribute.getTranslationKey()).formatted(Formatting.WHITE));
                     tooltip.add(effectText);
                 }
             });
         } else if (isPresetSlot) {
             tooltip.add(Text.literal("Empty Preset Slot").formatted(Formatting.GRAY));
-            tooltip.add(Text.literal("Click the gem in Inventory to equip").formatted(Formatting.YELLOW));
+            tooltip.add(Text.literal("Click a gem in Inventory to equip").formatted(Formatting.YELLOW));
         }
         return tooltip;
     }
