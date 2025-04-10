@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class GemBreakEvent {
-    private static final float BREAK_CHANCE = 0.50f; // 10% chance per gem
+    private static final float BREAK_CHANCE = 0.10f; // 10% chance per gem
     private static final Random RANDOM = new Random();
 
     public static void init() {
