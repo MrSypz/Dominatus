@@ -43,10 +43,10 @@ public class Dominatus implements ModInitializer {
         GemBreakEvent.init();
 
         ServerTickEvents.START_SERVER_TICK.register(MultiHitSystem::tick);
-
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+        //TODO: แก้ความซำ้ซ้อนและลด ภาระของเซิฟ
+        ServerPlayConnectionEvents.JOIN.register((handler, server, client) -> {
             PlayerEntity player = handler.getPlayer();
-            GemDataComponent.sync(player);
+            GemDataComponent.presetSlotApply(player);
         });
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusItemReloadListener());
