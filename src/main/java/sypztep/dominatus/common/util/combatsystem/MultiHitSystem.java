@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ToolItem;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -40,6 +41,8 @@ public final class MultiHitSystem {
 
     public static void scheduleMultiHit(PlayerEntity player, Entity target, int hitCount) {
         if (!player.getWorld().isClient) {
+            if (!(player.getMainHandStack().getItem() instanceof ToolItem)) return; // Exit if not holding a tool
+
             hitCount = Math.min(hitCount, 2);
             float startTick = player.getWorld().getServer().getTicks() + 2;
             float baseAmount = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) * 0.5f;
