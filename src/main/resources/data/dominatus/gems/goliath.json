@@ -1,5 +1,5 @@
 {
-  "type": "dominatus:accuracy",
+  "type": "dominatus:goliath",
   "attributes": {
     "dominatus:accuracy": {
       "id": "dominatus:accuracy",
@@ -8,5 +8,5 @@
     }
   },
   "max_presets": 2,
-  "texture": "dominatus:hud/gem/gem"
+  "texture": "dominatus:hud/gem/accuracy"
 }
