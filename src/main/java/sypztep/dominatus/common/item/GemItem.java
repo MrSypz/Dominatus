@@ -42,32 +42,7 @@ public final class GemItem extends Item {
         if (gemComponent.isPresent()) {
             GemComponent gem = gemComponent.get();
 
-            // Add gem type/rarity if applicable
             tooltip.add(Text.empty());
-
-            // Add inventory information if player is holding
-            if (type.isAdvanced() && MinecraftClient.getInstance().player != null) {
-                PlayerEntity player = MinecraftClient.getInstance().player;
-                GemDataComponent gemData = GemDataComponent.get(player);
-
-                // Show inventory count
-                int inventoryCount = (int) gemData.getGemInventory().stream()
-                        .filter(g -> g.type().equals(gem.type()))
-                        .count();
-                tooltip.add(Text.literal("In Inventory:")
-                        .formatted(Formatting.GRAY).append(Text.literal(" " + inventoryCount).formatted(Formatting.GREEN)));
-
-                // Show equipped count
-                int equippedCount = (int) gemData.getGemPresets().values().stream()
-                        .filter(g -> g != null && g.type().equals(gem.type()))
-                        .count();
-                int maxPresets = gem.maxPresets();
-                Formatting countColor = equippedCount >= maxPresets ? Formatting.RED : Formatting.GREEN;
-                tooltip.add(Text.literal("Equipped: ")
-                        .formatted(Formatting.GRAY)
-                        .append(Text.literal(equippedCount + "/" + maxPresets)
-                                .formatted(countColor)));
-            }
 
             tooltip.add(Text.literal("✧ ")
                     .formatted(Formatting.GOLD)

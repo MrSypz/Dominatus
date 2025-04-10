@@ -8,13 +8,31 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.KilledByPlayerLootCondition;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.loot.RandomGemComponentLootFunction;
+import sypztep.dominatus.common.loot.SpecificGemComponentLootFunction;
 
 import java.util.List;
 
 public final class ModLootableModify {
+    public static final LootFunctionType<RandomGemComponentLootFunction> RANDOM_GEM_FUNCTION_TYPE =
+            Registry.register(
+                    Registries.LOOT_FUNCTION_TYPE,
+                    Dominatus.id("random_gem_component"),
+                    new LootFunctionType<>(RandomGemComponentLootFunction.CODEC)
+            );
+    public static final LootFunctionType<SpecificGemComponentLootFunction> SPECIFIC_GEM_FUNCTION_TYPE =
+            Registry.register(
+                    Registries.LOOT_FUNCTION_TYPE,
+                    Dominatus.id("specific_gem_component"),
+                    new LootFunctionType<>(SpecificGemComponentLootFunction.CODEC)
+            );
+
     public static void init() {
         LootTableEvents.MODIFY.register((id, tableBuilder, source, registries) -> {
             if (source.isBuiltin()) {
@@ -91,29 +109,35 @@ public final class ModLootableModify {
                             .with(ItemEntry.builder(ModItems.LAHAV_FRAGMENT));
                     tableBuilder.pool(fragmentsPool);
                 }
-            }
-            if (source.isBuiltin() && isHostileMobLootTable(id)) {
-                LootPool.Builder refine_weapon = LootPool.builder()
-                        .conditionally(RandomChanceLootCondition.builder(0.05f)) // 5% chance this pool activates
-                        .rolls(UniformLootNumberProvider.create(1, 3)) // If activated, drops 1-3 items
-                        .conditionally(KilledByPlayerLootCondition.builder())
-                        .with(ItemEntry.builder(ModItems.REFINE_WEAPON_STONE));
-                LootPool.Builder refine_armor = LootPool.builder()
-                        .conditionally(RandomChanceLootCondition.builder(0.05f)) // 5% chance this pool activates
-                        .rolls(UniformLootNumberProvider.create(1, 3)) // If activated, drops 1-3 items
-                        .conditionally(KilledByPlayerLootCondition.builder())
-                        .with(ItemEntry.builder(ModItems.REFINE_ARMOR_STONE));
+                if (isHostileMobLootTable(id)) {
+                    LootPool.Builder refine_weapon = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.05f)) // 5% chance this pool activates
+                            .rolls(UniformLootNumberProvider.create(1, 3)) // If activated, drops 1-3 items
+                            .conditionally(KilledByPlayerLootCondition.builder())
+                            .with(ItemEntry.builder(ModItems.REFINE_WEAPON_STONE));
+                    LootPool.Builder refine_armor = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.05f)) // 5% chance this pool activates
+                            .rolls(UniformLootNumberProvider.create(1, 3)) // If activated, drops 1-3 items
+                            .conditionally(KilledByPlayerLootCondition.builder())
+                            .with(ItemEntry.builder(ModItems.REFINE_ARMOR_STONE));
 
-                tableBuilder.pool(refine_weapon);
-                tableBuilder.pool(refine_armor);
-            }
-            if (source.isBuiltin()) {
+                    tableBuilder.pool(refine_weapon);
+                    tableBuilder.pool(refine_armor);
+                }
                 if (LootTables.DESERT_PYRAMID_CHEST.equals(id)) {
-                    LootPool.Builder gemPool = LootPool.builder()
-                            .conditionally(RandomChanceLootCondition.builder(0.25f)) // 25% chance
-                            .rolls(UniformLootNumberProvider.create(1, 3)) // 1-3 gems
-                            .with(ItemEntry.builder(ModItems.GEM).apply(new RandomGemComponentLootFunction.Builder())); // Use the builder
-                    tableBuilder.pool(gemPool);
+                    LootPool.Builder accuracyGemPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.04f)) // 2% chance
+                            .rolls(UniformLootNumberProvider.create(1, 1)) // Exactly 1 item
+                            .with(ItemEntry.builder(ModItems.GEM)
+                                    .apply(new SpecificGemComponentLootFunction.Builder(Dominatus.id("pri_accuracy"))));
+                    tableBuilder.pool(accuracyGemPool);
+                } else if (LootTables.BASTION_TREASURE_CHEST.equals(id)) {
+                    LootPool.Builder evasionGemPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.04f)) // 2% chance (rarer)
+                            .rolls(UniformLootNumberProvider.create(1, 1)) // Exactly 1 item
+                            .with(ItemEntry.builder(ModItems.GEM)
+                                    .apply(new SpecificGemComponentLootFunction.Builder(Dominatus.id("pri_evasion"))));
+                    tableBuilder.pool(evasionGemPool);
                 }
             }
         });

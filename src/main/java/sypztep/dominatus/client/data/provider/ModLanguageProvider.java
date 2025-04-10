@@ -38,11 +38,15 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("item.dominatus.gem", "Gem");
         translate.add("item.dominatus.gem.effect", "Effect");
         // Gem Stone
-        translate.add("item.dominatus.gem.accuracy", "Accuracy");
-        translate.add("item.dominatus.gem.evasion", "Evasion");
+        translate.add("item.dominatus.gem.pri_accuracy", "I Accuracy");
+        translate.add("item.dominatus.gem.duo_accuracy", "II Accuracy");
+        translate.add("item.dominatus.gem.tri_accuracy", "III Accuracy");
+        translate.add("item.dominatus.gem.pri_evasion", "I Evasion");
+        translate.add("item.dominatus.gem.duo_evasion", "II Evasion");
+        translate.add("item.dominatus.gem.tri_evasion", "III Evasion");
 
         // Death message
-        translate.add("dominatus:accuracy", "Accuracy");
+        translate.add("dominatus:pri_accuracy", "Accuracy");
         // tooltip gem
         translate.add("item.dominatus.gem.effects", "Effects");
         // Attributes
@@ -104,6 +108,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("screen.dominatus.player_info","Player Information");
         // Tab and panels
         translate.add("tab.dominatus.stats", "Stats");
+        translate.add("tab.dominatus.gems", "Gems");
         translate.add("panel.dominatus.stat_description", "Stat Description");
         translate.add("panel.dominatus.player_statistics", "Player Statistics");
 
@@ -148,6 +153,10 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("stat.dominatus.max_health.details",
                 "Max Health can be increased through, command etc..");
 
+        translate.add("stat.dominatus.health_regen", "Nature Health Regen");
+        translate.add("stat.dominatus.health_regen.label", "Nature Health Regen %s");
+        translate.add("stat.dominatus.health_regen.desc", "Boosts your ability to recover health over time.");
+        translate.add("stat.dominatus.health_regen.details", "Grants health every 60 ticks (3 seconds) per point, active only when not in combat.");
         // Armor stat
         translate.add("stat.dominatus.armor", "Armor");
         translate.add("stat.dominatus.armor.label", "Armor %s");
@@ -155,6 +164,14 @@ public class ModLanguageProvider extends FabricLanguageProvider {
                 "Reduces damage taken from physical attacks.");
         translate.add("stat.dominatus.armor.details",
                 "Each point of armor reduces incoming physical damage by approximately 4%.");
+
+        // Armor Toughness stat
+        translate.add("stat.dominatus.armor_toughness", "Armor Toughness");
+        translate.add("stat.dominatus.armor_toughness.label", "Armor Toughness %s");
+        translate.add("stat.dominatus.armor_toughness.desc",
+                "Improves your resistance to high-damage attacks.");
+        translate.add("stat.dominatus.armor_toughness.details",
+                "Reduces the effectiveness of damage that bypasses armor. Each point increases protection against strong hits.");
 
         // Movement Speed stat
         translate.add("stat.dominatus.movement_speed", "Movement Speed");
@@ -171,6 +188,14 @@ public class ModLanguageProvider extends FabricLanguageProvider {
                 "The base damage you deal with physical attacks.");
         translate.add("stat.dominatus.attack_damage.details",
                 "This can be increased with weapons, strength potions, and enchantments.");
+
+// Attack Speed stat
+        translate.add("stat.dominatus.attack_speed", "Attack Speed");
+        translate.add("stat.dominatus.attack_speed.label", "Attack Speed %s");
+        translate.add("stat.dominatus.attack_speed.desc",
+                "Determines how quickly you can swing your weapon.");
+        translate.add("stat.dominatus.attack_speed.details",
+                "Base attack speed is 4 attacks per second. Higher values decrease the cooldown between attacks.");
 
         // Unknown stat fallback
         translate.add("stat.dominatus.unknown", "Unknown Stat");
