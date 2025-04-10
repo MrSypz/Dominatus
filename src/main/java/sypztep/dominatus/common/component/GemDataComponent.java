@@ -43,12 +43,15 @@ public class GemDataComponent implements AutoSyncedComponent {
     public boolean isInventoryFull() {
         return gemInventory.size() >= MAX_INVENTORY_SIZE;
     }
+
     public int getMaxInventorySize() {
         return MAX_INVENTORY_SIZE;
     }
+
     public int getMaxPresetSlots() {
         return MAX_PRESET_SLOTS;
     }
+
     public boolean hasGemInInventory(Identifier gemType) {
         return gemInventory.stream().anyMatch(gem -> gem.type().equals(gemType));
     }
@@ -80,6 +83,11 @@ public class GemDataComponent implements AutoSyncedComponent {
         return true;
     }
 
+    public void updatePresetSlots() {
+        GemManagerHelper.updateEntityStats(player);
+        sync();
+    }
+
     public boolean isPresetFull() {
         return gemPresets.values().stream().noneMatch(Objects::isNull);
     }
@@ -90,6 +98,7 @@ public class GemDataComponent implements AutoSyncedComponent {
                 .map(entry -> Dominatus.id(entry.getKey()))
                 .findFirst();
     }
+
     public void deleteGemFromPreset(Identifier slot) {
         String slotKey = slot.getPath();
         if (!gemPresets.containsKey(slotKey) || gemPresets.get(slotKey) == null) {
@@ -152,16 +161,23 @@ public class GemDataComponent implements AutoSyncedComponent {
         ModEntityComponents.GEM_DATA_COMPONENT.sync(player);
     }
 
+    public static void updatePresetSlots(PlayerEntity player) {
+        get(player).updatePresetSlots();
+    }
+
     // Static Accessors (updated)
     public static GemDataComponent get(PlayerEntity player) {
         return ModEntityComponents.GEM_DATA_COMPONENT.get(player);
     }
+
     public static int getMaxInventorySize(PlayerEntity player) {
         return get(player).getMaxInventorySize();
     }
+
     public static int getMaxPresetSlots(PlayerEntity player) {
         return get(player).getMaxPresetSlots();
     }
+
     public static boolean addToInventory(PlayerEntity player, GemComponent gem) {
         return get(player).addToInventory(gem);
     }
