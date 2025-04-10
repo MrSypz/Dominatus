@@ -1,4 +1,4 @@
-package sypztep.dominatus.mixin.core.registry.attribute;
+package sypztep.dominatus.mixin.core.registry.attribute.uncap;
 
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
