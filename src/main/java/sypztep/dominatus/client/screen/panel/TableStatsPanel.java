@@ -9,6 +9,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import sypztep.dominatus.common.init.ModEntityAttributes;
+import sypztep.dominatus.common.util.combatsystem.NewDamage;
 import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
 
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class TableStatsPanel extends ScrollablePanel {
         items.add(new StatItem(Text.translatable("stat.dominatus.evasion").getString(), "evasion", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.crit_chance").getString(), "crit_chance", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.crit_damage").getString(), "crit_damage", false));
-
+        items.add(new StatItem(Text.translatable("stat.dominatus.damage_reduction").getString(), "damage_reduction", false)); // New stat
         // Player attributes header
         items.add(new StatItem(Text.translatable("header.dominatus.player_attributes").getString(), true));
 
@@ -124,6 +125,9 @@ public class TableStatsPanel extends ScrollablePanel {
         values.put("max_health", new StatValue(
                 /* base */ player.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH),
                 /* addition */ Math.round(player.getMaxHealth() - player.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH))));
+        values.put("damage_reduction", new StatValue(
+                0, // Base is 0 since DR is fully gear-dependent
+                Math.round(NewDamage.getDamageReductionPercent(player) * 100f))); // DR% as percentage
 
         values.put("health_regen", new StatValue(
                 player.getAttributeBaseValue(ModEntityAttributes.HEALTH_REGEN),
@@ -328,7 +332,7 @@ public class TableStatsPanel extends ScrollablePanel {
                     String totalText = String.valueOf(statValue.getTotal());
 
                     // Add percentage sign for crit stats
-                    if (item.statKey().equals("crit_chance") || item.statKey().equals("crit_damage")) {
+                    if (item.statKey().equals("crit_chance") || item.statKey().equals("crit_damage") || item.statKey.equals("damage_reduction")) {
                         baseText += "%";
                         additionText += "%";
                         totalText += "%";

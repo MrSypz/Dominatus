@@ -29,13 +29,15 @@ public class StatsTab extends Tab {
 
         statDescriptions.put("crit_damage", new TableStatsPanel.StatDescription("stat.dominatus.crit_damage", "stat.dominatus.crit_damage.desc", "stat.dominatus.crit_damage.details"));
 
+        statDescriptions.put("damage_reduction", new TableStatsPanel.StatDescription("stat.dominatus.damage_reduction", "stat.dominatus.damage_reduction.desc", "stat.dominatus.damage_reduction.details")); // New
+
         statDescriptions.put("max_health", new TableStatsPanel.StatDescription("stat.dominatus.max_health", "stat.dominatus.max_health.desc", "stat.dominatus.max_health.details"));
 
         statDescriptions.put("health_regen", new TableStatsPanel.StatDescription("stat.dominatus.health_regen","stat.dominatus.health_regen.desc","stat.dominatus.health_regen.details"));
 
         statDescriptions.put("armor", new TableStatsPanel.StatDescription("stat.dominatus.armor", "stat.dominatus.armor.desc", "stat.dominatus.armor.details"));
 
-        statDescriptions.put("armor_toughness", new TableStatsPanel.StatDescription("stat.dominatus.armor_toughness", "stat.dominauts.armor_toughness.desc", "stat.dominatus.armor_toughness.details"));
+        statDescriptions.put("armor_toughness", new TableStatsPanel.StatDescription("stat.dominatus.armor_toughness", "stat.dominatus.armor_toughness.desc", "stat.dominatus.armor_toughness.details"));
 
         statDescriptions.put("movement_speed", new TableStatsPanel.StatDescription("stat.dominatus.movement_speed", "stat.dominatus.movement_speed.desc", "stat.dominatus.movement_speed.details"));
 
