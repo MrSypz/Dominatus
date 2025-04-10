@@ -37,16 +37,33 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("item.dominatus.reform_stone_grade_high.desc", "A stone used to reform items.");
         translate.add("item.dominatus.gem", "Gem");
         translate.add("item.dominatus.gem.effect", "Effect");
-        // Gem Stone
+        // Gem Stones
         translate.add("item.dominatus.gem.pri_accuracy", "I Accuracy");
         translate.add("item.dominatus.gem.duo_accuracy", "II Accuracy");
         translate.add("item.dominatus.gem.tri_accuracy", "III Accuracy");
         translate.add("item.dominatus.gem.pri_evasion", "I Evasion");
         translate.add("item.dominatus.gem.duo_evasion", "II Evasion");
         translate.add("item.dominatus.gem.tri_evasion", "III Evasion");
+        translate.add("item.dominatus.gem.pri_goliath", "I Goliath");
+        translate.add("item.dominatus.gem.duo_goliath", "II Goliath");
+        translate.add("item.dominatus.gem.tri_goliath", "III Goliath");
+        translate.add("item.dominatus.gem.pri_miner", "I Miner");
+        translate.add("item.dominatus.gem.duo_miner", "II Miner");
+        translate.add("item.dominatus.gem.tri_miner", "III Miner");
 
-        // Death message
-        translate.add("dominatus:pri_accuracy", "Accuracy");
+// Death Messages
+        translate.add("dominatus:pri_accuracy", "I Accuracy");
+        translate.add("dominatus:duo_accuracy", "II Accuracy");
+        translate.add("dominatus:tri_accuracy", "III Accuracy");
+        translate.add("dominatus:pri_evasion", "I Evasion");
+        translate.add("dominatus:duo_evasion", "II Evasion");
+        translate.add("dominatus:tri_evasion", "III Evasion");
+        translate.add("dominatus:pri_goliath", "I Goliath");
+        translate.add("dominatus:duo_goliath", "II Goliath");
+        translate.add("dominatus:tri_goliath", "III Goliath");
+        translate.add("dominatus:pri_miner", "I Miner");
+        translate.add("dominatus:duo_miner", "II Miner");
+        translate.add("dominatus:tri_miner", "III Miner");
         // tooltip gem
         translate.add("item.dominatus.gem.effects", "Effects");
         // Attributes

@@ -3,8 +3,8 @@ package sypztep.dominatus.common.util.combatsystem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 
-public class NewDamage {
-    private static final float VANILLA_MAX_DR = 12.0F;  // Full Netherite toughness (fixed cap)
+public final class NewDamage {
+    private static final float VANILLA_MAX_DR = 12.0F;
 
     // DP brackets: every 7 DP up to 157, inspired by BDO tiers
     private static final float[] DP_BRACKETS = {
@@ -40,7 +40,6 @@ public class NewDamage {
      * @return DR percentage (0.0 to 1.0)
      */
     private static float calculateDamageReduction(float dp, float dr) {
-        // DP bracket calculation
         float dpBaseDR = 0.0F;
         for (int i = 0; i < DP_BRACKETS.length - 1; i++) {
             if (dp <= DP_BRACKETS[i]) {
