@@ -1,5 +1,6 @@
 {
   "type": "dominatus:duo_miner",
+  "group": "dominatus:miner",
   "attributes": {
     "minecraft:player.mining_efficiency": {
       "id": "minecraft:player.mining_efficiency",

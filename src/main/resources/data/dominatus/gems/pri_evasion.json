@@ -1,5 +1,6 @@
 {
   "type": "dominatus:pri_evasion",
+  "group": "dominatus:evasion",
   "attributes": {
     "dominatus:evasion": {
       "id": "dominatus:evasion",

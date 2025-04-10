@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public record GemComponent(
         Identifier type,
+        Identifier group,
         Map<Identifier, EntityAttributeModifier> attributeModifiers,
         int maxPresets,
         Optional<Identifier> texture
@@ -20,6 +21,7 @@ public record GemComponent(
     public static final MapCodec<GemComponent> MAP_CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                     Identifier.CODEC.fieldOf("type").forGetter(GemComponent::type),
+                    Identifier.CODEC.fieldOf("group").forGetter(GemComponent::group), // Add group field
                     Codec.unboundedMap(
                             Identifier.CODEC,
                             EntityAttributeModifier.CODEC
@@ -28,7 +30,6 @@ public record GemComponent(
                     Identifier.CODEC.optionalFieldOf("texture").forGetter(GemComponent::texture)
             ).apply(instance, GemComponent::new)
     );
-
     public static final Codec<GemComponent> CODEC = MAP_CODEC.codec();
 
     public static Optional<GemComponent> fromStack(ItemStack stack) {

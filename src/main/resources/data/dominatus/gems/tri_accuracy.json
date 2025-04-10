@@ -1,5 +1,6 @@
 {
   "type": "dominatus:tri_accuracy",
+  "group": "dominatus:accuracy",
   "attributes": {
     "dominatus:accuracy": {
       "id": "dominatus:accuracy",

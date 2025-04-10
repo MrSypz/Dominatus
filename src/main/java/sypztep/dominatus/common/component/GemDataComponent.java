@@ -127,10 +127,10 @@ public class GemDataComponent implements AutoSyncedComponent {
 
     public boolean canAddGemToPresets(GemComponent gem) {
         if (gem == null) return true;
-        int count = (int) gemPresets.values().stream()
-                .filter(g -> g != null && g.type().equals(gem.type()))
+        int groupCount = (int) gemPresets.values().stream()
+                .filter(g -> g != null && g.group().equals(gem.group()))
                 .count();
-        return count < gem.maxPresets();
+        return groupCount < gem.maxPresets();
     }
 
     // Internal access for GemManagerHelper

@@ -1,5 +1,6 @@
 {
   "type": "dominatus:pri_goliath",
+  "group": "dominatus:goliath",
   "attributes": {
     "minecraft:generic.max_health": {
       "id": "minecraft:generic.max_health",

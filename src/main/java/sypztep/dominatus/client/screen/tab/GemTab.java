@@ -193,10 +193,10 @@ public class GemTab extends Tab {
             }
 
             int equippedCount = (int) gemData.getGemPresets().values().stream()
-                    .filter(g -> g != null && g.type().equals(gem.type()))
+                    .filter(g -> g != null && g.group().equals(gem.group()))
                     .count();
             int maxPresets = gem.maxPresets();
-            String presetText = String.format("Equipped: %d/%d", equippedCount, maxPresets);
+            String presetText = String.format("Group Equipped: %d/%d", equippedCount, maxPresets);
             descriptionLines.add(Text.literal(presetText));
 
             int totalHeight = descriptionLines.size() * (textRenderer.fontHeight + 2) - 2;
