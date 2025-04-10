@@ -80,49 +80,49 @@ public final class GemManagerHelper {
 
     private static void clearExistingModifiers(LivingEntity entity) {
         Set<EntityAttributeInstance> trackedAttributes = entity.getAttributes().getTracked();
-        Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersToRemove = ArrayListMultimap.create();
-
         for (EntityAttributeInstance instance : trackedAttributes) {
+            // Collect modifiers to remove
+            List<Identifier> modifiersToRemove = new ArrayList<>();
             for (EntityAttributeModifier modifier : instance.getModifiers()) {
-                if (modifier.id().toString().startsWith("dominatus:gem.")) {
-                    modifiersToRemove.put(instance.getAttribute(), modifier);
+                if (modifier.id().toString().startsWith("dominatus:gem.slot_")) {
+                    modifiersToRemove.add(modifier.id());
                 }
             }
-        }
-        if (!modifiersToRemove.isEmpty()) {
-            entity.getAttributes().removeModifiers(modifiersToRemove);
+            for (Identifier modifierId : modifiersToRemove) {
+                instance.removeModifier(modifierId);
+            }
         }
     }
 
-    private static void applyGemModifiers(LivingEntity entity, Collection<GemComponent> gems) {
-        if (gems.isEmpty()) return;
-
-        Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersToAdd = ArrayListMultimap.create();
-        for (GemComponent gem : gems) {
-            Map<Identifier, EntityAttributeModifier> modifiers = gem.attributeModifiers();
-            for (Map.Entry<Identifier, EntityAttributeModifier> entry : modifiers.entrySet()) {
-                Registries.ATTRIBUTE.getEntry(entry.getKey()).ifPresent(attribute -> {
-                    EntityAttributeModifier original = entry.getValue();
-                    EntityAttributeModifier newModifier = new EntityAttributeModifier(
-                            Dominatus.id("gem." + UUID.randomUUID()),
-                            original.value(),
-                            original.operation()
-                    );
-                    modifiersToAdd.put(attribute, newModifier);
-                });
+    private static void applyGemModifiers(LivingEntity entity, Map<String, GemComponent> presets) {
+        for (Map.Entry<String, GemComponent> entry : presets.entrySet()) {
+            String slotKey = entry.getKey();
+            GemComponent gem = entry.getValue();
+            if (gem != null) {
+                Map<Identifier, EntityAttributeModifier> modifiers = gem.attributeModifiers();
+                for (Map.Entry<Identifier, EntityAttributeModifier> modifierEntry : modifiers.entrySet()) {
+                    Registries.ATTRIBUTE.getEntry(modifierEntry.getKey()).ifPresent(attribute -> {
+                        EntityAttributeModifier original = modifierEntry.getValue();
+                        Identifier modifierId = Dominatus.id("gem." + slotKey + "." + modifierEntry.getKey().getPath());
+                        EntityAttributeModifier newModifier = new EntityAttributeModifier(
+                                modifierId,
+                                original.value(),
+                                original.operation()
+                        );
+                        EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
+                        if (instance != null && !instance.hasModifier(modifierId)) {
+                            instance.addPersistentModifier(newModifier);
+                        }
+                    });
+                }
             }
-        }
-        if (!modifiersToAdd.isEmpty()) {
-            entity.getAttributes().addTemporaryModifiers(modifiersToAdd);
         }
     }
 
     public static void updateEntityStats(PlayerEntity player) {
-        Collection<GemComponent> equippedGems = GemDataComponent.get(player).getGemPresets().values().stream()
-                .filter(Objects::nonNull)
-                .toList();
+        Map<String, GemComponent> presets = GemDataComponent.get(player).getMutableGemPresets();
         clearExistingModifiers(player);
-        applyGemModifiers(player, equippedGems);
+        applyGemModifiers(player, presets);
     }
     public static Identifier getGemTexture(GemComponent gem) {
         if (gem == null) return Dominatus.id("hud/gem/gem");

@@ -79,12 +79,6 @@ public class GemDataComponent implements AutoSyncedComponent {
         sync();
         return true;
     }
-    public void presetSlotApply() {
-        GemManagerHelper.updateEntityStats(player);
-    }
-    public static void presetSlotApply(PlayerEntity player) {
-        get(player).presetSlotApply();
-    }
 
     public boolean isPresetFull() {
         return gemPresets.values().stream().noneMatch(Objects::isNull);
