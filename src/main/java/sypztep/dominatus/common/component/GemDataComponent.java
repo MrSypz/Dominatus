@@ -27,7 +27,6 @@ public class GemDataComponent implements AutoSyncedComponent {
         }
     }
 
-    // Inventory Methods (unchanged)
     public boolean canAddToInventory(GemComponent gem) {
         return gem != null && !isInventoryFull();
     }
@@ -65,11 +64,6 @@ public class GemDataComponent implements AutoSyncedComponent {
         }
     }
 
-    public void clearInventory() {
-        gemInventory.clear();
-        sync();
-    }
-
     // Preset Methods (updated to use String keys)
     public boolean isPresetSlotValid(Identifier slot) {
         return slot != null && gemPresets.containsKey(slot.getPath());
@@ -84,6 +78,12 @@ public class GemDataComponent implements AutoSyncedComponent {
         GemManagerHelper.updateEntityStats(player);
         sync();
         return true;
+    }
+    public void presetSlotApply() {
+        GemManagerHelper.updateEntityStats(player);
+    }
+    public static void presetSlotApply(PlayerEntity player) {
+        get(player).presetSlotApply();
     }
 
     public boolean isPresetFull() {
