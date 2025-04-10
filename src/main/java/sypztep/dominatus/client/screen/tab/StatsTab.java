@@ -31,6 +31,8 @@ public class StatsTab extends Tab {
 
         statDescriptions.put("max_health", new TableStatsPanel.StatDescription("stat.dominatus.max_health", "stat.dominatus.max_health.desc", "stat.dominatus.max_health.details"));
 
+        statDescriptions.put("health_regen", new TableStatsPanel.StatDescription("stat.dominatus.health_regen","stat.dominatus.health_regen.desc","stat.dominatus.health_regen.details"));
+
         statDescriptions.put("armor", new TableStatsPanel.StatDescription("stat.dominatus.armor", "stat.dominatus.armor.desc", "stat.dominatus.armor.details"));
 
         statDescriptions.put("armor_toughness", new TableStatsPanel.StatDescription("stat.dominatus.armor_toughness", "stat.dominauts.armor_toughness.desc", "stat.dominatus.armor_toughness.details"));
@@ -38,6 +40,8 @@ public class StatsTab extends Tab {
         statDescriptions.put("movement_speed", new TableStatsPanel.StatDescription("stat.dominatus.movement_speed", "stat.dominatus.movement_speed.desc", "stat.dominatus.movement_speed.details"));
 
         statDescriptions.put("attack_damage", new TableStatsPanel.StatDescription("stat.dominatus.attack_damage", "stat.dominatus.attack_damage.desc", "stat.dominatus.attack_damage.details"));
+
+        statDescriptions.put("attack_speed", new TableStatsPanel.StatDescription("stat.dominatus.attack_speed", "stat.dominatus.attack_speed.desc", "stat.dominatus.attack_speed.details"));
     }
 
     public StatsTab() {
@@ -64,36 +68,12 @@ public class StatsTab extends Tab {
         // Create stats panel (right side - 2/3 width)
         TableStatsPanel statsPanel = new TableStatsPanel(rightX, panelY, rightWidth, panelHeight, Text.translatable("panel.dominatus.player_statistics"));
 
-        // Setup click handler to update selected stat
-        statsPanel.setOnStatClicked(index -> {
-            switch (index) {
-                case 1:
-                    selectedStat = "accuracy";
-                    break;
-                case 2:
-                    selectedStat = "evasion";
-                    break;
-                case 3:
-                    selectedStat = "crit_chance";
-                    break;
-                case 4:
-                    selectedStat = "crit_damage";
-                    break;
-                case 6:
-                    selectedStat = "max_health";
-                    break;
-                case 7:
-                    selectedStat = "armor";
-                    break;
-                case 8:
-                    selectedStat = "movement_speed";
-                    break;
-                case 9:
-                    selectedStat = "attack_damage";
-                    break;
+        statsPanel.setOnStatClicked(statIndex -> {
+            List<String> statKeys = statsPanel.getStatKeys();
+            if (statIndex >= 0 && statIndex < statKeys.size()) {
+                selectedStat = statKeys.get(statIndex);
             }
         });
-
         addPanel(statsPanel);
     }
 
