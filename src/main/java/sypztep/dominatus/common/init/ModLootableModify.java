@@ -124,20 +124,32 @@ public final class ModLootableModify {
                     tableBuilder.pool(refine_weapon);
                     tableBuilder.pool(refine_armor);
                 }
-                if (LootTables.DESERT_PYRAMID_CHEST.equals(id)) {
+                if (LootTables.PILLAGER_OUTPOST_CHEST.equals(id) || LootTables.DESERT_PYRAMID_CHEST.equals(id)) {
                     LootPool.Builder accuracyGemPool = LootPool.builder()
-                            .conditionally(RandomChanceLootCondition.builder(0.04f)) // 2% chance
+                            .conditionally(RandomChanceLootCondition.builder(0.08f)) // 8% chance
                             .rolls(UniformLootNumberProvider.create(1, 1)) // Exactly 1 item
                             .with(ItemEntry.builder(ModItems.GEM)
                                     .apply(new SpecificGemComponentLootFunction.Builder(Dominatus.id("pri_accuracy"))));
-                    tableBuilder.pool(accuracyGemPool);
-                } else if (LootTables.BASTION_TREASURE_CHEST.equals(id)) {
                     LootPool.Builder evasionGemPool = LootPool.builder()
-                            .conditionally(RandomChanceLootCondition.builder(0.04f)) // 2% chance (rarer)
+                            .conditionally(RandomChanceLootCondition.builder(0.08f)) // 8% chance
                             .rolls(UniformLootNumberProvider.create(1, 1)) // Exactly 1 item
                             .with(ItemEntry.builder(ModItems.GEM)
                                     .apply(new SpecificGemComponentLootFunction.Builder(Dominatus.id("pri_evasion"))));
                     tableBuilder.pool(evasionGemPool);
+                    tableBuilder.pool(accuracyGemPool);
+                } else if (LootTables.BASTION_TREASURE_CHEST.equals(id)) {
+                    LootPool.Builder treasurePool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.08f))
+                            .rolls(UniformLootNumberProvider.create(1, 1))
+                            .with(ItemEntry.builder(ModItems.GEM))
+                            .apply(new SpecificGemComponentLootFunction.Builder(Dominatus.id("pri_goliath")));
+                    tableBuilder.pool(treasurePool);
+                } else if (LootTables.ABANDONED_MINESHAFT_CHEST.equals(id)) {
+                    LootPool.Builder abandonedGemPool = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.12f))
+                            .rolls(UniformLootNumberProvider.create(1, 1))
+                            .with(ItemEntry.builder(ModItems.GEM).apply(new SpecificGemComponentLootFunction.Builder(Dominatus.id("pri_miner"))));
+                    tableBuilder.pool(abandonedGemPool);
                 }
             }
         });

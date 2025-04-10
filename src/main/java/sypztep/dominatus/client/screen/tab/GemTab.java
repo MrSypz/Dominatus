@@ -6,6 +6,8 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.screen.panel.ContextMenuPanel;
 import sypztep.dominatus.client.screen.panel.GemSlotPanel;
@@ -156,54 +158,94 @@ public class GemTab extends Tab {
                 slot.render(context, mouseX, mouseY, delta);
                 gemSlots.add(slot);
 
-                String gemName = gem.type().toString().split(":")[1];
-                context.drawTextWithShadow(textRenderer,
-                        Text.translatable("item.dominatus.gem." + gemName).getString(),
-                        x + 60, slotY + 5, canEquipThisGem ? 0xFFFFD700 : 0xFFAAAAAA);
+                // Render gem description with vertical scrolling
+                int descX = x + 60;
+                int descYStart = slotY + 5;
+                int descYEnd = slotY + 45; // 50 - 5 padding
+                int descWidth = width - 70; // Adjust for gem slot and padding
 
-                int textY = slotY + 20;
-                for (Map.Entry<Identifier, EntityAttributeModifier> entry : gem.attributeModifiers().entrySet()) {
-                    EntityAttribute attribute = Registries.ATTRIBUTE.get(entry.getKey());
-                    if (attribute != null) {
-                        EntityAttributeModifier modifier = entry.getValue();
-                        String operation = switch (modifier.operation()) {
-                            case ADD_VALUE -> "➕";
-                            case ADD_MULTIPLIED_BASE -> "✕";
-                            case ADD_MULTIPLIED_TOTAL -> "⚝";
-                        };
-                        String effectText = operation + String.format(" %.1f ", modifier.value()) +
-                                Text.translatable(attribute.getTranslationKey()).getString();
-                        int attributeColor = canEquipThisGem ? 0xFF55FF55 : 0xFF559955;
-                        context.drawTextWithShadow(textRenderer, effectText, x + 60, textY, attributeColor);
-                        textY += textRenderer.fontHeight + 2;
-                    }
-                }
-
-                int equippedCount = (int) gemData.getGemPresets().values().stream()
-                        .filter(g -> g != null && g.type().equals(gem.type()))
-                        .count();
-                int maxPresets = gem.maxPresets();
-                String presetText = String.format("Equipped: %d/%d", equippedCount, maxPresets);
-                int presetColor;
-                String statusText;
-
-                if (equippedCount >= maxPresets) {
-                    presetColor = 0xFFFF5555;
-                    statusText = "✘ Maxed";
-                } else if (presetsAreFull) {
-                    presetColor = 0xFFFF9955;
-                    statusText = "⚠ No Slots";
-                } else {
-                    presetColor = 0xFF55FF55;
-                    statusText = "✔ Available";
-                }
-
-                context.drawTextWithShadow(textRenderer, presetText, x + 60, textY, presetColor);
-                context.drawTextWithShadow(textRenderer, statusText, x + 60 + textRenderer.getWidth(presetText) + 5, textY, presetColor);
+                drawGemDescription(context, gem, descX, descYStart, descX + descWidth, descYEnd, canEquipThisGem, mouseX, mouseY);
             }
 
             if (selectedGemIndex != -1 && contextMenu != null) {
                 contextMenu.render(context, mouseX, mouseY, delta);
+            }
+        }
+
+        private void drawGemDescription(DrawContext context, GemComponent gem, int startX, int startY, int endX, int endY, boolean canEquip, int mouseX, int mouseY) {
+            List<Text> descriptionLines = new ArrayList<>();
+            String gemName = gem.type().toString().split(":")[1];
+            descriptionLines.add(Text.translatable("item.dominatus.gem." + gemName));
+
+            for (Map.Entry<Identifier, EntityAttributeModifier> entry : gem.attributeModifiers().entrySet()) {
+                EntityAttribute attribute = Registries.ATTRIBUTE.get(entry.getKey());
+                if (attribute != null) {
+                    EntityAttributeModifier modifier = entry.getValue();
+                    String operation = switch (modifier.operation()) {
+                        case ADD_VALUE -> "➕";
+                        case ADD_MULTIPLIED_BASE -> "✕";
+                        case ADD_MULTIPLIED_TOTAL -> "⚝";
+                    };
+                    String effectText = operation + String.format(" %.1f ", modifier.value()) +
+                            Text.translatable(attribute.getTranslationKey()).getString();
+                    descriptionLines.add(Text.literal(effectText));
+                }
+            }
+
+            int equippedCount = (int) gemData.getGemPresets().values().stream()
+                    .filter(g -> g != null && g.type().equals(gem.type()))
+                    .count();
+            int maxPresets = gem.maxPresets();
+            String presetText = String.format("Equipped: %d/%d", equippedCount, maxPresets);
+            descriptionLines.add(Text.literal(presetText));
+
+            int totalHeight = descriptionLines.size() * (textRenderer.fontHeight + 2) - 2;
+            int availableHeight = endY - startY;
+
+            if (totalHeight > availableHeight && isMouseOverGemDescription(startX, startY, endX, endY, mouseX, mouseY)) {
+                // Vertical scrolling
+                double time = (double) Util.getMeasuringTimeMs() / 1000.0;
+                double scrollRange = totalHeight - availableHeight;
+                double speed = Math.max(scrollRange * 0.5, 3.0);
+                double oscillation = Math.sin((Math.PI / 2) * Math.cos((Math.PI * 2) * time / speed)) / 2.0 + 0.5;
+                double scrollOffset = MathHelper.lerp(oscillation, 0.0, scrollRange);
+
+                context.enableScissor(startX, startY, endX, endY);
+                int currentY = startY - (int) scrollOffset;
+                for (Text line : descriptionLines) {
+                    int color = getLineColor(line, canEquip, equippedCount, maxPresets);
+                    context.drawTextWithShadow(textRenderer, line.getString(), startX, currentY, color);
+                    currentY += textRenderer.fontHeight + 2;
+                }
+                context.disableScissor();
+            } else {
+                // Static rendering if it fits
+                int currentY = startY;
+                for (Text line : descriptionLines) {
+                    if (currentY + textRenderer.fontHeight <= endY) {
+                        int color = getLineColor(line, canEquip, equippedCount, maxPresets);
+                        context.drawTextWithShadow(textRenderer, line.getString(), startX, currentY, color);
+                        currentY += textRenderer.fontHeight + 2;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        private boolean isMouseOverGemDescription(int startX, int startY, int endX, int endY, int mouseX, int mouseY) {
+            return mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= endY;
+        }
+
+        private int getLineColor(Text line, boolean canEquip, int equippedCount, int maxPresets) {
+            String text = line.getString();
+            if (text.contains("Equipped:")) {
+                if (equippedCount >= maxPresets) return 0xFFFF5555;
+                return canEquip ? 0xFF55FF55 : 0xFFFF9955;
+            } else if (text.contains("➕") || text.contains("✕") || text.contains("⚝")) {
+                return canEquip ? 0xFF55FF55 : 0xFF559955;
+            } else {
+                return canEquip ? 0xFFFFD700 : 0xFFAAAAAA;
             }
         }
 
