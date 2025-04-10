@@ -1,0 +1,17 @@
+{
+  "type": "dominatus:pri_accuracy",
+  "attributes": {
+    "dominatus:accuracy": {
+      "id": "dominatus:accuracy",
+      "amount": 8.0,
+      "operation": "add_value"
+    },
+    "minecraft:generic.attack_speed" : {
+      "id": "minecraft:generic.attack_speed",
+      "amount": 0.05,
+      "operation": "add_value"
+    }
+  },
+  "max_presets": 2,
+  "texture": "dominatus:hud/gem/accuracy"
+}
