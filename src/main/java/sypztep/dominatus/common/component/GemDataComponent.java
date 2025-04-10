@@ -78,11 +78,8 @@ public class GemDataComponent implements AutoSyncedComponent {
             return false;
         }
         gemPresets.put(slotKey, gem);
-        GemManagerHelper.updateEntityStats(player);
-        sync();
         return true;
     }
-
     public void updatePresetSlots() {
         GemManagerHelper.updateEntityStats(player);
         sync();
@@ -101,12 +98,9 @@ public class GemDataComponent implements AutoSyncedComponent {
 
     public void deleteGemFromPreset(Identifier slot) {
         String slotKey = slot.getPath();
-        if (!gemPresets.containsKey(slotKey) || gemPresets.get(slotKey) == null) {
-            return; // Slot doesn’t exist or is already empty
-        }
-        gemPresets.put(slotKey, null); // Remove the gem from the preset
-        GemManagerHelper.updateEntityStats(player); // Update player stats
-        sync(); // Sync the change to the client
+        if (!gemPresets.containsKey(slotKey) || gemPresets.get(slotKey) == null) return;
+        gemPresets.put(slotKey, null);
+        GemManagerHelper.updateEntityStats(player);
     }
 
     public Optional<GemComponent> getPresetSlot(Identifier slot) {
@@ -119,12 +113,6 @@ public class GemDataComponent implements AutoSyncedComponent {
         return Collections.unmodifiableMap(result);
     }
 
-    public void clearPresets() {
-        gemPresets.replaceAll((k, v) -> null);
-        GemManagerHelper.updateEntityStats(player);
-        sync();
-    }
-
     public boolean canAddGemToPresets(GemComponent gem) {
         if (gem == null) return true;
         int groupCount = (int) gemPresets.values().stream()
@@ -133,7 +121,6 @@ public class GemDataComponent implements AutoSyncedComponent {
         return groupCount < gem.maxPresets();
     }
 
-    // Internal access for GemManagerHelper
     public List<GemComponent> getMutableGemInventory() {
         return gemInventory;
     }
