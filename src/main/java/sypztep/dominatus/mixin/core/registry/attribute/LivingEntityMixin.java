@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityMixin {
+public class LivingEntityMixin { // #4
     @Inject(method = "createLivingAttributes", at = @At("RETURN"))
     private static void registryExtraStats(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         for (RegistryEntry<EntityAttribute> entry : ModEntityAttributes.ENTRIES) {
