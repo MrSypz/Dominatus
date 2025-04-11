@@ -16,14 +16,14 @@ import java.util.*;
 public class GemDataComponent implements AutoSyncedComponent {
     private final PlayerEntity player;
     private List<GemComponent> gemInventory = new ArrayList<>();
-    private Map<String, GemComponent> gemPresets = new HashMap<>();
+    private Map<Identifier, GemComponent> gemPresets = new HashMap<>();
     private static final int MAX_INVENTORY_SIZE = 50;
     private static final int MAX_PRESET_SLOTS = 8;
 
     public GemDataComponent(PlayerEntity player) {
         this.player = player;
         for (int i = 0; i < MAX_PRESET_SLOTS; i++) {
-            gemPresets.put("slot_" + i, null);
+            gemPresets.put(Dominatus.id("slot_" + i), null);
         }
     }
 
@@ -67,22 +67,18 @@ public class GemDataComponent implements AutoSyncedComponent {
         }
     }
 
-    // Preset Methods (updated to use String keys)
     public boolean isPresetSlotValid(Identifier slot) {
-        return slot != null && gemPresets.containsKey(slot.getPath());
+        return slot != null && gemPresets.containsKey(slot);
     }
 
     public boolean setPresetSlot(Identifier slot, GemComponent gem) {
-        String slotKey = slot.getPath();
-        if (!gemPresets.containsKey(slotKey) || (gem != null && !canAddGemToPresets(gem))) {
+        if (!gemPresets.containsKey(slot) || (gem != null && !canAddGemToPresets(gem))) {
             return false;
         }
-        gemPresets.put(slotKey, gem);
-        return true;
-    }
-    public void updatePresetSlots() {
+        gemPresets.put(slot, gem);
         GemManagerHelper.updateEntityStats(player);
         sync();
+        return true;
     }
 
     public boolean isPresetFull() {
@@ -92,25 +88,24 @@ public class GemDataComponent implements AutoSyncedComponent {
     public Optional<Identifier> getAvailablePresetSlot() {
         return gemPresets.entrySet().stream()
                 .filter(entry -> entry.getValue() == null)
-                .map(entry -> Dominatus.id(entry.getKey()))
+                .map(Map.Entry::getKey)
                 .findFirst();
     }
 
     public void deleteGemFromPreset(Identifier slot) {
-        String slotKey = slot.getPath();
-        if (!gemPresets.containsKey(slotKey) || gemPresets.get(slotKey) == null) return;
-        gemPresets.put(slotKey, null);
+        if (!gemPresets.containsKey(slot) || gemPresets.get(slot) == null) {
+            return;
+        }
+        gemPresets.put(slot, null);
         GemManagerHelper.updateEntityStats(player);
     }
 
     public Optional<GemComponent> getPresetSlot(Identifier slot) {
-        return Optional.ofNullable(gemPresets.get(slot.getPath()));
+        return Optional.ofNullable(gemPresets.get(slot));
     }
 
     public Map<Identifier, GemComponent> getGemPresets() {
-        Map<Identifier, GemComponent> result = new HashMap<>();
-        gemPresets.forEach((key, value) -> result.put(Dominatus.id(key), value));
-        return Collections.unmodifiableMap(result);
+        return Collections.unmodifiableMap(gemPresets);
     }
 
     public boolean canAddGemToPresets(GemComponent gem) {
@@ -125,11 +120,10 @@ public class GemDataComponent implements AutoSyncedComponent {
         return gemInventory;
     }
 
-    public Map<String, GemComponent> getMutableGemPresets() {
+    public Map<Identifier, GemComponent> getMutableGemPresets() {
         return gemPresets;
     }
 
-    // NBT and Sync
     @Override
     public void readFromNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         GemManagerHelper.readGemDataFromNbt(this, tag, registryLookup);
@@ -148,11 +142,6 @@ public class GemDataComponent implements AutoSyncedComponent {
         ModEntityComponents.GEM_DATA_COMPONENT.sync(player);
     }
 
-    public static void updatePresetSlots(PlayerEntity player) {
-        get(player).updatePresetSlots();
-    }
-
-    // Static Accessors (updated)
     public static GemDataComponent get(PlayerEntity player) {
         return ModEntityComponents.GEM_DATA_COMPONENT.get(player);
     }

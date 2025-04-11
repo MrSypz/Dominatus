@@ -54,6 +54,7 @@ public record GemActionPayloadC2S(Identifier action, Identifier slot, int invent
                     if (inventoryIndex < gemData.getGemInventory().size()) {
                         GemComponent gem = gemData.getGemInventory().get(inventoryIndex);
                         if (gemData.canAddGemToPresets(gem) && gemData.isPresetSlotValid(slot)) {
+//                            Dominatus.LOGGER.info("Equipping gem {} to slot {}", gem.type(), slot);
                             gemData.setPresetSlot(slot, gem);
                             gemData.removeFromInventory(inventoryIndex);
                             modified = true;
@@ -62,18 +63,23 @@ public record GemActionPayloadC2S(Identifier action, Identifier slot, int invent
                 } else if (action.equals(Dominatus.id("unequip_gem"))) {
                     GemComponent gem = gemData.getPresetSlot(slot).orElse(null);
                     if (gem != null && !gemData.isInventoryFull()) {
+//                        Dominatus.LOGGER.info("Unequipping gem {} from slot {}", gem.type(), slot);
                         gemData.addToInventory(gem);
                         gemData.setPresetSlot(slot, null);
                         modified = true;
+                    } else {
+//                        Dominatus.LOGGER.warn("Failed to unequip gem from slot {}. Gem: {}, InventoryFull: {}", slot, gem, gemData.isInventoryFull());
                     }
                 } else if (action.equals(Dominatus.id("remove_gem")) && inventoryIndex >= 0) {
                     if (inventoryIndex < gemData.getGemInventory().size()) {
+//                        Dominatus.LOGGER.info("Removing gem at inventory index {}", inventoryIndex);
                         gemData.removeFromInventory(inventoryIndex);
                         modified = true;
                     }
                 }
 
                 if (modified) {
+//                    Dominatus.LOGGER.info("Updating stats for player {} after action {}", context.player().getName().getString(), action);
                     GemManagerHelper.updateEntityStats(context.player());
                     GemDataComponent.sync(context.player());
                 }

@@ -35,21 +35,21 @@ public final class GemManagerHelper {
             }
         }
 
-        Map<String, GemComponent> presets = component.getMutableGemPresets();
+        Map<Identifier, GemComponent> presets = component.getMutableGemPresets();
         presets.clear();
         if (tag.contains("GemPresets", NbtElement.COMPOUND_TYPE)) {
             NbtCompound presetsTag = tag.getCompound("GemPresets");
             for (String key : presetsTag.getKeys()) {
                 if (presetsTag.contains(key, NbtElement.COMPOUND_TYPE)) {
                     GemComponent.CODEC.parse(registryLookup.getOps(NbtOps.INSTANCE), presetsTag.getCompound(key))
-                            .result().ifPresent(gem -> presets.put(key, gem));
+                            .result().ifPresent(gem -> presets.put(Dominatus.id(key), gem));
                 } else {
-                    presets.put(key, null);
+                    presets.put(Dominatus.id(key), null);
                 }
             }
         }
         for (int i = 0; i < 8; i++) {
-            presets.putIfAbsent("slot_" + i, null);
+            presets.putIfAbsent(Dominatus.id("slot_" + i), null);
         }
     }
 
@@ -66,12 +66,12 @@ public final class GemManagerHelper {
         tag.put("GemInventory", inventoryList);
 
         NbtCompound presetsTag = new NbtCompound();
-        for (Map.Entry<String, GemComponent> entry : component.getMutableGemPresets().entrySet()) {
+        for (Map.Entry<Identifier, GemComponent> entry : component.getMutableGemPresets().entrySet()) {
             if (entry.getValue() != null) {
-                GemComponent.CODEC.encodeStart(registryLookup.getOps(net.minecraft.nbt.NbtOps.INSTANCE), entry.getValue())
+                GemComponent.CODEC.encodeStart(registryLookup.getOps(NbtOps.INSTANCE), entry.getValue())
                         .result().ifPresent(encoded -> {
                             if (encoded instanceof NbtElement nbtElement) {
-                                presetsTag.put(entry.getKey(), nbtElement); // Key is already "slot_0"
+                                presetsTag.put(entry.getKey().getPath(), nbtElement);
                             }
                         });
             }
@@ -79,46 +79,67 @@ public final class GemManagerHelper {
         tag.put("GemPresets", presetsTag);
     }
 
-    private static void clearExistingModifiers(LivingEntity entity) {
-        Set<EntityAttributeInstance> trackedAttributes = entity.getAttributes().getTracked();
-        for (EntityAttributeInstance instance : trackedAttributes) {
-            getModifier(instance);
-
+    private static void clearExistingModifiers(LivingEntity entity, GemDataComponent gemData) {
+        Set<RegistryEntry<EntityAttribute>> possibleAttributes = new HashSet<>();
+        for (GemComponent gem : gemData.getGemInventory()) {
+            if (gem != null) {
+                gem.attributeModifiers().keySet().forEach(id ->
+                        Registries.ATTRIBUTE.getEntry(id).ifPresent(possibleAttributes::add)
+                );
+            }
+        }
+        for (GemComponent gem : gemData.getMutableGemPresets().values()) {
+            if (gem != null) {
+                gem.attributeModifiers().keySet().forEach(id ->
+                        Registries.ATTRIBUTE.getEntry(id).ifPresent(possibleAttributes::add)
+                );
+            }
         }
 
-        EntityAttributeInstance attackDamageInstance = entity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        if (attackDamageInstance != null) getModifier(attackDamageInstance);
-
+        for (RegistryEntry<EntityAttribute> attribute : possibleAttributes) {
+            EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
+            if (instance != null) {
+                getModifier(instance);
+            }
+        }
     }
 
     private static void getModifier(EntityAttributeInstance instance) {
         List<Identifier> modifiersToRemove = new ArrayList<>();
         for (EntityAttributeModifier modifier : instance.getModifiers()) {
             String modifierIdStr = modifier.id().toString();
-            if (modifierIdStr.startsWith("dominatus:gem.slot_")) modifiersToRemove.add(modifier.id());
+            if (modifierIdStr.startsWith("dominatus:gem.slot_")) {
+                Dominatus.LOGGER.info("Removing modifier: {}", modifierIdStr);
+                modifiersToRemove.add(modifier.id());
+            }
         }
-        for (Identifier modifierId : modifiersToRemove)
+        for (Identifier modifierId : modifiersToRemove) {
             instance.removeModifier(modifierId);
+        }
     }
 
-    private static void applyGemModifiers(LivingEntity entity, Map<String, GemComponent> presets) {
+    private static void applyGemModifiers(LivingEntity entity, Map<Identifier, GemComponent> presets) {
         Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersToAdd = ArrayListMultimap.create();
 
-        for (Map.Entry<String, GemComponent> entry : presets.entrySet()) {
-            String slotKey = entry.getKey();
+        for (Map.Entry<Identifier, GemComponent> entry : presets.entrySet()) {
+            Identifier slotKey = entry.getKey();
             GemComponent gem = entry.getValue();
             if (gem != null) {
                 Map<Identifier, EntityAttributeModifier> modifiers = gem.attributeModifiers();
                 for (Map.Entry<Identifier, EntityAttributeModifier> modifierEntry : modifiers.entrySet()) {
                     Registries.ATTRIBUTE.getEntry(modifierEntry.getKey()).ifPresent(attribute -> {
                         EntityAttributeModifier original = modifierEntry.getValue();
-                        Identifier modifierId = Dominatus.id("gem." + slotKey + "." + modifierEntry.getKey().getPath());
+                        Identifier modifierId = Identifier.of(
+                                "dominatus",
+                                "gem." + slotKey.getPath() + "." + modifierEntry.getKey().getPath()
+                        );
                         EntityAttributeModifier newModifier = new EntityAttributeModifier(
                                 modifierId,
                                 original.value(),
                                 original.operation()
                         );
                         modifiersToAdd.put(attribute, newModifier);
+                        Dominatus.LOGGER.info("Adding modifier: {} with value: {} for attribute: {}", modifierId, newModifier.value(), attribute);
                     });
                 }
             }
@@ -126,13 +147,20 @@ public final class GemManagerHelper {
 
         if (!modifiersToAdd.isEmpty()) {
             entity.getAttributes().addTemporaryModifiers(modifiersToAdd);
+            for (RegistryEntry<EntityAttribute> attribute : modifiersToAdd.keySet()) {
+                EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
+                if (instance != null) {
+                    Dominatus.LOGGER.info("Attribute {} modifiers after update: {}", attribute, instance.getModifiers());
+                }
+            }
         }
     }
 
     public static void updateEntityStats(PlayerEntity player) {
-        Map<String, GemComponent> presets = GemDataComponent.get(player).getMutableGemPresets();
-        clearExistingModifiers(player);
-        applyGemModifiers(player, presets);
+        GemDataComponent gemData = GemDataComponent.get(player);
+        Dominatus.LOGGER.info("Gem Presets before update: {}", gemData.getMutableGemPresets());
+        clearExistingModifiers(player, gemData);
+        applyGemModifiers(player, gemData.getMutableGemPresets());
     }
 
     public static Identifier getGemTexture(GemComponent gem) {
