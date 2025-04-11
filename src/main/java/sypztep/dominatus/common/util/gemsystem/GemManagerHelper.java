@@ -81,6 +81,7 @@ public final class GemManagerHelper {
 
     private static void clearExistingModifiers(LivingEntity entity, GemDataComponent gemData) {
         Set<RegistryEntry<EntityAttribute>> possibleAttributes = new HashSet<>();
+        // Include attributes from inventory to ensure we clear any stale modifiers
         for (GemComponent gem : gemData.getGemInventory()) {
             if (gem != null) {
                 gem.attributeModifiers().keySet().forEach(id ->
@@ -88,6 +89,7 @@ public final class GemManagerHelper {
                 );
             }
         }
+        // Include attributes from presets
         for (GemComponent gem : gemData.getMutableGemPresets().values()) {
             if (gem != null) {
                 gem.attributeModifiers().keySet().forEach(id ->
@@ -109,7 +111,7 @@ public final class GemManagerHelper {
         for (EntityAttributeModifier modifier : instance.getModifiers()) {
             String modifierIdStr = modifier.id().toString();
             if (modifierIdStr.startsWith("dominatus:gem.slot_")) {
-                Dominatus.LOGGER.info("Removing modifier: {}", modifierIdStr);
+                // Dominatus.LOGGER.info("Removing modifier: {}", modifierIdStr);
                 modifiersToRemove.add(modifier.id());
             }
         }
@@ -119,8 +121,6 @@ public final class GemManagerHelper {
     }
 
     private static void applyGemModifiers(LivingEntity entity, Map<Identifier, GemComponent> presets) {
-        Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersToAdd = ArrayListMultimap.create();
-
         for (Map.Entry<Identifier, GemComponent> entry : presets.entrySet()) {
             Identifier slotKey = entry.getKey();
             GemComponent gem = entry.getValue();
@@ -138,19 +138,13 @@ public final class GemManagerHelper {
                                 original.value(),
                                 original.operation()
                         );
-                        modifiersToAdd.put(attribute, newModifier);
-                        Dominatus.LOGGER.info("Adding modifier: {} with value: {} for attribute: {}", modifierId, newModifier.value(), attribute);
+                        EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
+                        if (instance != null) {
+                            // Use addPersistentModifier instead of addTemporaryModifier
+                            instance.addPersistentModifier(newModifier);
+                            // Dominatus.LOGGER.info("Adding persistent modifier: {} with value: {} for attribute: {}", modifierId, newModifier.value(), attribute);
+                        }
                     });
-                }
-            }
-        }
-
-        if (!modifiersToAdd.isEmpty()) {
-            entity.getAttributes().addTemporaryModifiers(modifiersToAdd);
-            for (RegistryEntry<EntityAttribute> attribute : modifiersToAdd.keySet()) {
-                EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
-                if (instance != null) {
-                    Dominatus.LOGGER.info("Attribute {} modifiers after update: {}", attribute, instance.getModifiers());
                 }
             }
         }
@@ -158,7 +152,7 @@ public final class GemManagerHelper {
 
     public static void updateEntityStats(PlayerEntity player) {
         GemDataComponent gemData = GemDataComponent.get(player);
-        Dominatus.LOGGER.info("Gem Presets before update: {}", gemData.getMutableGemPresets());
+        // Dominatus.LOGGER.info("Gem Presets before update: {}", gemData.getMutableGemPresets());
         clearExistingModifiers(player, gemData);
         applyGemModifiers(player, gemData.getMutableGemPresets());
     }
