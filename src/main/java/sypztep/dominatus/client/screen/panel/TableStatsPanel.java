@@ -9,6 +9,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import sypztep.dominatus.common.init.ModEntityAttributes;
+import sypztep.dominatus.common.util.combatsystem.NewDamage;
 import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
 
 import java.util.ArrayList;
@@ -46,7 +47,6 @@ public class TableStatsPanel extends ScrollablePanel {
         super(x, y, width, height, title);
         initStats();
     }
-
     /**
      * Initialize the stats.
      */
@@ -69,19 +69,30 @@ public class TableStatsPanel extends ScrollablePanel {
         items.add(new StatItem(Text.translatable("stat.dominatus.evasion").getString(), "evasion", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.crit_chance").getString(), "crit_chance", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.crit_damage").getString(), "crit_damage", false));
-
+        items.add(new StatItem(Text.translatable("stat.dominatus.damage_reduction").getString(), "damage_reduction", false)); // New stat
         // Player attributes header
         items.add(new StatItem(Text.translatable("header.dominatus.player_attributes").getString(), true));
 
         // Player attributes
         items.add(new StatItem(Text.translatable("stat.dominatus.max_health").getString(), "max_health", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.armor").getString(), "armor", false));
+        items.add(new StatItem(Text.translatable("stat.dominatus.armor_toughness").getString(), "armor_toughness", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.movement_speed").getString(), "movement_speed", false));
         items.add(new StatItem(Text.translatable("stat.dominatus.attack_damage").getString(), "attack_damage", false));
+        items.add(new StatItem(Text.translatable("stat.dominatus.attack_speed").getString(), "attack_speed", false));
 
         return items;
     }
 
+    public List<String> getStatKeys() {
+        List<String> keys = new ArrayList<>();
+        for (StatItem item : statItems) {
+            if (!item.isHeader()) {
+                keys.add(item.statKey());
+            }
+        }
+        return keys;
+    }
     /**
      * Update the stat values.
      */
@@ -113,11 +124,22 @@ public class TableStatsPanel extends ScrollablePanel {
         // Player attributes
         values.put("max_health", new StatValue(
                 /* base */ player.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH),
-                /* addition */ Math.round(player.getMaxHealth() - 20)));
+                /* addition */ Math.round(player.getMaxHealth() - player.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH))));
+        values.put("damage_reduction", new StatValue(
+                0, // Base is 0 since DR is fully gear-dependent
+                Math.round(NewDamage.getDamageReductionPercent(player) * 100f))); // DR% as percentage
+
+        values.put("health_regen", new StatValue(
+                player.getAttributeBaseValue(ModEntityAttributes.HEALTH_REGEN),
+                Math.round(player.getAttributeValue(ModEntityAttributes.HEALTH_REGEN) - player.getAttributeBaseValue(ModEntityAttributes.HEALTH_REGEN))
+        ));
 
         values.put("armor", new StatValue(
-                /* base */ 0,
+                /* base */ player.getAttributeBaseValue(EntityAttributes.GENERIC_ARMOR),
                 /* addition */ player.getArmor()));
+        values.put("armor_toughness", new StatValue(
+                player.getAttributeBaseValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS),
+                Math.round(player.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS) - player.getAttributeBaseValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS))));
 
         double baseSpeed = player.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         double currentSpeed = player.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
@@ -128,8 +150,13 @@ public class TableStatsPanel extends ScrollablePanel {
         ));
 
         values.put("attack_damage", new StatValue(
-                /* base */ 1,
-                /* addition */ (int) (player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) - 1)));
+                /* base */ player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
+                /* addition */ (int) (player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) - player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE))));
+
+        values.put("attack_speed", new StatValue(
+                player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED),
+                Math.round(player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED) - player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED))
+        ));
         return values;
     }
 
@@ -305,7 +332,7 @@ public class TableStatsPanel extends ScrollablePanel {
                     String totalText = String.valueOf(statValue.getTotal());
 
                     // Add percentage sign for crit stats
-                    if (item.statKey().equals("crit_chance") || item.statKey().equals("crit_damage")) {
+                    if (item.statKey().equals("crit_chance") || item.statKey().equals("crit_damage") || item.statKey.equals("damage_reduction")) {
                         baseText += "%";
                         additionText += "%";
                         totalText += "%";
@@ -411,18 +438,29 @@ public class TableStatsPanel extends ScrollablePanel {
             int relativeY = (int) (mouseY - getContentY() + scrollAmount) - 23;
             if (relativeY < 0) return false;
 
-            int index = relativeY / lineHeight;
+            int rowIndex = relativeY / lineHeight;
 
-            if (index < statItems.size() && !statItems.get(index).isHeader()) {
-                // Update selected index
-                selectedIndex = index;
-                // Notify callback
-                onStatClicked.accept(index);
-                return true;
+            if (rowIndex < statItems.size() && !statItems.get(rowIndex).isHeader()) {
+                // Calculate statIndex (index in statKeys, skipping headers)
+                int statIndex;
+                int nonHeaderCount = 0;
+                for (int i = 0; i <= rowIndex; i++) {
+                    if (!statItems.get(i).isHeader()) {
+                        nonHeaderCount++;
+                    }
+                }
+                statIndex = nonHeaderCount - 1; // Convert to 0-based index for statKeys
+
+                if (statIndex >= 0 && statIndex < getStatKeys().size()) {
+                    // Update selected index
+                    selectedIndex = rowIndex;
+                    // Notify callback with statIndex
+                    onStatClicked.accept(statIndex);
+                    return true;
+                }
             }
         }
 
-        // Default to parent behavior
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -446,7 +484,7 @@ public class TableStatsPanel extends ScrollablePanel {
         }
     }
 
-    public record StatValue(double base, long addition) {
+    public record StatValue(double base, double addition) {
         public double getTotal() {
             return base + addition;
         }

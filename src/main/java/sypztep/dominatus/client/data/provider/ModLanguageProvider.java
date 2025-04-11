@@ -37,16 +37,46 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("item.dominatus.reform_stone_grade_high.desc", "A stone used to reform items.");
         translate.add("item.dominatus.gem", "Gem");
         translate.add("item.dominatus.gem.effect", "Effect");
-        // Gem Stone
-        translate.add("item.dominatus.gem.accuracy", "Accuracy");
+        // Gem Stones
+        translate.add("item.dominatus.gem.pri_accuracy", "I Accuracy");
+        translate.add("item.dominatus.gem.duo_accuracy", "II Accuracy");
+        translate.add("item.dominatus.gem.tri_accuracy", "III Accuracy");
+        translate.add("item.dominatus.gem.pri_evasion", "I Evasion");
+        translate.add("item.dominatus.gem.duo_evasion", "II Evasion");
+        translate.add("item.dominatus.gem.tri_evasion", "III Evasion");
+        translate.add("item.dominatus.gem.pri_goliath", "I Goliath");
+        translate.add("item.dominatus.gem.duo_goliath", "II Goliath");
+        translate.add("item.dominatus.gem.tri_goliath", "III Goliath");
+        translate.add("item.dominatus.gem.pri_miner", "I Miner");
+        translate.add("item.dominatus.gem.duo_miner", "II Miner");
+        translate.add("item.dominatus.gem.tri_miner", "III Miner");
+
+// Death Messages
+        translate.add("dominatus:pri_accuracy", "I Accuracy");
+        translate.add("dominatus:duo_accuracy", "II Accuracy");
+        translate.add("dominatus:tri_accuracy", "III Accuracy");
+        translate.add("dominatus:pri_evasion", "I Evasion");
+        translate.add("dominatus:duo_evasion", "II Evasion");
+        translate.add("dominatus:tri_evasion", "III Evasion");
+        translate.add("dominatus:pri_goliath", "I Goliath");
+        translate.add("dominatus:duo_goliath", "II Goliath");
+        translate.add("dominatus:tri_goliath", "III Goliath");
+        translate.add("dominatus:pri_miner", "I Miner");
+        translate.add("dominatus:duo_miner", "II Miner");
+        translate.add("dominatus:tri_miner", "III Miner");
+        // tooltip gem
         translate.add("item.dominatus.gem.effects", "Effects");
         // Attributes
         translate.add("attribute.name.evasion", "Evasion");
         translate.add("attribute.name.accuracy", "Accuracy");
         translate.add("attribute.name.crit_chance", "Critical Chance");
         translate.add("attribute.name.crit_damage", "Critical Damage");
+        translate.add("attribute.name.back_attack", "Back Damage");
+        translate.add("attribute.name.air_attack", "Air Damage");
+        translate.add("attribute.name.down_attack", "Down Damage");
         translate.add("attribute.name.player_vers_entity_damage", "PvE Damage");
         translate.add("attribute.name.player_vers_player_damage", "PvP Damage");
+        translate.add("attribute.name.health_regen","Health Regen");
         // Miscellaneous
         translate.add("item.dominatus.loss_fragment", "Loss Fragment");
         translate.add("item.dominatus.loss_fragment.desc", "Combine to obtain Refined Armor Enforge.");
@@ -76,6 +106,11 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("config.jade.plugin_dominatus.stats_config", "Stats Config");
         //Stats Screen
         generateStatsScreenTranslations(translate);
+        genetrateTabGem(translate);
+    }
+    private void genetrateTabGem(TranslationBuilder translate) {
+        translate.add("panel.dominatus.gem_inventory", "Gem Inventory");
+        translate.add("panel.dominatus.gem_presets", "Gem Presets");
     }
     private void generateConfig(TranslationBuilder translate) {
         translate.add("text.autoconfig.dominatus.title", "Dominatus Config");
@@ -94,6 +129,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("screen.dominatus.player_info","Player Information");
         // Tab and panels
         translate.add("tab.dominatus.stats", "Stats");
+        translate.add("tab.dominatus.gems", "Gems");
         translate.add("panel.dominatus.stat_description", "Stat Description");
         translate.add("panel.dominatus.player_statistics", "Player Statistics");
 
@@ -130,6 +166,10 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("stat.dominatus.crit_damage.details",
                 "The default critical hit multiplier is 150%. This stat increases that multiplier.");
 
+        translate.add("stat.dominatus.damage_reduction", "Damage Reduction");
+        translate.add("stat.dominatus.damage_reduction.label", "Damage Reduction: %s%%");
+        translate.add("stat.dominatus.damage_reduction.desc", "Reduces incoming damage by a percentage based on your Defense Power (DP) and Damage Reduction (DR) stats.");
+        translate.add("stat.dominatus.damage_reduction.details", "Max at 30%");
         // Health stat
         translate.add("stat.dominatus.max_health", "Max Health");
         translate.add("stat.dominatus.max_health.label", "Max Health %s");
@@ -138,6 +178,10 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("stat.dominatus.max_health.details",
                 "Max Health can be increased through, command etc..");
 
+        translate.add("stat.dominatus.health_regen", "Nature Health Regen");
+        translate.add("stat.dominatus.health_regen.label", "Nature Health Regen %s");
+        translate.add("stat.dominatus.health_regen.desc", "Boosts your ability to recover health over time.");
+        translate.add("stat.dominatus.health_regen.details", "Grants health every 60 ticks (3 seconds) per point, active only when not in combat.");
         // Armor stat
         translate.add("stat.dominatus.armor", "Armor");
         translate.add("stat.dominatus.armor.label", "Armor %s");
@@ -145,6 +189,14 @@ public class ModLanguageProvider extends FabricLanguageProvider {
                 "Reduces damage taken from physical attacks.");
         translate.add("stat.dominatus.armor.details",
                 "Each point of armor reduces incoming physical damage by approximately 4%.");
+
+        // Armor Toughness stat
+        translate.add("stat.dominatus.armor_toughness", "Armor Toughness");
+        translate.add("stat.dominatus.armor_toughness.label", "Armor Toughness %s");
+        translate.add("stat.dominatus.armor_toughness.desc",
+                "Improves your resistance to high-damage attacks.");
+        translate.add("stat.dominatus.armor_toughness.details",
+                "Reduces the effectiveness of damage that bypasses armor. Each point increases protection against strong hits.");
 
         // Movement Speed stat
         translate.add("stat.dominatus.movement_speed", "Movement Speed");
@@ -162,10 +214,16 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("stat.dominatus.attack_damage.details",
                 "This can be increased with weapons, strength potions, and enchantments.");
 
+// Attack Speed stat
+        translate.add("stat.dominatus.attack_speed", "Attack Speed");
+        translate.add("stat.dominatus.attack_speed.label", "Attack Speed %s");
+        translate.add("stat.dominatus.attack_speed.desc",
+                "Determines how quickly you can swing your weapon.");
+        translate.add("stat.dominatus.attack_speed.details",
+                "Base attack speed is 4 attacks per second. Higher values decrease the cooldown between attacks.");
+
         // Unknown stat fallback
         translate.add("stat.dominatus.unknown", "Unknown Stat");
         translate.add("stat.dominatus.unknown.desc", "No information available for this stat.");
-
-
     }
 }

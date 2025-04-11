@@ -8,12 +8,31 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.KilledByPlayerLootCondition;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import sypztep.dominatus.Dominatus;
+import sypztep.dominatus.common.loot.RandomGemComponentLootFunction;
+import sypztep.dominatus.common.loot.SpecificGemComponentLootFunction;
 
 import java.util.List;
 
 public final class ModLootableModify {
+    public static final LootFunctionType<RandomGemComponentLootFunction> RANDOM_GEM_FUNCTION_TYPE =
+            Registry.register(
+                    Registries.LOOT_FUNCTION_TYPE,
+                    Dominatus.id("random_gem_component"),
+                    new LootFunctionType<>(RandomGemComponentLootFunction.CODEC)
+            );
+    public static final LootFunctionType<SpecificGemComponentLootFunction> SPECIFIC_GEM_FUNCTION_TYPE =
+            Registry.register(
+                    Registries.LOOT_FUNCTION_TYPE,
+                    Dominatus.id("specific_gem_component"),
+                    new LootFunctionType<>(SpecificGemComponentLootFunction.CODEC)
+            );
+
     public static void init() {
         LootTableEvents.MODIFY.register((id, tableBuilder, source, registries) -> {
             if (source.isBuiltin()) {
@@ -90,24 +109,67 @@ public final class ModLootableModify {
                             .with(ItemEntry.builder(ModItems.LAHAV_FRAGMENT));
                     tableBuilder.pool(fragmentsPool);
                 }
-            }
-            if (source.isBuiltin() && isHostileMobLootTable(id)) {
-                LootPool.Builder refine_weapon = LootPool.builder()
-                        .conditionally(RandomChanceLootCondition.builder(0.05f)) // 5% chance this pool activates
-                        .rolls(UniformLootNumberProvider.create(1, 3)) // If activated, drops 1-3 items
-                        .conditionally(KilledByPlayerLootCondition.builder())
-                        .with(ItemEntry.builder(ModItems.REFINE_WEAPON_STONE));
-                LootPool.Builder refine_armor = LootPool.builder()
-                        .conditionally(RandomChanceLootCondition.builder(0.05f)) // 5% chance this pool activates
-                        .rolls(UniformLootNumberProvider.create(1, 3)) // If activated, drops 1-3 items
-                        .conditionally(KilledByPlayerLootCondition.builder())
-                        .with(ItemEntry.builder(ModItems.REFINE_ARMOR_STONE));
+                if (isHostileMobLootTable(id)) {
+                    LootPool.Builder refine_weapon = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.05f)) // 5% chance this pool activates
+                            .rolls(UniformLootNumberProvider.create(1, 3)) // If activated, drops 1-3 items
+                            .conditionally(KilledByPlayerLootCondition.builder())
+                            .with(ItemEntry.builder(ModItems.REFINE_WEAPON_STONE));
+                    LootPool.Builder refine_armor = LootPool.builder()
+                            .conditionally(RandomChanceLootCondition.builder(0.05f)) // 5% chance this pool activates
+                            .rolls(UniformLootNumberProvider.create(1, 3)) // If activated, drops 1-3 items
+                            .conditionally(KilledByPlayerLootCondition.builder())
+                            .with(ItemEntry.builder(ModItems.REFINE_ARMOR_STONE));
 
-                tableBuilder.pool(refine_weapon);
-                tableBuilder.pool(refine_armor);
+                    tableBuilder.pool(refine_weapon);
+                    tableBuilder.pool(refine_armor);
+                }
+                // Define chest-specific gem types and chances
+                if (LootTables.PILLAGER_OUTPOST_CHEST.equals(id) || LootTables.DESERT_PYRAMID_CHEST.equals(id)) {
+                    String[] gemTypes = {"accuracy", "evasion"};
+                    tierMap(tableBuilder, gemTypes);
+                } else if (LootTables.BASTION_TREASURE_CHEST.equals(id)) {
+                    String[] gemTypes = {"goliath"};
+                    rareTierMap(tableBuilder, gemTypes);
+                } else if (LootTables.ABANDONED_MINESHAFT_CHEST.equals(id) || LootTables.SPAWN_BONUS_CHEST.equals(id)) {
+                    String[] gemTypes = {"miner"};
+                    tierMap(tableBuilder, gemTypes);
+                } else if (LootTables.ANCIENT_CITY_CHEST.equals(id)) {
+                    String[] gemTypes = {"accuracy", "evasion", "goliath"}; // Added evasion and goliath
+                    rareTierMap(tableBuilder, gemTypes);
+                }
             }
         });
     }
+
+    private static void tierMap(LootTable.Builder tableBuilder, String[] gemTypes) {
+        String[] tiers = {"pri", "duo", "tri"};
+        float[] chances = {0.08f, 0.04f, 0.02f}; // 8%, 4%, 2%
+
+        getGemType(tableBuilder, gemTypes, tiers, chances);
+    }
+
+    private static void rareTierMap(LootTable.Builder tableBuilder, String[] gemTypes) {
+        String[] tiers = {"pri", "duo", "tri"};
+        float[] chances = {0.12f, 0.08f, 0.04f}; // 12%, 8%, 4% (higher rates like Bastion)
+
+        getGemType(tableBuilder, gemTypes, tiers, chances);
+    }
+
+    private static void getGemType(LootTable.Builder tableBuilder, String[] gemTypes, String[] tiers, float[] chances) {
+        for (String gemType : gemTypes) {
+            for (int i = 0; i < tiers.length; i++) {
+                LootPool.Builder pool = LootPool.builder()
+                        .conditionally(RandomChanceLootCondition.builder(chances[i]))
+                        .rolls(UniformLootNumberProvider.create(1, 1))
+                        .with(ItemEntry.builder(ModItems.GEM)
+                                .apply(new SpecificGemComponentLootFunction.Builder(
+                                        Dominatus.id(tiers[i] + "_" + gemType))));
+                tableBuilder.pool(pool);
+            }
+        }
+    }
+
     private static final List<EntityType<?>> HOSTILE_MOBS = List.of(
             EntityType.ZOMBIE,
             EntityType.SKELETON,

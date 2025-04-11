@@ -17,11 +17,13 @@
     "core.item.refinement.freerepair.AnvilScreenHandlerMixin",
     "core.item.refinement.iteminfo.ItemStackMixin",
     "core.item.refinement.newdurability.ItemStackMixin",
-    "core.registry.attribute.EntityAttributesMixin",
     "core.registry.attribute.LivingEntityMixin",
-    "core.registry.attribute.apply.ServerWorldMixin"
+    "core.registry.attribute.apply.ServerWorldMixin",
+    "core.registry.attribute.healthregen.LivingEntityMixin",
+    "core.registry.attribute.uncap.EntityAttributesMixin"
   ],
   "client": [
+    "core.gem.DeathScreenMixin",
     "core.item.refinement.refinelevel.DrawContextMixin"
   ],
   "injectors": {

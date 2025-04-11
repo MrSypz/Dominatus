@@ -1,0 +1,23 @@
+{
+  "type": "dominatus:duo_evasion",
+  "group": "dominatus:evasion",
+  "attributes": {
+    "dominatus:evasion": {
+      "id": "dominatus:evasion",
+      "amount": 12.0,
+      "operation": "add_value"
+    },
+    "minecraft:generic.max_health": {
+      "id": "minecraft:generic.max_health",
+      "amount": 12.0,
+      "operation": "add_value"
+    },
+    "dominatus:health_regen": {
+      "id": "dominatus:health_regen",
+      "amount": 1.0,
+      "operation": "add_value"
+    }
+  },
+  "max_presets": 2,
+  "texture": "dominatus:hud/gem/evasion"
+}

@@ -1,0 +1,18 @@
+{
+  "type": "dominatus:pri_miner",
+  "group": "dominatus:miner",
+  "attributes": {
+    "minecraft:player.mining_efficiency": {
+      "id": "minecraft:player.mining_efficiency",
+      "amount": 0.5,
+      "operation": "add_value"
+    },
+    "minecraft:generic.explosion_knockback_resistance": {
+      "id": "minecraft:generic.explosion_knockback_resistance",
+      "amount": 0.1,
+      "operation": "add_value"
+    }
+  },
+  "max_presets": 2,
+  "texture": "dominatus:hud/gem/accuracy"
+}
