@@ -15,10 +15,7 @@ import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.client.event.RefinementTooltip;
-import sypztep.dominatus.client.payload.AddRefineSoundPayloadS2C;
-import sypztep.dominatus.client.payload.AddTextParticlesPayloadS2C;
-import sypztep.dominatus.client.payload.GemBreakPayloadS2C;
-import sypztep.dominatus.client.payload.RefinePayloadS2C;
+import sypztep.dominatus.client.payload.*;
 import sypztep.dominatus.client.screen.PlayerInfoScreen;
 import sypztep.dominatus.client.screen.RefineScreen;
 import sypztep.dominatus.client.screen.RifMissingScreen;
@@ -49,6 +46,7 @@ public class DominatusClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(AddTextParticlesPayloadS2C.ID, new AddTextParticlesPayloadS2C.Receiver());
         ClientPlayNetworking.registerGlobalReceiver(AddRefineSoundPayloadS2C.ID, new AddRefineSoundPayloadS2C.Receiver());
         ClientPlayNetworking.registerGlobalReceiver(GemBreakPayloadS2C.ID, new GemBreakPayloadS2C.Receiver());
+        ClientPlayNetworking.registerGlobalReceiver(SyncAttackDamagePayloadS2C.ID, new SyncAttackDamagePayloadS2C.Receiver());
 
         AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();

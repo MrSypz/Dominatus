@@ -2,7 +2,7 @@ package sypztep.dominatus;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-//import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
@@ -13,6 +13,7 @@ import sypztep.dominatus.common.command.GemCommand;
 import sypztep.dominatus.common.command.RefineSetCommand;
 import sypztep.dominatus.common.event.GemBreakEvent;
 import sypztep.dominatus.common.event.PreventItemUsed;
+import sypztep.dominatus.common.event.RestoreGemPowerEvent;
 import sypztep.dominatus.common.init.*;
 import sypztep.dominatus.common.reloadlistener.DominatusEntityStatsReloadListener;
 import sypztep.dominatus.common.reloadlistener.DominatusItemReloadListener;
@@ -41,8 +42,7 @@ public class Dominatus implements ModInitializer {
         GemBreakEvent.init();
 
         ServerTickEvents.START_SERVER_TICK.register(MultiHitSystem::tick);
-//        ServerPlayerEvents.AFTER_RESPAWN.register(new PlayerRespawnHandler());
-
+        ServerPlayerEvents.AFTER_RESPAWN.register(new RestoreGemPowerEvent());
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusItemReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusEntityStatsReloadListener());
