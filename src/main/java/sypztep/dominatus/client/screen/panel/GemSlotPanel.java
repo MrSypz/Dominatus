@@ -82,7 +82,7 @@ public class GemSlotPanel extends Button {
 
             if (!isPresetSlot && gemData != null && gem.maxPresets() < Integer.MAX_VALUE) {
                 int equippedCount = (int) gemData.getGemPresets().values().stream()
-                        .filter(g -> g != null && g.type().equals(gem.type()))
+                        .filter(g -> g != null && g.group().equals(gem.group()))
                         .count();
                 int maxPresets = gem.maxPresets();
                 String countText = equippedCount + "/" + maxPresets;
@@ -160,27 +160,7 @@ public class GemSlotPanel extends Button {
                 tooltip.add(Text.literal("Left-click to unequip").formatted(Formatting.YELLOW));
             } else {
                 tooltip.add(Text.literal("Click to equip").formatted(Formatting.GREEN));
-                int inventoryCount = (int) gemData.getGemInventory().stream()
-                        .filter(g -> g.type().equals(gem.type()))
-                        .count();
-                tooltip.add(Text.literal("In Inventory: " + inventoryCount).formatted(Formatting.AQUA));
             }
-            tooltip.add(Text.empty());
-            tooltip.add(Text.literal("✧ Effects ✧").formatted(Formatting.YELLOW));
-            gem.attributeModifiers().forEach((attributeId, modifier) -> {
-                EntityAttribute attribute = Registries.ATTRIBUTE.get(attributeId);
-                if (attribute != null) {
-                    String operation = switch (modifier.operation()) {
-                        case ADD_VALUE -> "+";
-                        case ADD_MULTIPLIED_BASE -> "×";
-                        case ADD_MULTIPLIED_TOTAL -> "★";
-                    };
-                    MutableText effectText = Text.literal(operation + String.format(" %.1f ", modifier.value()))
-                            .formatted(Formatting.GREEN)
-                            .append(Text.translatable(attribute.getTranslationKey()).formatted(Formatting.WHITE));
-                    tooltip.add(effectText);
-                }
-            });
         } else if (isPresetSlot) {
             tooltip.add(Text.literal("Empty Preset Slot").formatted(Formatting.GRAY));
             tooltip.add(Text.literal("Click a gem in Inventory to equip").formatted(Formatting.YELLOW));

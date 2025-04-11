@@ -6,10 +6,9 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.screen.panel.ContextMenuPanel;
+import sypztep.dominatus.client.screen.panel.GemDescriptionPanel;
 import sypztep.dominatus.client.screen.panel.GemSlotPanel;
 import sypztep.dominatus.common.component.GemDataComponent;
 import sypztep.dominatus.common.data.GemComponent;
@@ -84,11 +83,15 @@ public class GemTab extends Tab {
         private final List<GemSlotPanel> gemSlots = new ArrayList<>();
         private final ContextMenuPanel contextMenu;
         private int selectedGemIndex = -1;
+        private GemDescriptionPanel descriptionPanel; // Single instance reused
+        private int hoveredGemIndex = -1;
 
         public InventoryPanel(int x, int y, int width, int height, Text title) {
             super(x, y, width, height, title);
             updateContentHeight();
             contextMenu = new ContextMenuPanel(0, 0);
+            // Initialize description panel with default hidden position
+            descriptionPanel = new GemDescriptionPanel(0, 0, 200, 0, null, gemData, false); // Pass gemData
         }
 
         private void updateContentHeight() {
@@ -136,6 +139,7 @@ public class GemTab extends Tab {
 
             List<GemComponent> gemInventory = gemData.getGemInventory();
             gemSlots.clear();
+            hoveredGemIndex = -1;
 
             for (int i = 0; i < gemInventory.size(); i++) {
                 GemComponent gem = gemInventory.get(i);
@@ -158,25 +162,52 @@ public class GemTab extends Tab {
                 slot.render(context, mouseX, mouseY, delta);
                 gemSlots.add(slot);
 
-                // Render gem description with vertical scrolling
+                // Render gem name and group beside the slot
+                String gemName = Text.translatable("item.dominatus.gem." + gem.type().toString().split(":")[1]).getString();
+                String groupLabel = "Group: ";
+                String groupName = gem.group().toString().split(":")[1];
+                int nameX = x + 60; // Right of the slot
+                int maxTextWidth = width - 60 - 10; // Space from slot to edge, minus padding
+                int nameColor = 0xFFFFD700; // White for gem name
+                int groupLabelColor = 0xFFAAAAAA; // Yellow for "Group:"
+                int groupNameColor = 0xFFFFD700; // White for group name
+
+                // Gem name (top, truncated, white)
+                int nameY = slotY + 5; // Near top of slot
+                Text truncatedName = Text.literal(textRenderer.trimToWidth(gemName, maxTextWidth));
+                context.drawTextWithShadow(textRenderer, truncatedName, nameX, nameY, nameColor);
+
+                // Group info (below, "Group:" yellow, name white, truncated)
+                int groupY = slotY + 5 + textRenderer.fontHeight + 2; // Below name with 2px spacing
+                int groupX = nameX;
+                context.drawTextWithShadow(textRenderer, groupLabel, groupX, groupY, groupLabelColor);
+                groupX += textRenderer.getWidth(groupLabel);
+                Text truncatedGroupName = Text.literal(textRenderer.trimToWidth(groupName, maxTextWidth - textRenderer.getWidth(groupLabel)));
+                context.drawTextWithShadow(textRenderer, truncatedGroupName, groupX, groupY, groupNameColor);
+
+                // Check hover for description panel
                 int descX = x + 60;
                 int descYStart = slotY + 5;
-                int descYEnd = slotY + 45; // 50 - 5 padding
-                int descWidth = width - 70; // Adjust for gem slot and padding
-
-                drawGemDescription(context, gem, descX, descYStart, descX + descWidth, descYEnd, canEquipThisGem, mouseX, mouseY);
+                int descYEnd = slotY + 45;
+                if (mouseX >= descX && mouseX <= x + width && mouseY >= descYStart && mouseY <= descYEnd) {
+                    hoveredGemIndex = i;
+                    updateDescriptionPanel(gem, canEquipThisGem, descX, descYEnd);
+                }
             }
+
+            // Render description panel if a gem is hovered
+            descriptionPanel.setVisible(hoveredGemIndex != -1);
+            descriptionPanel.render(context, mouseX, mouseY, delta); // Always render to allow animation
 
             if (selectedGemIndex != -1 && contextMenu != null) {
                 contextMenu.render(context, mouseX, mouseY, delta);
             }
         }
 
-        private void drawGemDescription(DrawContext context, GemComponent gem, int startX, int startY, int endX, int endY, boolean canEquip, int mouseX, int mouseY) {
+        private void updateDescriptionPanel(GemComponent gem, boolean canEquip, int x, int baseY) {
             List<Text> descriptionLines = new ArrayList<>();
-            String gemName = gem.type().toString().split(":")[1];
-            descriptionLines.add(Text.translatable("item.dominatus.gem." + gemName));
-
+            String gemName = Text.translatable("item.dominatus.gem." + gem.type().toString().split(":")[1]).getString();
+            descriptionLines.add(Text.literal(gemName));
             for (Map.Entry<Identifier, EntityAttributeModifier> entry : gem.attributeModifiers().entrySet()) {
                 EntityAttribute attribute = Registries.ATTRIBUTE.get(entry.getKey());
                 if (attribute != null) {
@@ -186,67 +217,27 @@ public class GemTab extends Tab {
                         case ADD_MULTIPLIED_BASE -> "✕";
                         case ADD_MULTIPLIED_TOTAL -> "⚝";
                     };
-                    String effectText = operation + String.format(" %.1f ", modifier.value()) +
-                            Text.translatable(attribute.getTranslationKey()).getString();
-                    descriptionLines.add(Text.literal(effectText));
+                    descriptionLines.add(Text.literal(operation + String.format(" %.1f ", modifier.value()) +
+                            Text.translatable(attribute.getTranslationKey()).getString()));
                 }
             }
+            descriptionLines.add(Text.literal("Group " + gem.group().toString().split(":")[1]));
+            descriptionLines.add(Text.literal(String.format("▶ Equipped: %d/%d",
+                    (int) gemData.getGemPresets().values().stream()
+                            .filter(g -> g != null && g.group().equals(gem.group()))
+                            .count(),
+                    gem.maxPresets())));
 
-            int equippedCount = (int) gemData.getGemPresets().values().stream()
-                    .filter(g -> g != null && g.group().equals(gem.group()))
-                    .count();
-            int maxPresets = gem.maxPresets();
-            String presetText = String.format("Group Equipped: %d/%d", equippedCount, maxPresets);
-            descriptionLines.add(Text.literal(presetText));
+            int panelHeight = descriptionLines.size() * (textRenderer.fontHeight + 2) + 10; // Padding included
+            int panelWidth = 200; // Fixed width, adjust as needed
 
-            int totalHeight = descriptionLines.size() * (textRenderer.fontHeight + 2) - 2;
-            int availableHeight = endY - startY;
+            int panelX = Math.min(x, client.getWindow().getScaledWidth() - panelWidth - 5);
+            int panelY = baseY - panelHeight - 5; // Position above the slot, with 5px gap
 
-            if (totalHeight > availableHeight && isMouseOverGemDescription(startX, startY, endX, endY, mouseX, mouseY)) {
-                // Vertical scrolling
-                double time = (double) Util.getMeasuringTimeMs() / 1000.0;
-                double scrollRange = totalHeight - availableHeight;
-                double speed = Math.max(scrollRange * 0.5, 3.0);
-                double oscillation = Math.sin((Math.PI / 2) * Math.cos((Math.PI * 2) * time / speed)) / 2.0 + 0.5;
-                double scrollOffset = MathHelper.lerp(oscillation, 0.0, scrollRange);
+            // Ensure panel stays on-screen vertically
+            panelY = Math.max(5, Math.min(panelY, client.getWindow().getScaledHeight() - panelHeight - 5));
 
-                context.enableScissor(startX, startY, endX, endY);
-                int currentY = startY - (int) scrollOffset;
-                for (Text line : descriptionLines) {
-                    int color = getLineColor(line, canEquip, equippedCount, maxPresets);
-                    context.drawTextWithShadow(textRenderer, line.getString(), startX, currentY, color);
-                    currentY += textRenderer.fontHeight + 2;
-                }
-                context.disableScissor();
-            } else {
-                // Static rendering if it fits
-                int currentY = startY;
-                for (Text line : descriptionLines) {
-                    if (currentY + textRenderer.fontHeight <= endY) {
-                        int color = getLineColor(line, canEquip, equippedCount, maxPresets);
-                        context.drawTextWithShadow(textRenderer, line.getString(), startX, currentY, color);
-                        currentY += textRenderer.fontHeight + 2;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-
-        private boolean isMouseOverGemDescription(int startX, int startY, int endX, int endY, int mouseX, int mouseY) {
-            return mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= endY;
-        }
-
-        private int getLineColor(Text line, boolean canEquip, int equippedCount, int maxPresets) {
-            String text = line.getString();
-            if (text.contains("Equipped:")) {
-                if (equippedCount >= maxPresets) return 0xFFFF5555;
-                return canEquip ? 0xFF55FF55 : 0xFFFF9955;
-            } else if (text.contains("➕") || text.contains("✕") || text.contains("⚝")) {
-                return canEquip ? 0xFF55FF55 : 0xFF559955;
-            } else {
-                return canEquip ? 0xFFFFD700 : 0xFFAAAAAA;
-            }
+            descriptionPanel.update(gem, canEquip, panelX, panelY, panelWidth, panelHeight); // Update existing instance
         }
 
         private void equipGem(GemComponent gem) {
@@ -255,9 +246,7 @@ public class GemTab extends Tab {
                 if (availableSlot.isPresent()) {
                     int inventoryIndex = gemData.getGemInventory().indexOf(gem);
                     GemActionPayloadC2S.sendEquipGem(availableSlot.get(), inventoryIndex);
-                    //force client update ห้ามลบ
                     gemData.setPresetSlot(availableSlot.get(), gem);
-                    //==
                     updateContentHeight();
                     presetPanel.updateContentHeight();
                     updateSlotsState();

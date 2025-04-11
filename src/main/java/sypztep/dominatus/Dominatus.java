@@ -2,6 +2,7 @@ package sypztep.dominatus;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+//import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
@@ -40,6 +41,8 @@ public class Dominatus implements ModInitializer {
         GemBreakEvent.init();
 
         ServerTickEvents.START_SERVER_TICK.register(MultiHitSystem::tick);
+//        ServerPlayerEvents.AFTER_RESPAWN.register(new PlayerRespawnHandler());
+
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusItemReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusEntityStatsReloadListener());
