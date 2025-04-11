@@ -46,11 +46,6 @@ public class Dominatus implements ModInitializer {
 
         ServerTickEvents.START_SERVER_TICK.register(MultiHitSystem::tick);
 
-        ServerPlayConnectionEvents.JOIN.register((handler, server, client) -> {
-            PlayerEntity player = handler.getPlayer();
-            GemDataComponent.updatePresetSlots(player);
-        });
-
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusItemReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusEntityStatsReloadListener());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new GemItemDataReloadListener());

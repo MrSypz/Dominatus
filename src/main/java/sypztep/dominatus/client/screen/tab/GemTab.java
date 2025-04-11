@@ -255,7 +255,9 @@ public class GemTab extends Tab {
                 if (availableSlot.isPresent()) {
                     int inventoryIndex = gemData.getGemInventory().indexOf(gem);
                     GemActionPayloadC2S.sendEquipGem(availableSlot.get(), inventoryIndex);
+                    //force client update ห้ามลบ
                     gemData.setPresetSlot(availableSlot.get(), gem);
+                    //==
                     updateContentHeight();
                     presetPanel.updateContentHeight();
                     updateSlotsState();
@@ -404,7 +406,10 @@ public class GemTab extends Tab {
             GemActionPayloadC2S.sendUnequipGem(slot);
             updateContentHeight();
             inventoryPanel.updateContentHeight();
+
             gemData.setPresetSlot(slot, null);
+
+            // Update the enabled state of inventory panel slots
             inventoryPanel.updateSlotsState();
         }
 
