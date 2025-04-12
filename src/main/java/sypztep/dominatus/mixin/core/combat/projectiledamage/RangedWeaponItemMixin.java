@@ -23,7 +23,7 @@ public class RangedWeaponItemMixin {
 
         if (projectile instanceof PersistentProjectileEntity projectileEntity) {
             double accuracy = shooter.getAttributeValue(ModEntityAttributes.ACCURACY);
-            projectileEntity.setDamage(projectileEntity.getDamage() + accuracy / 5);
+            projectileEntity.setDamage(projectileEntity.getDamage() + accuracy * 0.2);
         }
     }
 }
