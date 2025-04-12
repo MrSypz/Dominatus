@@ -11,6 +11,7 @@
     "core.combat.newdamage.LivingEntityMixin",
     "core.combat.projectileclipthrough.PersistentProjectileEntityMixin",
     "core.combat.projectileclipthrough.TridentEntityMixin",
+    "core.combat.projectiledamage.RangedWeaponItemMixin",
     "core.combat.specialattack.LivingEntityMixin",
     "core.item.applyrefinestats.LivingEntityMixin",
     "core.item.refinement.ItemMixin",
