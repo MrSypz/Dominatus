@@ -21,6 +21,7 @@ public final class ModEntityAttributes {
     public static final RegistryEntry<EntityAttribute> DOWN_ATTACK = register("down_attack", new ClampedEntityAttribute("attribute.name.down_attack", 0.5, 0.0, 10.24D).setTracked(true));
 
     public static final RegistryEntry<EntityAttribute> HEALTH_REGEN = register("health_regen", new ClampedEntityAttribute("attribute.name.health_regen", 0.0, 0.0, 1024D).setTracked(true));
+    public static final RegistryEntry<EntityAttribute> DAMAGE_REDUCTION = register("damage_reduction", new ClampedEntityAttribute("attribute.name.damage_reduction", 0.0, -1024D, 1024D).setTracked(true));
 
     public static final RegistryEntry<EntityAttribute> PLAYER_VERS_ENTITY_DAMAGE = register("player_vers_entity_damage", new ClampedEntityAttribute("attribute.name.player_vers_entity_damage", 0, 0.0, 1024).setTracked(true));
     public static final RegistryEntry<EntityAttribute> PLAYER_VERS_PLAYER_DAMAGE = register("player_vers_player_damage", new ClampedEntityAttribute("attribute.name.player_vers_player_damage", 0, 0.0, 1024).setTracked(true));
