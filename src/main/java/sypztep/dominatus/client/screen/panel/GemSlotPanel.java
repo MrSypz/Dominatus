@@ -2,18 +2,14 @@ package sypztep.dominatus.client.screen.panel;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.common.component.GemDataComponent;
 import sypztep.dominatus.common.data.GemComponent;
+import sypztep.dominatus.common.util.gemsystem.GemManagerHelper;
 import sypztep.tyrannus.client.screen.panel.Button;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -81,9 +77,7 @@ public class GemSlotPanel extends Button {
             }
 
             if (!isPresetSlot && gemData != null && gem.maxPresets() < Integer.MAX_VALUE) {
-                int equippedCount = (int) gemData.getGemPresets().values().stream()
-                        .filter(g -> g != null && g.group().equals(gem.group()))
-                        .count();
+                int equippedCount = gemData.getEquippedCountForGroup(gem.group());
                 int maxPresets = gem.maxPresets();
                 String countText = equippedCount + "/" + maxPresets;
                 int countColor = equippedCount >= maxPresets ? 0xFFFF5555 : 0xFF55FF55;
@@ -107,7 +101,6 @@ public class GemSlotPanel extends Button {
             }
         }
 
-        // Set tooltip for parent to render
         if (isHovered && isEnabled()) {
             activeTooltip = getTooltip();
         } else {
@@ -150,21 +143,7 @@ public class GemSlotPanel extends Button {
         context.fill(centerX - plusThickness / 2, centerY - plusSize,
                 centerX + plusThickness / 2, centerY + plusSize, plusColor);
     }
-
     private List<Text> getTooltip() {
-        List<Text> tooltip = new ArrayList<>();
-        if (gem != null) {
-            String gemName = gem.type().toString().split(":")[1];
-            tooltip.add(Text.translatable("item.dominatus.gem." + gemName).formatted(Formatting.GOLD));
-            if (isPresetSlot) {
-                tooltip.add(Text.literal("Left-click to unequip").formatted(Formatting.YELLOW));
-            } else {
-                tooltip.add(Text.literal("Click to equip").formatted(Formatting.GREEN));
-            }
-        } else if (isPresetSlot) {
-            tooltip.add(Text.literal("Empty Preset Slot").formatted(Formatting.GRAY));
-            tooltip.add(Text.literal("Click a gem in Inventory to equip").formatted(Formatting.YELLOW));
-        }
-        return tooltip;
+        return GemManagerHelper.getGemTooltip(gem, isPresetSlot);
     }
 }

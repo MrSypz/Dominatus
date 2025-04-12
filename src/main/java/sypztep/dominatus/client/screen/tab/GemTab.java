@@ -41,12 +41,10 @@ public class GemTab extends Tab {
         int leftX = 10;
         int rightX = leftX + leftWidth + 5;
 
-        inventoryPanel = new InventoryPanel(leftX, panelY, leftWidth, panelHeight,
-                Text.translatable("panel.dominatus.gem_inventory"));
+        inventoryPanel = new InventoryPanel(leftX, panelY, leftWidth, panelHeight, Text.translatable("panel.dominatus.gem_inventory"));
         addPanel(inventoryPanel);
 
-        presetPanel = new PresetPanel(rightX, panelY, rightWidth, panelHeight,
-                Text.translatable("panel.dominatus.gem_presets"));
+        presetPanel = new PresetPanel(rightX, panelY, rightWidth, panelHeight, Text.translatable("panel.dominatus.gem_presets"));
         addPanel(presetPanel);
     }
 
@@ -115,16 +113,11 @@ public class GemTab extends Tab {
             int y = getContentY() - (int) scrollAmount;
             int width = getContentWidth() - (enableScrollbar ? scrollbarWidth + scrollbarPadding + 10 : 5);
 
-            int activeGems = (int) gemData.getGemPresets().values().stream().filter(Objects::nonNull).count();
-            int maxGems = GemDataComponent.getMaxPresetSlots(client.player);
-            boolean presetsAreFull = activeGems >= maxGems;
+            boolean presetsAreFull = gemData.hasReachedPresetLimit();
 
-            String inventoryCount = String.format("Inventory (%d/%d)",
-                    gemData.getGemInventory().size(),
-                    GemDataComponent.getMaxInventorySize(client.player));
+            String inventoryCount = GemManagerHelper.formatCountText("Inventory", gemData.getGemInventory().size(), GemDataComponent.getMaxInventorySize(client.player));
             int countColor = presetsAreFull ? 0xFFAAAAAA : 0xFFFFD700;
-            context.drawTextWithShadow(textRenderer, inventoryCount,
-                    x + (width - textRenderer.getWidth(inventoryCount)) / 2, y + 10, countColor);
+            context.drawTextWithShadow(textRenderer, inventoryCount, x + (width - textRenderer.getWidth(inventoryCount)) / 2, y + 10, countColor);
 
             if (presetsAreFull) {
                 String warningText = "⚠ All preset slots are full! Unequip a gem first.";
@@ -150,8 +143,7 @@ public class GemTab extends Tab {
 
                 boolean canEquipThisGem = !presetsAreFull && gemData.canAddGemToPresets(gem);
                 Identifier gemTexture = GemManagerHelper.getGemTexture(gem);
-                GemSlotPanel slot = new GemSlotPanel(x + 10, slotY + 5, 40, 40, gem, gemTexture,
-                        canEquipThisGem ? slotPanel -> equipGem(gem) : null, gemData, false);
+                GemSlotPanel slot = new GemSlotPanel(x + 10, slotY + 5, 40, 40, gem, gemTexture, canEquipThisGem ? slotPanel -> equipGem(gem) : null, gemData, false);
 
                 if (!canEquipThisGem) {
                     slot.setEnabled(false);
@@ -217,16 +209,11 @@ public class GemTab extends Tab {
                         case ADD_MULTIPLIED_BASE -> "✕";
                         case ADD_MULTIPLIED_TOTAL -> "⚝";
                     };
-                    descriptionLines.add(Text.literal(operation + String.format(" %.1f ", modifier.value()) +
-                            Text.translatable(attribute.getTranslationKey()).getString()));
+                    descriptionLines.add(Text.literal(operation + String.format(" %.1f ", modifier.value()) + Text.translatable(attribute.getTranslationKey()).getString()));
                 }
             }
             descriptionLines.add(Text.literal("Group " + gem.group().toString().split(":")[1]));
-            descriptionLines.add(Text.literal(String.format("▶ Equipped: %d/%d",
-                    (int) gemData.getGemPresets().values().stream()
-                            .filter(g -> g != null && g.group().equals(gem.group()))
-                            .count(),
-                    gem.maxPresets())));
+            descriptionLines.add(Text.literal(String.format("▶ Equipped: %d/%d", gemData.getEquippedCountForGroup(gem.group()), gem.maxPresets())));
 
             int panelHeight = descriptionLines.size() * (textRenderer.fontHeight + 2) + 10; // Padding included
             int panelWidth = 200; // Fixed width, adjust as needed
@@ -322,17 +309,15 @@ public class GemTab extends Tab {
 
             int activeGems = (int) gemData.getGemPresets().values().stream().filter(Objects::nonNull).count();
             int maxGems = GemDataComponent.getMaxPresetSlots(client.player);
-            boolean isFull = activeGems >= maxGems;
+            boolean isFull = gemData.hasReachedPresetLimit();
 
-            String presetCount = String.format("Equipped Gems (%d/%d)", activeGems, maxGems);
+            String presetCount = GemManagerHelper.formatCountText("Equipped Gems", activeGems, maxGems);
             int countColor = isFull ? 0xFFFF5555 : 0xFFFFD700;
-            context.drawTextWithShadow(textRenderer, presetCount,
-                    x + (width - textRenderer.getWidth(presetCount)) / 2, y + 10, countColor);
+            context.drawTextWithShadow(textRenderer, presetCount, x + (width - textRenderer.getWidth(presetCount)) / 2, y + 10, countColor);
 
             String statusText = isFull ? "Maximum gems equipped!" : "Click a gem in inventory to equip";
             int statusColor = isFull ? 0xFFFF5555 : 0xFF55FF55;
-            context.drawTextWithShadow(textRenderer, statusText,
-                    x + (width - textRenderer.getWidth(statusText)) / 2, y + 26, statusColor);
+            context.drawTextWithShadow(textRenderer, statusText, x + (width - textRenderer.getWidth(statusText)) / 2, y + 26, statusColor);
 
             drawGradientDivider(context, x + 10, y + 44, width - 20, 1.0f);
 
@@ -344,8 +329,7 @@ public class GemTab extends Tab {
             renderCrossPattern(context, centerX, centerY, presets, mouseX, mouseY, delta);
         }
 
-        private void renderCrossPattern(DrawContext context, int centerX, int centerY,
-                                        Map<Identifier, GemComponent> presets, int mouseX, int mouseY, float delta) {
+        private void renderCrossPattern(DrawContext context, int centerX, int centerY, Map<Identifier, GemComponent> presets, int mouseX, int mouseY, float delta) {
             List<Map.Entry<Identifier, GemComponent>> presetEntries = new ArrayList<>(presets.entrySet());
             int maxSlots = GemDataComponent.getMaxPresetSlots(client.player);
 
@@ -373,9 +357,7 @@ public class GemTab extends Tab {
                 Identifier slotId = i < presetEntries.size() ? presetEntries.get(i).getKey() : null;
                 GemComponent gem = i < presetEntries.size() ? presetEntries.get(i).getValue() : null;
 
-                GemSlotPanel slot = new GemSlotPanel(slotX, slotY, SLOT_SIZE, SLOT_SIZE, gem,
-                        GemManagerHelper.getGemTexture(gem),
-                        gem != null ? slotPanel -> unequipGem(slotId) : null, gemData, true);
+                GemSlotPanel slot = new GemSlotPanel(slotX, slotY, SLOT_SIZE, SLOT_SIZE, gem, GemManagerHelper.getGemTexture(gem), gem != null ? slotPanel -> unequipGem(slotId) : null, gemData, true);
 
                 if (gem == null) {
                     slot.setEnabled(true);

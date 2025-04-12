@@ -1,12 +1,9 @@
 package sypztep.dominatus.common.util.gemsystem;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -15,6 +12,8 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.component.GemDataComponent;
@@ -118,6 +117,22 @@ public final class GemManagerHelper {
         for (Identifier modifierId : modifiersToRemove) {
             instance.removeModifier(modifierId);
         }
+    }
+    public static String formatCountText(String label, int current, int max) {
+        return String.format("%s (%d/%d)", label, current, max);
+    }
+    public static List<Text> getGemTooltip(GemComponent gem, boolean isPresetSlot) {
+        List<Text> tooltip = new ArrayList<>();
+        if (gem != null) {
+            String gemName = gem.type().toString().split(":")[1];
+            tooltip.add(Text.translatable("item.dominatus.gem." + gemName).formatted(Formatting.GOLD));
+            tooltip.add(Text.literal(isPresetSlot ? "Left-click to unequip" : "Click to equip")
+                    .formatted(isPresetSlot ? Formatting.YELLOW : Formatting.GREEN));
+        } else if (isPresetSlot) {
+            tooltip.add(Text.literal("Empty Preset Slot").formatted(Formatting.GRAY));
+            tooltip.add(Text.literal("Click a gem in Inventory to equip").formatted(Formatting.YELLOW));
+        }
+        return tooltip;
     }
 
     private static void applyGemModifiers(LivingEntity entity, Map<Identifier, GemComponent> presets) {

@@ -145,6 +145,19 @@ public class GemDataComponent implements AutoSyncedComponent {
     public static GemDataComponent get(PlayerEntity player) {
         return ModEntityComponents.GEM_DATA_COMPONENT.get(player);
     }
+    public int getEquippedCountForGroup(Identifier group) {
+        if (group == null) return 0;
+        return (int) gemPresets.values().stream()
+                .filter(g -> g != null && g.group().equals(group))
+                .count();
+    }
+    public boolean hasReachedPresetLimit() {
+        return getActivePresetCount() >= MAX_PRESET_SLOTS;
+    }
+
+    public int getActivePresetCount() {
+        return (int) gemPresets.values().stream().filter(Objects::nonNull).count();
+    }
 
     public static int getMaxInventorySize(PlayerEntity player) {
         return get(player).getMaxInventorySize();
