@@ -11,6 +11,7 @@ public final class RefinementBuilder {
     private int durability;
     private float damage;
     private int protection;
+    private int damageReduction;
 
     public RefinementBuilder() {
         this.refine = 0;
@@ -19,6 +20,7 @@ public final class RefinementBuilder {
         this.durability = 100;
         this.damage = 0;
         this.protection = 0;
+        this.damageReduction = 0;
     }
 
     public RefinementBuilder fromExisting(Refinement existing) {
@@ -29,6 +31,7 @@ public final class RefinementBuilder {
             this.durability = existing.durability();
             this.damage = existing.damage();
             this.protection = existing.protection();
+            this.damageReduction = existing.damageReduction();
         }
         return this;
     }
@@ -63,9 +66,15 @@ public final class RefinementBuilder {
         return this;
     }
 
-    public Refinement build() {
-        return new Refinement(refine, accuracy, evasion, durability, damage, protection);
+    public RefinementBuilder withDamageReduction(int damageReduction) {
+        this.damageReduction = damageReduction;
+        return this;
     }
+
+    public Refinement build() {
+        return new Refinement(refine, accuracy, evasion, durability, damage, protection, damageReduction);
+    }
+
     public void applyTo(ItemStack stack) {
         stack.set(ModDataComponents.REFINEMENT, build());
     }

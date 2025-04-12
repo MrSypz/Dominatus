@@ -27,6 +27,7 @@ public final class RefinementItemManager {
     private static final Identifier ARMOR_MODIFIER_ID = Dominatus.id("extra.armor_stats");
     private static final Identifier ACCURACY_MODIFIER_ID = Dominatus.id("extra.accuracy_stats");
     private static final Identifier EVASION_MODIFIER_ID = Dominatus.id("extra.evasion_stats");
+    private static final Identifier DAMAGE_REDUCTION_MODIFIER_ID = Dominatus.id("extra.damage_reduction_stats");
 
     public static void updateEntityStats(LivingEntity entity) {
         clearExistingModifiers(entity);
@@ -46,6 +47,7 @@ public final class RefinementItemManager {
         removeAttributeModifier(entity, EntityAttributes.GENERIC_ARMOR, ARMOR_MODIFIER_ID);
         removeAttributeModifier(entity, ModEntityAttributes.ACCURACY, ACCURACY_MODIFIER_ID);
         removeAttributeModifier(entity, ModEntityAttributes.EVASION, EVASION_MODIFIER_ID);
+        removeAttributeModifier(entity, ModEntityAttributes.DAMAGE_REDUCTION, DAMAGE_REDUCTION_MODIFIER_ID);
     }
 
     private static void forceUpdateAttributes(LivingEntity entity) {
@@ -53,6 +55,7 @@ public final class RefinementItemManager {
         updateAttribute(entity, EntityAttributes.GENERIC_ARMOR, ARMOR_MODIFIER_ID, STATS_HOLDER.protection);
         updateAttribute(entity, ModEntityAttributes.ACCURACY, ACCURACY_MODIFIER_ID, STATS_HOLDER.accuracy);
         updateAttribute(entity, ModEntityAttributes.EVASION, EVASION_MODIFIER_ID, STATS_HOLDER.evasion);
+        updateAttribute(entity, ModEntityAttributes.DAMAGE_REDUCTION, DAMAGE_REDUCTION_MODIFIER_ID, STATS_HOLDER.damageReduction);
     }
 
     private static void removeAttributeModifier(LivingEntity entity, RegistryEntry<EntityAttribute> attribute, Identifier modifierId) {
@@ -67,12 +70,14 @@ public final class RefinementItemManager {
         public int accuracy;
         public float damage;
         public int protection;
+        public int damageReduction;
 
         public void add(Refinement refinement) {
             this.evasion += refinement.evasion();
             this.accuracy += refinement.accuracy();
             this.damage += refinement.damage();
             this.protection += refinement.protection();
+            this.damageReduction += refinement.damageReduction();
         }
 
         public void reset() {
@@ -80,6 +85,7 @@ public final class RefinementItemManager {
             accuracy = 0;
             damage = 0;
             protection = 0;
+            damageReduction = 0;
         }
     }
 

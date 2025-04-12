@@ -220,20 +220,23 @@ public final class RefineScreen
         context.getMatrices().push();
         context.getMatrices().scale(scale, scale, 1.0f);
 
-        // Stats data array to hold all stat pairs
+        // Stats data arrays
         StatPair[] stats = {
                 new StatPair("ACC:", currentRef.accuracy(),
                         RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
-                                entry.startAccuracy(), entry.endAccuracy())),
+                                entry.accuracy().start(), entry.accuracy().end())),
                 new StatPair("EVA:", currentRef.evasion(),
                         RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
-                                entry.startEvasion(), entry.endEvasion())),
-                new StatPair("DMG:", currentRef.damage(),
-                        RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
-                                entry.starDamage(), entry.endDamage())),
+                                entry.evasion().start(), entry.evasion().end())),
                 new StatPair("DEF:", currentRef.protection(),
                         RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
-                                entry.startProtection(), entry.endProtection()))
+                                entry.protection().start(), entry.protection().end())),
+                new StatPair("DR:", currentRef.damageReduction(),
+                        RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                                entry.damageReduction().start(), entry.damageReduction().end())),
+                new StatPair("DMG:", currentRef.damage(),
+                        RefinementCalculator.calculateStatValue(currentLevel + 1, entry.maxLvl(),
+                                entry.damage().start(), entry.damage().end()))
         };
 
         float baseY = LEFT_LABEL_START_Y / scale;

@@ -43,13 +43,15 @@ public final class RefinementManager {
                 .fromExisting(oldRef)
                 .withRefine(newLevel)
                 .withAccuracy(RefinementCalculator.calculateStatValue(
-                        newLevel, entry.maxLvl(), entry.startAccuracy(), entry.endAccuracy()))
+                        newLevel, entry.maxLvl(), entry.accuracy().start(), entry.accuracy().end()))
                 .withEvasion(RefinementCalculator.calculateStatValue(
-                        newLevel, entry.maxLvl(), entry.startEvasion(), entry.endEvasion()))
+                        newLevel, entry.maxLvl(), entry.evasion().start(), entry.evasion().end()))
                 .withDamage(RefinementCalculator.calculateStatValue(
-                        newLevel, entry.maxLvl(), entry.starDamage(), entry.endDamage()))
+                        newLevel, entry.maxLvl(), entry.damage().start(), entry.damage().end()))
                 .withProtection(RefinementCalculator.calculateStatValue(
-                        newLevel, entry.maxLvl(), entry.startProtection(), entry.endProtection()))
+                        newLevel, entry.maxLvl(), entry.protection().start(), entry.protection().end()))
+                .withDamageReduction(RefinementCalculator.calculateStatValue(
+                        newLevel, entry.maxLvl(), entry.damageReduction().start(), entry.damageReduction().end()))
                 .applyTo(stack);
     }
 

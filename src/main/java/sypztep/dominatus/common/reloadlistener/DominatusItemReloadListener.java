@@ -11,12 +11,14 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.data.DominatusItemEntry;
+import sypztep.dominatus.common.util.refinesystem.StatRange;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public final class DominatusItemReloadListener implements SimpleSynchronousResourceReloadListener {
-    private static final Identifier ID = Dominatus.id("penomioritemdata");
+    private static final Identifier ID = Dominatus.id("itemdata");
+
     @Override
     public Identifier getFabricId() {
         return ID;
@@ -35,7 +37,6 @@ public final class DominatusItemReloadListener implements SimpleSynchronousResou
                     Identifier itemId = Identifier.of(itemIdStr);
                     Item item = Registries.ITEM.get(itemId);
 
-                    // Log the processing
                     Dominatus.LOGGER.info("Processing item: {}", itemId);
 
                     if (item == Registries.ITEM.get(Registries.ITEM.getDefaultId()) && !itemId.equals(Registries.ITEM.getDefaultId())) {
@@ -44,30 +45,40 @@ public final class DominatusItemReloadListener implements SimpleSynchronousResou
                     }
 
                     JsonObject itemProperties = object.getAsJsonObject("itemProperties");
+                    JsonObject modifier = itemProperties.getAsJsonObject("modifier");
 
                     int maxLvl = itemProperties.get("maxLvl").getAsInt();
-                    int startAccuracy = itemProperties.get("startAccuracy").getAsInt();
-                    int endAccuracy = itemProperties.get("endAccuracy").getAsInt();
-                    int startEvasion = itemProperties.get("startEvasion").getAsInt();
-                    int endEvasion = itemProperties.get("endEvasion").getAsInt();
+                    StatRange<Integer> accuracy = new StatRange<>(
+                            modifier.getAsJsonObject("accuracy").get("start").getAsInt(),
+                            modifier.getAsJsonObject("accuracy").get("end").getAsInt()
+                    );
+                    StatRange<Integer> evasion = new StatRange<>(
+                            modifier.getAsJsonObject("evasion").get("start").getAsInt(),
+                            modifier.getAsJsonObject("evasion").get("end").getAsInt()
+                    );
                     int maxDurability = itemProperties.get("maxDurability").getAsInt();
-                    int starDamage = itemProperties.get("starDamage").getAsInt();
-                    int endDamage = itemProperties.get("endDamage").getAsInt();
-                    int startProtection = itemProperties.get("startProtection").getAsInt();
-                    int endProtection = itemProperties.get("endProtection").getAsInt();
+                    StatRange<Float> damage = new StatRange<>(
+                            modifier.getAsJsonObject("damage").get("start").getAsFloat(),
+                            modifier.getAsJsonObject("damage").get("end").getAsFloat()
+                    );
+                    StatRange<Integer> protection = new StatRange<>(
+                            modifier.getAsJsonObject("protection").get("start").getAsInt(),
+                            modifier.getAsJsonObject("protection").get("end").getAsInt()
+                    );
+                    StatRange<Integer> damageReduction = new StatRange<>(
+                            modifier.getAsJsonObject("damageReduction").get("start").getAsInt(),
+                            modifier.getAsJsonObject("damageReduction").get("end").getAsInt()
+                    );
                     int repairpoint = itemProperties.get("repairpoint").getAsInt();
 
                     DominatusItemEntry entry = new DominatusItemEntry(
                             maxLvl,
-                            startAccuracy,
-                            endAccuracy,
-                            startEvasion,
-                            endEvasion,
+                            accuracy,
+                            evasion,
                             maxDurability,
-                            starDamage,
-                            endDamage,
-                            startProtection,
-                            endProtection,
+                            damage,
+                            protection,
+                            damageReduction,
                             repairpoint
                     );
 
