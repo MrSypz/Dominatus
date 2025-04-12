@@ -3,7 +3,7 @@ package sypztep.dominatus.common.util.refinesystem;
 import net.minecraft.util.math.MathHelper;
 
 public final class RefinementCalculator {
-    // Base success rates for each enhancement level (0-20)
+    // Base success rates for each enhancement level (0-20), made harder for 15-20
     private static final double[] SUCCESS_RATES = {
             1.0,    // 0
             0.95,   // 1 - First breakpoint
@@ -20,12 +20,12 @@ public final class RefinementCalculator {
             0.30,   // 12
             0.25,   // 13
             0.20,   // 14
-            0.15,   // 15 - Third breakpoint
-            0.125,  // PRI (16)
-            0.10,   // DUO (17)
-            0.075,  // TRI (18)
-            0.05,   // TET (19)
-            0.025   // PEN (20) - Final breakpoint
+            0.10,   // 15 - Third breakpoint (was 0.15)
+            0.08,   // PRI (16, was 0.125)
+            0.06,   // DUO (17, was 0.10)
+            0.04,   // TRI (18, was 0.075)
+            0.03,   // TET (19, was 0.05)
+            0.015   // PEN (20, was 0.025)
     };
 
     // Constants for enhancement system
@@ -33,21 +33,21 @@ public final class RefinementCalculator {
     private static final double[] FAILSTACK_MULTIPLIERS = {
             0.01,   // 0-7 (+1% per failstack)
             0.015,  // 8-14 (+1.5% per failstack)
-            0.02,   // 15-16 PRI (+2% per failstack)
-            0.015,  // 17 DUO
-            0.01,   // 18 TRI
-            0.0075, // 19 TET
-            0.005   // 20 PEN (+0.5% per failstack)
+            0.02,   // 15 PRI (+2% per failstack)
+            0.015,  // 16-17 DUO (unchanged)
+            0.01,   // 18 TRI (unchanged)
+            0.006,  // 19 TET (was 0.0075)
+            0.004   // 20 PEN (was 0.005)
     };
 
     private static final int[] FAILSTACK_CAPS = {
             20,   // 0-7
             35,   // 8-14
-            50,   // 15 PRI
-            55,   // 16-17 DUO
-            60,   // 18 TRI
-            100,  // 19 TET
-            150   // 20 PEN
+            45,   // 15 PRI (was 50)
+            50,   // 16-17 DUO (was 55)
+            55,   // 18 TRI (was 60)
+            90,   // 19 TET (was 100)
+            140   // 20 PEN (was 150)
     };
 
     // Function to map enhancement level to the appropriate array index
@@ -82,20 +82,24 @@ public final class RefinementCalculator {
         if (currentLvl < 0 || currentLvl > maxLvl) {
             currentLvl = MathHelper.clamp(currentLvl, 0, maxLvl);
         }
-        return calculateValue(currentLvl, maxLvl, startValue, endValue).intValue();
+        // Add 15 to endValue at max refinement
+        int adjustedEndValue = endValue + (int) (15 * ((double) currentLvl / maxLvl));
+        return calculateValue(currentLvl, maxLvl, startValue, adjustedEndValue).intValue();
     }
 
     public static float calculateStatValue(int currentLvl, int maxLvl, float startValue, float endValue) {
         if (currentLvl < 0 || currentLvl > maxLvl) {
             currentLvl = MathHelper.clamp(currentLvl, 0, maxLvl);
         }
-        return calculateValue(currentLvl, maxLvl, startValue, endValue).floatValue();
+        // Add 15 to endValue at max refinement
+        float adjustedEndValue = endValue + (15 * ((float) currentLvl / maxLvl));
+        return calculateValue(currentLvl, maxLvl, startValue, adjustedEndValue).floatValue();
     }
 
     private static Number calculateValue(int currentLvl, int maxLvl, Number startValue, Number endValue) {
         currentLvl = MathHelper.clamp(currentLvl, 0, maxLvl);
 
-        double relativePosition = (double)currentLvl / maxLvl;
+        double relativePosition = (double) currentLvl / maxLvl;
 
         double ratio;
         double maxLevel20Ratio = 20.0 / maxLvl;
@@ -115,14 +119,15 @@ public final class RefinementCalculator {
             ratio = 0.75 + 0.25 * Math.min(normalizedPosition, 1.0);
         }
 
-        ratio = Math.pow(ratio, 1.1);
+        // Adjusted exponent to make curve slightly steeper for higher levels
+        ratio = Math.pow(ratio, 1.2);
 
         if (startValue instanceof Integer) {
-            int range = ((Integer)endValue) - ((Integer)startValue);
-            return ((Integer)startValue) + (int)(ratio * range);
+            int range = ((Integer) endValue) - ((Integer) startValue);
+            return ((Integer) startValue) + (int) (ratio * range);
         } else {
-            float range = ((Float)endValue) - ((Float)startValue);
-            return ((Float)startValue) + (float)(ratio * range);
+            float range = ((Float) endValue) - ((Float) startValue);
+            return ((Float) startValue) + (float) (ratio * range);
         }
     }
 }

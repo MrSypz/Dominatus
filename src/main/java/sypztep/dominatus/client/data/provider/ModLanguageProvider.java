@@ -77,6 +77,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("attribute.name.player_vers_entity_damage", "PvE Damage");
         translate.add("attribute.name.player_vers_player_damage", "PvP Damage");
         translate.add("attribute.name.health_regen","Health Regen");
+        translate.add("attribute.name.damage_reduction","Damage Reduction");
         // Miscellaneous
         translate.add("item.dominatus.loss_fragment", "Loss Fragment");
         translate.add("item.dominatus.loss_fragment.desc", "Combine to obtain Refined Armor Enforge.");
