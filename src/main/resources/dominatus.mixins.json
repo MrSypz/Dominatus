@@ -18,6 +18,7 @@
     "core.item.refinement.freerepair.AnvilScreenHandlerMixin",
     "core.item.refinement.iteminfo.ItemStackMixin",
     "core.item.refinement.newdurability.ItemStackMixin",
+    "core.item.remvoearmortoughness.ArmorItemMixin",
     "core.registry.attribute.LivingEntityMixin",
     "core.registry.attribute.apply.ServerWorldMixin",
     "core.registry.attribute.healthregen.LivingEntityMixin",

@@ -23,6 +23,13 @@ public class EntityAttributesMixin {
                     Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), new ClampedEntityAttribute("attribute.name.generic.armor", 0.0, -1000000.0, 1000000.0).setTracked(true)));
             case "generic.attack_damage" -> info.setReturnValue(
                     Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), new ClampedEntityAttribute("attribute.name.generic.attack_damage", 2.0, 0.0, 1000000.0)));
+            case "generic.armor_toughness" -> info.setReturnValue(
+                    Registry.registerReference(
+                            Registries.ATTRIBUTE,
+                            Identifier.ofVanilla(id),
+                            new ClampedEntityAttribute("attribute.name.generic.armor_toughness", 0.0, 0.0, 0.0).setTracked(false)
+                    )
+            );
         }
     }
 }
