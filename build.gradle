@@ -42,6 +42,9 @@ repositories {
     maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup 'maven.modrinth'
+        }
     }
     maven {
         name = "Jade"
@@ -78,6 +81,8 @@ dependencies {
     modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
 
     modImplementation "curse.maven:jade-324717:${jade_version}"
+
+    modCompileOnly "maven.modrinth:ranged-weapon-api:${project.ranged_weapon_api_version}"
 }
 
 processResources {
@@ -124,9 +129,29 @@ modrinth {
     gameVersions = ["1.21", "1.21.1"]
     loaders = ["fabric"]
     changelog = """
-## What's New
-- Make a bow refinement are more better now every 5 accuracy increase range damage by 1
-- No longer crash with Ranged Weapon API
+## Bug Fixes
+- Fixed repair point system for SimplySwords weapon compatibility
+
+## Technical Changes
+- Centralized stats information system for consistency
+- Change accuracy cap to 100% from 95%
+
+## Combat System Changes
+
+### New Damage System v3
+The main goal of this is bypass the 30 armor points vanilla limit which prevents users from having high armor values.
+
+**System Comparison:**
+
+| Feature                 | Vanilla Minecraft | Dominatus v2 | Dominatus v3                              |
+|-------------------------|------------------|---------------|-------------------------------------------|
+| **Base Formula**        | Complex formula with diminishing returns | Bracket-based system | Simple: `damage = damage - defense`       |
+| **Defense Calculation** | `armor - (damage / (2 + toughness/4))` | DP brackets with linear interpolation | `defense = armor + (armorToughness * 1.2)`  |
+| **Maximum Reduction**   | Can reach 100% | Hard cap at 30% | Hard cap at 90%                           |
+| **Armor Penetration**   | Modifies effectiveness value | Not directly addressed | Directly reduces final damage reduction % |
+| **High Armor**          | Diminishing returns after 20 armor | Bracket system caps benefits | Linear scaling with 90% maximum           |
+| **Armor Toughness**     | Reduces impact of high damage | Small bonus (2-3% at 12 DR) | Direct 1.2× multiplier to defense         |
+
 """
     dependencies { // A special DSL for creating dependencies
         // scope.type

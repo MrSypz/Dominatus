@@ -1,10 +1,12 @@
-package sypztep.dominatus.common.stats;
+package sypztep.dominatus.client.screen.stats;
 
+import net.fabric_extras.ranged_weapon.api.EntityAttributes_RangedWeapon;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.registry.entry.RegistryEntry;
+import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class StatRegistry {
 
     // Category definitions
     public static final String CATEGORY_COMBAT = "header.dominatus.combat_stats";
+    public static final String RWI_COMPAT = "header.dominatus.ranged_stats";
     public static final String CATEGORY_ATTRIBUTES = "header.dominatus.player_attributes";
 
     // Register all stats - this is called during mod initialization
@@ -55,6 +58,63 @@ public class StatRegistry {
                         getAttributeBaseValue(entity, ModEntityAttributes.CRIT_DAMAGE)) * 100f),
                 true);
 
+        registerStat("back_attack", "stat.dominatus.back_attack",
+                entity -> (double) Math.round(getAttributeBaseValue(entity, ModEntityAttributes.BACK_ATTACK) * 100f),
+                entity -> (double) Math.round((getAttributeValue(entity, ModEntityAttributes.BACK_ATTACK) -
+                        getAttributeBaseValue(entity, ModEntityAttributes.BACK_ATTACK)) * 100f),
+                true);
+
+        registerStat("air_attack", "stat.dominatus.air_attack",
+                entity -> (double) Math.round(getAttributeBaseValue(entity, ModEntityAttributes.AIR_ATTACK) * 100f),
+                entity -> (double) Math.round((getAttributeValue(entity, ModEntityAttributes.AIR_ATTACK) -
+                        getAttributeBaseValue(entity, ModEntityAttributes.AIR_ATTACK)) * 100f),
+                true);
+
+        registerStat("down_attack", "stat.dominatus.down_attack",
+                entity -> (double) Math.round(getAttributeBaseValue(entity, ModEntityAttributes.DOWN_ATTACK) * 100f),
+                entity -> (double) Math.round((getAttributeValue(entity, ModEntityAttributes.DOWN_ATTACK) -
+                        getAttributeBaseValue(entity, ModEntityAttributes.DOWN_ATTACK)) * 100f),
+                true);
+
+        registerStat("player_vers_entity_damage", "stat.dominatus.player_vers_entity_damage",
+                entity -> (double) Math.round(getAttributeBaseValue(entity, ModEntityAttributes.PLAYER_VERS_ENTITY_DAMAGE)),
+                entity -> (double) Math.round(getAttributeValue(entity, ModEntityAttributes.PLAYER_VERS_ENTITY_DAMAGE) -
+                        getAttributeBaseValue(entity, ModEntityAttributes.PLAYER_VERS_ENTITY_DAMAGE)),
+                false);
+
+        registerStat("player_vers_player_damage", "stat.dominatus.player_vers_player_damage",
+                entity -> (double) Math.round(getAttributeBaseValue(entity, ModEntityAttributes.PLAYER_VERS_PLAYER_DAMAGE)),
+                entity -> (double) Math.round(getAttributeValue(entity, ModEntityAttributes.PLAYER_VERS_PLAYER_DAMAGE) -
+                                getAttributeBaseValue(entity, ModEntityAttributes.PLAYER_VERS_PLAYER_DAMAGE)),
+                        false);
+
+        // RWI Stats (only register if RWI mod is loaded)
+        if (Dominatus.isRWILoaded) {
+            registerHeader(RWI_COMPAT);
+            registerStat("ranged_damage", "stat.dominatus.ranged_damage",
+                    entity -> (double) Math.round(getAttributeBaseValue(entity, (EntityAttributes_RangedWeapon.DAMAGE.entry))),
+                    entity -> (double) Math.round(getAttributeValue(entity, (EntityAttributes_RangedWeapon.DAMAGE.entry)) -
+                            getAttributeBaseValue(entity, (EntityAttributes_RangedWeapon.DAMAGE.entry))),
+                    false);
+
+            registerStat("pull_time", "stat.dominatus.pull_time",
+                    entity -> (double) Math.round(getAttributeBaseValue(entity, (EntityAttributes_RangedWeapon.PULL_TIME.entry)) * 20), // Convert to ticks
+                    entity -> (double) Math.round((getAttributeValue(entity, (EntityAttributes_RangedWeapon.PULL_TIME.entry)) -
+                            getAttributeBaseValue(entity, (EntityAttributes_RangedWeapon.PULL_TIME.entry))) * 20),
+                    false);
+
+            registerStat("ranged_haste", "stat.dominatus.ranged_haste",
+                    entity -> (double) Math.round(getAttributeBaseValue(entity, (EntityAttributes_RangedWeapon.HASTE.entry))),
+                    entity -> (double) Math.round(getAttributeValue(entity, (EntityAttributes_RangedWeapon.HASTE.entry)) -
+                            getAttributeBaseValue(entity, (EntityAttributes_RangedWeapon.HASTE.entry))),
+                    false);
+
+            registerStat("velocity", "stat.dominatus.velocity",
+                    entity -> (double) Math.round(getAttributeBaseValue(entity, (EntityAttributes_RangedWeapon.VELOCITY.entry))),
+                    entity -> (double) Math.round(getAttributeValue(entity, (EntityAttributes_RangedWeapon.VELOCITY.entry)) -
+                            getAttributeBaseValue(entity, (EntityAttributes_RangedWeapon.VELOCITY.entry))),
+                    false);
+        }
         // Player Attributes Category
         registerHeader(CATEGORY_ATTRIBUTES);
 

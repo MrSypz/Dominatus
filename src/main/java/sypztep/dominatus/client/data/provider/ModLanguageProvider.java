@@ -218,6 +218,79 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("stat.dominatus.attack_speed.details",
                 "Base attack speed is 4 attacks per second. Higher values decrease the cooldown between attacks.");
 
+
+        // Back Attack stat
+        translate.add("stat.dominatus.back_attack", "Back Attack Damage");
+        translate.add("stat.dominatus.back_attack.label", "Back Attack Damage %s");
+        translate.add("stat.dominatus.back_attack.desc",
+                "Increases damage dealt when attacking enemies from behind.");
+        translate.add("stat.dominatus.back_attack.details",
+                "Each point increases back attack damage by 1% of the base damage.");
+
+        // Air Attack stat
+        translate.add("stat.dominatus.air_attack", "Air Attack Damage");
+        translate.add("stat.dominatus.air_attack.label", "Air Attack Damage %s");
+        translate.add("stat.dominatus.air_attack.desc",
+                "Boosts damage dealt to enemies while they are airborne.");
+        translate.add("stat.dominatus.air_attack.details",
+                "Each point increases air attack damage by 1% of the base damage.");
+
+        // Down Attack stat
+        translate.add("stat.dominatus.down_attack", "Down Attack Damage");
+        translate.add("stat.dominatus.down_attack.label", "Down Attack Damage %s");
+        translate.add("stat.dominatus.down_attack.desc",
+                "Enhances damage dealt to enemies that are knocked down.");
+        translate.add("stat.dominatus.down_attack.details",
+                "Each point increases down attack damage by 1% of the base damage.");
+
+        // Player vs Entity Damage stat
+        translate.add("stat.dominatus.player_vers_entity_damage", "PvE Damage");
+        translate.add("stat.dominatus.player_vers_entity_damage.label", "PvE Damage %s");
+        translate.add("stat.dominatus.player_vers_entity_damage.desc",
+                "Increases damage dealt to non-player entities (monsters, animals, etc.).");
+        translate.add("stat.dominatus.player_vers_entity_damage.details",
+                "Each point adds a flat amount to damage against entities.");
+
+        // Player vs Player Damage stat
+        translate.add("stat.dominatus.player_vers_player_damage", "PvP Damage");
+        translate.add("stat.dominatus.player_vers_player_damage.label", "PvP Damage %s");
+        translate.add("stat.dominatus.player_vers_player_damage.desc",
+                "Increases damage dealt to other players in combat.");
+        translate.add("stat.dominatus.player_vers_player_damage.details",
+                "Each point adds a flat amount to damage against players.");
+
+        //RWI COMPAT
+        translate.add("header.dominatus.ranged_stats", "RANGED STATISTICS");
+        translate.add("stat.dominatus.ranged_damage", "Ranged Damage");
+        translate.add("stat.dominatus.ranged_damage.label", "Ranged Damage %s");
+        translate.add("stat.dominatus.ranged_damage.desc",
+                "The base damage dealt by ranged weapons like bows or crossbows.");
+        translate.add("stat.dominatus.ranged_damage.details",
+                "Each point increases the damage of ranged attacks.");
+
+        // Pull Time stat
+        translate.add("stat.dominatus.pull_time", "Draw Time");
+        translate.add("stat.dominatus.pull_time.label", "Draw Time %s ticks");
+        translate.add("stat.dominatus.pull_time.desc",
+                "Time required to fully draw a ranged weapon.");
+        translate.add("stat.dominatus.pull_time.details",
+                "Lower values mean faster drawing. Measured in ticks (20 ticks = 1 second).");
+
+        // Ranged Haste stat
+        translate.add("stat.dominatus.ranged_haste", "Ranged Haste");
+        translate.add("stat.dominatus.ranged_haste.label", "Ranged Haste %s");
+        translate.add("stat.dominatus.ranged_haste.desc",
+                "Increases the speed of drawing and firing ranged weapons.");
+        translate.add("stat.dominatus.ranged_haste.details",
+                "Each point reduces the time between ranged attacks.");
+
+        // Velocity stat
+        translate.add("stat.dominatus.velocity", "Projectile Velocity");
+        translate.add("stat.dominatus.velocity.label", "Projectile Velocity %s");
+        translate.add("stat.dominatus.velocity.desc",
+                "Speed of projectiles fired from ranged weapons.");
+        translate.add("stat.dominatus.velocity.details",
+                "Higher values increase the travel speed of arrows or other projectiles.");
         // Unknown stat fallback
         translate.add("stat.dominatus.unknown", "Unknown Stat");
         translate.add("stat.dominatus.unknown.desc", "No information available for this stat.");

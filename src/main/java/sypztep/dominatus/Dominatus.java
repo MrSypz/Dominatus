@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -23,12 +24,17 @@ import sypztep.dominatus.common.util.combatsystem.MultiHitSystem;
 public class Dominatus implements ModInitializer {
     public static final String MODID = "dominatus";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
+
+    public static boolean isRWILoaded = false;
+
     public static Identifier id(String path) {
         return Identifier.of(MODID, path);
     }
 
     @Override
     public void onInitialize() {
+        isRWILoaded = FabricLoader.getInstance().isModLoaded("ranged_weapon_api");
+
         ModDataComponents.init();
         ModScreenHandler.init();
 

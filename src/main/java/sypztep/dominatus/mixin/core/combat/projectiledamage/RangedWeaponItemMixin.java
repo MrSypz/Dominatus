@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 
-@Mixin(RangedWeaponItem.class)
+@Mixin(value = RangedWeaponItem.class)
 public class RangedWeaponItemMixin {
     @WrapOperation(
             method = "shootAll",
@@ -22,8 +22,8 @@ public class RangedWeaponItemMixin {
         original.call(instance, shooter, projectile, index, speed, divergence, yaw, target);
 
         if (projectile instanceof PersistentProjectileEntity projectileEntity) {
-            double accuracy = shooter.getAttributeValue(ModEntityAttributes.ACCURACY);
-            projectileEntity.setDamage(projectileEntity.getDamage() + accuracy * 0.2);
+            double accuracyBonus = (shooter.getAttributeValue(ModEntityAttributes.ACCURACY) - shooter.getAttributeBaseValue(ModEntityAttributes.ACCURACY)) * 0.2f;
+            projectileEntity.setDamage(projectileEntity.getDamage() + accuracyBonus);
         }
     }
 }

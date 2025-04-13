@@ -4,8 +4,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.client.screen.panel.TableStatsPanel;
-import sypztep.dominatus.common.stats.StatRegistry;
-import sypztep.dominatus.common.stats.StatRegistry.StatDefinition;
+import sypztep.dominatus.client.screen.stats.StatRegistry;
+import sypztep.dominatus.client.screen.stats.StatRegistry.StatDefinition;
 import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
 import sypztep.tyrannus.client.screen.tab.Tab;
 

@@ -2,9 +2,9 @@ package sypztep.dominatus.client.screen.panel;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
-import sypztep.dominatus.common.stats.StatRegistry;
-import sypztep.dominatus.common.stats.StatRegistry.StatDefinition;
-import sypztep.dominatus.common.stats.StatRegistry.StatValue;
+import sypztep.dominatus.client.screen.stats.StatRegistry;
+import sypztep.dominatus.client.screen.stats.StatRegistry.StatDefinition;
+import sypztep.dominatus.client.screen.stats.StatRegistry.StatValue;
 import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
 
 import java.util.ArrayList;
