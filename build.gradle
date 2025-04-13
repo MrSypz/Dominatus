@@ -1,5 +1,6 @@
 plugins {
     id 'fabric-loom' version '1.9-SNAPSHOT'
+    id "com.modrinth.minotaur" version "2.+"
     id 'maven-publish'
 }
 
@@ -100,6 +101,47 @@ tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         it.options.release.set(targetJavaVersion)
+    }
+}
+
+def envFile = new File('.env')
+if (envFile.exists()) {
+    envFile.eachLine { line ->
+        def (key, value) = line.tokenize('=')
+        if (key && value) {
+            project.ext.set(key.trim(), value.trim())
+        }
+    }
+}
+
+
+modrinth {
+    token = project.ext.has('MODRINTH_TOKEN') ? project.ext.MODRINTH_TOKEN : System.getenv("MODRINTH_TOKEN")
+    projectId = "GXWZHp1x"
+    versionNumber = project.mod_version+"-"+project.minecraft_version
+    versionType = "beta" // This is the default -- can also be `beta` or `alpha`
+    uploadFile = remapJar
+    gameVersions = ["1.21", "1.21.1"]
+    loaders = ["fabric"]
+    changelog = """
+## What's New
+- Make a bow refinement are more better now every 5 accuracy increase range damage by 1
+- No longer crash with Ranged Weapon API
+"""
+    dependencies { // A special DSL for creating dependencies
+        // scope.type
+        // The scope can be `required`, `optional`, `incompatible`, or `embedded`
+        // The type can either be `project` or `version`
+        required.project "fabric-api" // Creates a new required dependency on Fabric API
+        required.project "cloth-config"
+        required.project "modmenu"
+        required.project "accessories"
+        required.version "knumber", "1.0.2-1.21.1"
+        required.version "reduced-invincibility-frames", "1.0.1-1.21.1"
+        optional.project "jade"
+        incompatible.project "forgified-fabric-api"
+        incompatible.project "connector"
+        embedded.project "cardinal-components-api"
     }
 }
 
