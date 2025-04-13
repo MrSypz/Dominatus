@@ -1,70 +1,85 @@
 package sypztep.dominatus.common.util.combatsystem;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+
+import static sypztep.dominatus.Dominatus.LOGGER;
 
 public final class NewDamage {
-    private static final float VANILLA_MAX_DR = 12.0F;
-
-    // DP brackets: every 7 DP up to 157, inspired by BDO tiers
-    private static final float[] DP_BRACKETS = {
-            0, 7, 14, 21, 28, 35, 42, 49, 56, 63, 70, 77, 84, 91, 98, 105, 112, 119, 126, 133, 140, 157
-    };
-    private static final float[] DR_PER_BRACKET = {
-            0.00F, 0.01F, 0.02F, 0.03F, 0.04F, 0.05F, 0.06F, 0.07F, 0.08F, 0.09F,
-            0.10F, 0.11F, 0.12F, 0.13F, 0.14F, 0.15F, 0.16F, 0.17F, 0.18F, 0.19F,
-            0.20F, 0.21F
-    }; // DR% per tier, up to 21% at 157 DP
+    // Maximum damage reduction cap (90%)
+    private static final float MAX_REDUCTION = 0.9F;
 
     /**
-     * Calculate damage after applying armor-based reduction.
-     * @return Reduced damage amount
+     * Calculate damage after applying armor-based reduction using PoE-inspired formula.
+     * <br><br>
+     * Formula: damage = damage - defense
+     * With a maximum damage reduction of 90%.
+     *
+     * @param armorWearer The entity wearing armor
+     * @param damageAmount The incoming damage amount
+     * @param damageSource The source of the damage
+     * @param armor The armor value
+     * @param armorToughness The armor toughness value
+     * @return The damage after reduction
      */
-    public static float applyArmorToDamage(LivingEntity entity, float damage) {
-        float drPercent = getDamageReductionPercent(entity);
-        return damage * (1.0F - drPercent);
-    }
+    public static float getDamageLeft(LivingEntity armorWearer, float damageAmount, DamageSource damageSource, float armor, float armorToughness) {
+//        LOGGER.info("==================== DAMAGE CALCULATION START ====================");
+//        LOGGER.info("Entity: {}, Initial Damage: {}", armorWearer.getName().getString(), damageAmount);
+//        LOGGER.info("Armor: {}, Toughness: {}", armor, armorToughness);
 
-    /**
-     * Get the current damage reduction percentage based on DP and DR.
-     * @return DR percentage (0.0 to 1.0)
-     */
-    public static float getDamageReductionPercent(LivingEntity entity) {
-        float totalDP = (float) entity.getAttributeValue(EntityAttributes.GENERIC_ARMOR); // DP from evasion
-        float totalDR = Math.min((float) entity.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS), VANILLA_MAX_DR); // DR capped at 12
-        return calculateDamageReduction(totalDP, totalDR);
-    }
+        // Calculate base defense
+        float baseDefense = armor + armorToughness * 1.2F;
+//        LOGGER.info("Base Defense (armor + toughness*1.2): {}", baseDefense);
 
-    /**
-     * Calculate DR% using DP brackets and a small DR bonus, BDO-style.
-     * @return DR percentage (0.0 to 1.0)
-     */
-    private static float calculateDamageReduction(float dp, float dr) {
-        float dpBaseDR = 0.0F;
-        for (int i = 0; i < DP_BRACKETS.length - 1; i++) {
-            if (dp <= DP_BRACKETS[i]) {
-                dpBaseDR = DR_PER_BRACKET[i];
-                break;
-            } else if (dp <= DP_BRACKETS[i + 1]) {
-                // Linear interpolation between brackets
-                float dpRange = DP_BRACKETS[i + 1] - DP_BRACKETS[i];
-                float drRange = DR_PER_BRACKET[i + 1] - DR_PER_BRACKET[i];
-                float dpProgress = (dp - DP_BRACKETS[i]) / dpRange;
-                dpBaseDR = DR_PER_BRACKET[i] + (drRange * dpProgress);
-                break;
-            }
+        float reducedDamage = Math.max(0.0F, damageAmount - baseDefense);
+        float initialDamageReduction = damageAmount > 0.0F
+                ? 1.0F - (reducedDamage / damageAmount)
+                : 0.0F;
+//        LOGGER.info("Initial Damage Reduction (before penetration): {}%", initialDamageReduction * 100);
+
+        // Apply armor penetration (directly reduces damage reduction)
+        float penetrationPercentage = 0.0F;
+        ItemStack itemStack = damageSource.getWeaponStack();
+//        LOGGER.info("Weapon: {}", itemStack != null ? itemStack.getName().getString() : "None");
+
+        if (itemStack != null && armorWearer.getWorld() instanceof ServerWorld serverWorld) {
+            // Get modified armor effectiveness with penetration applied
+            float modifiedArmorEffectiveness = EnchantmentHelper.getArmorEffectiveness(
+                    serverWorld,
+                    itemStack,
+                    armorWearer,
+                    damageSource,
+                    initialDamageReduction
+            );
+
+            // Calculate penetration as the absolute difference in effectiveness
+            penetrationPercentage = initialDamageReduction - modifiedArmorEffectiveness;
+
+//            LOGGER.info("Base DR: {}%, Modified DR: {}%, Penetration: {}%",
+//                    initialDamageReduction * 100,
+//                    modifiedArmorEffectiveness * 100,
+//                    penetrationPercentage * 100);
         }
-        // If DP exceeds max bracket (157), use highest tier
-        if (dp > DP_BRACKETS[DP_BRACKETS.length - 1]) {
-            dpBaseDR = DR_PER_BRACKET[DP_BRACKETS.length - 1];
-        }
 
-        // DR contribution: Small bonus, tuned for ~2-3% at 12 DR
-        float drK = 60.0F; // 12 / (12 + 60) ≈ 0.167
-        float drContribution = dr / (dr + drK); // 12 DR → ~0.167
-        float drScaled = drContribution * 0.15F; // ~2.5% at 12 DR
+        // Apply penetration directly to damage reduction percentage
+        float damageReduction = Math.max(0.0F, initialDamageReduction - penetrationPercentage);
+//        LOGGER.info("Final Damage Reduction (after penetration): {}%", damageReduction * 100);
 
-        // Total DR capped at 30%, aiming for ~20% at (157 DP, 12 DR)
-        return Math.min(dpBaseDR + drScaled, 0.30F);
+        // Apply the 90% cap to damage reduction
+        float cappedReduction = Math.min(damageReduction, MAX_REDUCTION);
+//        if (damageReduction > MAX_REDUCTION) {
+//            LOGGER.info("Damage Reduction capped from {}% to {}%",
+//                    damageReduction * 100, MAX_REDUCTION * 100);
+//        }
+
+        // Calculate the final damage after capped reduction
+        //        LOGGER.info("Final Damage: {} ({}% of original)",
+//                finalDamage, ((finalDamage / damageAmount) * 100));
+//        LOGGER.info("==================== DAMAGE CALCULATION END ====================");
+
+        return damageAmount * (1.0F - cappedReduction);
     }
 }
