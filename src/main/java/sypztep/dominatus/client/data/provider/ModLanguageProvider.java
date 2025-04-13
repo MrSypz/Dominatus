@@ -111,6 +111,9 @@ public class ModLanguageProvider extends FabricLanguageProvider {
     private void genetrateTabGem(TranslationBuilder translate) {
         translate.add("panel.dominatus.gem_inventory", "Gem Inventory");
         translate.add("panel.dominatus.gem_presets", "Gem Presets");
+
+        translate.add("panel.dominatus.info", "Information");
+        translate.add("panel.dominatus.gem_stats", "Gem Stat Bonuses");
     }
     private void generateConfig(TranslationBuilder translate) {
         translate.add("text.autoconfig.dominatus.title", "Dominatus Config");

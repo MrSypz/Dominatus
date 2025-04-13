@@ -1,9 +1,11 @@
 package sypztep.dominatus.client.screen.tab;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.registry.Registries;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
@@ -14,7 +16,9 @@ import sypztep.dominatus.common.component.GemDataComponent;
 import sypztep.dominatus.common.data.GemComponent;
 import sypztep.dominatus.common.payload.GemActionPayloadC2S;
 import sypztep.dominatus.common.util.gemsystem.GemManagerHelper;
+import sypztep.tyrannus.client.screen.panel.Button;
 import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
+import sypztep.tyrannus.client.screen.panel.UIPanel;
 import sypztep.tyrannus.client.screen.tab.Tab;
 
 import java.util.*;
@@ -23,6 +27,8 @@ public class GemTab extends Tab {
     private final GemDataComponent gemData;
     private InventoryPanel inventoryPanel;
     private PresetPanel presetPanel;
+    private Button overlayButton;
+    private InformationPanel infoPanel;
 
     public GemTab() {
         super("gems", Text.translatable("tab.dominatus.gems"), Dominatus.id("hud/gem/gem"));
@@ -32,7 +38,7 @@ public class GemTab extends Tab {
     @Override
     protected void initPanels() {
         int totalWidth = parentScreen.width - 20;
-        int panelHeight = parentScreen.height - 100;
+        int panelHeight = parentScreen.height - 100; // Adjusted for button
         int panelY = 65;
 
         int leftWidth = totalWidth / 2;
@@ -46,15 +52,32 @@ public class GemTab extends Tab {
 
         presetPanel = new PresetPanel(rightX, panelY, rightWidth, panelHeight, Text.translatable("panel.dominatus.gem_presets"));
         addPanel(presetPanel);
+
+        // Initialize overlay button
+        int buttonWidth = 100;
+        int buttonHeight = 20;
+        int buttonX = (parentScreen.width - buttonWidth) / 3;
+        int buttonY = parentScreen.height - 30;
+        overlayButton = new Button(buttonX, buttonY, buttonWidth, buttonHeight,
+                Text.translatable("panel.dominatus.info"), button -> {
+            infoPanel.setVisible(!infoPanel.targetVisible);
+        });
+        addPanel(overlayButton);
+
+        // Initialize information panel
+        int infoHeight = 150;
+        int infoY = parentScreen.height; // Off-screen initially
+        infoPanel = new InformationPanel(leftX, infoY, leftWidth, infoHeight, gemData);
+        infoPanel.setVisible(false);
+        addPanel(infoPanel);
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
-        // Render tooltip at tab level with vanilla style
         context.getMatrices().push();
-        context.getMatrices().translate(0, 0, 10); // Z-index 10
+        context.getMatrices().translate(0, 0, 10);
         renderTooltip(context, mouseX, mouseY);
         context.getMatrices().pop();
     }
@@ -77,19 +100,361 @@ public class GemTab extends Tab {
         }
     }
 
+    private static List<Text> aggregateGemStats(GemDataComponent gemData) {
+        List<Text> statLines = new ArrayList<>();
+        Map<String, Double> aggregatedModifiers = new HashMap<>();
+
+        // Aggregate modifiers
+        for (GemComponent gem : gemData.getGemPresets().values()) {
+            if (gem != null) {
+                for (Map.Entry<Identifier, EntityAttributeModifier> entry : gem.attributeModifiers().entrySet()) {
+                    EntityAttribute attribute = Registries.ATTRIBUTE.get(entry.getKey());
+                    if (attribute != null) {
+                        EntityAttributeModifier modifier = entry.getValue();
+                        String key = attribute.getTranslationKey();
+                        double value = aggregatedModifiers.getOrDefault(key, 0.0);
+                        switch (modifier.operation()) {
+                            case ADD_VALUE:
+                                value += modifier.value();
+                                break;
+                            case ADD_MULTIPLIED_BASE:
+                            case ADD_MULTIPLIED_TOTAL:
+                                value += modifier.value() * 100; // Convert to percentage
+                                break;
+                        }
+                        aggregatedModifiers.put(key, value);
+                    }
+                }
+            }
+        }
+
+        // Title
+        statLines.add(Text.translatable("panel.dominatus.gem_stats")
+                .styled(style -> style.withBold(true).withColor(0xFFFFD700)));
+
+        // Stats or empty message
+        if (aggregatedModifiers.isEmpty()) {
+            statLines.add(Text.literal("No stat bonuses from equipped gems.")
+                    .styled(style -> style.withItalic(true).withColor(0xFFAAAAAA)));
+        } else {
+            aggregatedModifiers.forEach((key, value) -> {
+                String operation = key.contains("crit_chance") || key.contains("crit_damage") ?
+                        "✕" : "➕";
+                String format = value % 1 == 0 ? "%.0f" : "%.1f";
+                String symbol = key.contains("crit_chance") || key.contains("crit_damage") ? "%" : "";
+                String displayValue = String.format(format + symbol, value); // Show negative sign
+                int valueColor = value >= 0 ? 0xFF55FF55 : 0xFFFF5555;
+
+                statLines.add(Text.empty()
+                        .append(Text.literal(operation).styled(style -> style.withColor(0xFFAAAAAA)))
+                        .append(" ")
+                        .append(Text.literal(displayValue).styled(style -> style.withColor(valueColor)))
+                        .append(" ")
+                        .append(Text.translatable(key).styled(style -> style.withColor(0xFFFFFF))));
+            });
+        }
+
+        return statLines;
+    }
+
+    private class SimpleButton {
+        private final int x, y, width, height;
+        private final Text text;
+        private final Runnable onClick;
+        private boolean isPressed = false;
+        private boolean isEnabled = true;
+        private boolean wasHovered = false;
+        private float pressAnimation = 0.0f;
+        private float hoverAnimation = 0.0f;
+        private static final int BG_NORMAL = 0xFF2A2A2A;
+        private static final int BG_HOVER = 0xFF3A3A3A;
+        private static final int BG_PRESSED = 0xFF1A1A1A;
+        private static final int BG_DISABLED = 0xFF1A1A1A;
+        private static final int TEXT_NORMAL = 0xFFAAAAAA;
+        private static final int TEXT_HOVER = 0xFFFFFFFF;
+        private static final int TEXT_DISABLED = 0xFF666666;
+        private static final int CORNER_RADIUS = 4;
+
+        public SimpleButton(int x, int y, int width, int height, Text text, Runnable onClick) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.text = text;
+            this.onClick = onClick;
+        }
+
+        public void render(DrawContext context, int mouseX, int mouseY, float delta, int textAlpha) {
+            // Update animations
+            if (isPressed) {
+                pressAnimation = Math.min(1.0f, pressAnimation + 0.2f * delta);
+                hoverAnimation = Math.min(1.0f, hoverAnimation + 0.3f * delta);
+            } else {
+                pressAnimation = Math.max(0.0f, pressAnimation - 0.1f * delta);
+                if (isMouseOver(mouseX, mouseY) && isEnabled) {
+                    hoverAnimation = Math.min(1.0f, hoverAnimation + 0.3f * delta);
+                } else {
+                    hoverAnimation = Math.max(0.0f, hoverAnimation - 0.3f * delta);
+                }
+            }
+
+            // Handle hover sound
+            boolean isNowHovered = isMouseOver(mouseX, mouseY) && isEnabled;
+            if (isNowHovered && !wasHovered && client != null) {
+                client.getSoundManager().play(
+                        PositionedSoundInstance.master(SoundEvents.BLOCK_NOTE_BLOCK_HAT, 1.8F)
+                );
+            }
+            wasHovered = isNowHovered;
+
+            // Calculate colors
+            int bgColor;
+            int textColor;
+            if (!isEnabled) {
+                bgColor = BG_DISABLED;
+                textColor = TEXT_DISABLED;
+            } else {
+                bgColor = interpolateColor(
+                        interpolateColor(BG_NORMAL, BG_HOVER, hoverAnimation),
+                        BG_PRESSED, pressAnimation
+                );
+                textColor = interpolateColor(TEXT_NORMAL, TEXT_HOVER, hoverAnimation);
+            }
+            textColor = (textAlpha << 24) | (textColor & 0xFFFFFF);
+
+            // Apply scale animation
+            float scale = 1.0f + (hoverAnimation * 0.05f) - (pressAnimation * 0.05f);
+            context.getMatrices().push();
+            context.getMatrices().translate(x + width / 2.0f, y + height / 2.0f, 0);
+            context.getMatrices().scale(scale, scale, 1.0f);
+            context.getMatrices().translate(-(x + width / 2.0f), -(y + height / 2.0f), 0);
+
+            // Draw rounded background
+            context.fill(x + CORNER_RADIUS, y, x + width - CORNER_RADIUS, y + height, bgColor);
+            context.fill(x, y + CORNER_RADIUS, x + width, y + height - CORNER_RADIUS, bgColor);
+
+            // Draw gradient effect
+            int topGradient = lightenColor(bgColor, 0.2f);
+            int bottomGradient = darkenColor(bgColor, 0.2f);
+            float gradientHeight = height * 0.15f;
+            context.fill(x, y, x + width, y + (int) gradientHeight, topGradient);
+            context.fill(x, y + height - (int) gradientHeight, x + width, y + height, bottomGradient);
+
+            // Draw shadow
+            int shadowColor = (textAlpha << 24) | 0x66000000;
+            int shadowOffset = 2;
+            context.fill(x + shadowOffset, y + shadowOffset,
+                    x + width + shadowOffset, y + height + shadowOffset, shadowColor);
+
+            // Draw text with press offset
+            int textY = y + (height - client.textRenderer.fontHeight) / 2 + (int) (pressAnimation * 1.5f);
+            context.drawTextWithShadow(client.textRenderer, text, x + (width - client.textRenderer.getWidth(text)) / 2, textY, textColor);
+
+            // Draw glow effect
+            if (hoverAnimation > 0.3f && isEnabled) {
+                int glowAlpha = (int) (40 * hoverAnimation * (textAlpha / 255.0f));
+                int glowColor = (glowAlpha << 24) | 0xFFFFFF;
+                int glowSize = 1;
+                context.fill(x - glowSize, y - glowSize, x + width + glowSize, y, glowColor);
+                context.fill(x - glowSize, y + height, x + width + glowSize, y + height + glowSize, glowColor);
+                context.fill(x - glowSize, y, x, y + height, glowColor);
+                context.fill(x + width, y, x + width + glowSize, y + height, glowColor);
+            }
+
+            context.getMatrices().pop();
+        }
+
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (button == 0 && isMouseOver(mouseX, mouseY) && isEnabled) {
+                isPressed = true;
+                if (client != null) {
+                    client.getSoundManager().play(
+                            PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F)
+                    );
+                }
+                onClick.run();
+                return true;
+            }
+            isPressed = false;
+            return false;
+        }
+
+        private boolean isMouseOver(double mouseX, double mouseY) {
+            return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
+        }
+
+        private int interpolateColor(int color1, int color2, float fraction) {
+            int a1 = (color1 >> 24) & 0xFF;
+            int r1 = (color1 >> 16) & 0xFF;
+            int g1 = (color1 >> 8) & 0xFF;
+            int b1 = color1 & 0xFF;
+
+            int a2 = (color2 >> 24) & 0xFF;
+            int r2 = (color2 >> 16) & 0xFF;
+            int g2 = (color2 >> 8) & 0xFF;
+            int b2 = color2 & 0xFF;
+
+            int a = (int) (a1 + (a2 - a1) * fraction);
+            int r = (int) (r1 + (r2 - r1) * fraction);
+            int g = (int) (g1 + (g2 - g1) * fraction);
+            int b = (int) (b1 + (b2 - b1) * fraction);
+
+            return (a << 24) | (r << 16) | (g << 8) | b;
+        }
+
+        private int lightenColor(int color, float factor) {
+            int a = (color >> 24) & 0xFF;
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = color & 0xFF;
+
+            r = Math.min(255, (int) (r + (255 - r) * factor));
+            g = Math.min(255, (int) (g + (255 - g) * factor));
+            b = Math.min(255, (int) (b + (255 - b) * factor));
+
+            return (a << 24) | (r << 16) | (g << 8) | b;
+        }
+
+        private int darkenColor(int color, float factor) {
+            int a = (color >> 24) & 0xFF;
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = color & 0xFF;
+
+            r = Math.max(0, (int) (r * (1 - factor)));
+            g = Math.max(0, (int) (g * (1 - factor)));
+            b = Math.max(0, (int) (b * (1 - factor)));
+
+            return (a << 24) | (r << 16) | (g << 8) | b;
+        }
+    }
+
+    private class InformationPanel extends UIPanel {
+        private final GemDataComponent gemData;
+        private float animationProgress = 0.0f;
+        private static final float ANIMATION_SPEED = 0.015f;
+        private boolean isVisible = false;
+        private boolean targetVisible = false;
+        private static final int BG_COLOR = 0xFF1A1A1A;
+        private static final int BORDER_COLOR = 0xFF424242;
+        private List<Text> statLines;
+        private final SimpleButton closeButton;
+
+        public InformationPanel(int x, int y, int width, int height, GemDataComponent gemData) {
+            super(x, y, width, height, null);
+            this.gemData = gemData;
+            this.setDrawHeader(false);
+            this.setDrawBorder(true);
+            this.setPadding(5);
+            updateContent();
+            // Initialize close button (bottom-right)
+            int buttonWidth = 60;
+            int buttonHeight = 20;
+            int buttonX = x + width - buttonWidth - padding;
+            int buttonY = y + height - buttonHeight - padding;
+            this.closeButton = new SimpleButton(buttonX, buttonY, buttonWidth, buttonHeight,
+                    Text.literal("Close"), () -> this.targetVisible = false);
+        }
+
+        public void setVisible(boolean visible) {
+            this.targetVisible = visible;
+            this.isVisible = true; // Keep rendering during fade-out
+        }
+
+        public boolean isFullyClosed() {
+            return !isVisible && animationProgress <= 0.0f;
+        }
+
+        public void updateContent() {
+            statLines = aggregateGemStats(gemData);
+        }
+
+        private float easeInOutCubic(float t) {
+            return t < 0.5f ? 4 * t * t * t : 1 - (float) Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        @Override
+        public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+            if (!isVisible && animationProgress <= 0.0f) {
+                return;
+            }
+
+            // Update animation
+            if (targetVisible) {
+                animationProgress = Math.min(1.0f, animationProgress + ANIMATION_SPEED);
+            } else {
+                animationProgress = Math.max(0.0f, animationProgress - ANIMATION_SPEED);
+            }
+
+            // Fully close when faded out
+            if (!targetVisible && animationProgress <= 0.0f) {
+                isVisible = false;
+            }
+
+            // Apply easing
+            float easedProgress = easeInOutCubic(animationProgress);
+
+            // Calculate animated position (slide from bottom)
+            int animatedY = (int) (parentScreen.height - (height * easedProgress));
+            int alpha = (int) (easedProgress * 255);
+            int borderColor = (alpha << 24) | (BORDER_COLOR & 0xFFFFFF);
+
+            context.getMatrices().push();
+            context.getMatrices().translate(0, animatedY - y, 50); // z=50
+
+            // Draw background
+            context.fill(x, y, x + width, y + height, BG_COLOR);
+
+            // Draw border
+            if (drawBorder) {
+                context.fill(x, y, x + width, y + 1, borderColor);
+                context.fill(x, y + height - 1, x + width, y + height, borderColor);
+                context.fill(x, y, x + 1, y + height, borderColor);
+                context.fill(x + width - 1, y, x + width, y + height, borderColor);
+            }
+
+            // Render contents
+            renderContents(context, mouseX, mouseY, delta, animatedY);
+
+            context.getMatrices().pop();
+        }
+
+        protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta, int animatedY) {
+            int textY = y + padding;
+            int textAlpha = (int) (easeInOutCubic(animationProgress) * 255);
+
+            for (Text line : statLines) {
+                context.drawTextWithShadow(textRenderer, line, x + padding, textY, 0xFFFFFF | (textAlpha << 24));
+                textY += textRenderer.fontHeight + 2;
+            }
+
+            closeButton.render(context, mouseX, mouseY - (animatedY - y), delta, textAlpha);
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (isVisible && animationProgress > 0) {
+                int animatedY = (int) (parentScreen.height - (height * easeInOutCubic(animationProgress)));
+                if (closeButton.mouseClicked(mouseX, mouseY - (animatedY - y), button)) {
+                    return true;
+                }
+            }
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+    }
+
     private class InventoryPanel extends ScrollablePanel {
         private final List<GemSlotPanel> gemSlots = new ArrayList<>();
         private final ContextMenuPanel contextMenu;
         private int selectedGemIndex = -1;
-        private GemDescriptionPanel descriptionPanel; // Single instance reused
+        private GemDescriptionPanel descriptionPanel;
         private int hoveredGemIndex = -1;
 
         public InventoryPanel(int x, int y, int width, int height, Text title) {
             super(x, y, width, height, title);
             updateContentHeight();
             contextMenu = new ContextMenuPanel(0, 0);
-            // Initialize description panel with default hidden position
-            descriptionPanel = new GemDescriptionPanel(0, 0, 200, 0, null, gemData, false); // Pass gemData
+            descriptionPanel = new GemDescriptionPanel(0, 0, 200, 0, null, gemData, false);
         }
 
         private void updateContentHeight() {
@@ -154,30 +519,26 @@ public class GemTab extends Tab {
                 slot.render(context, mouseX, mouseY, delta);
                 gemSlots.add(slot);
 
-                // Render gem name and group beside the slot
                 String gemName = Text.translatable("item.dominatus.gem." + gem.type().toString().split(":")[1]).getString();
                 String groupLabel = "Group: ";
                 String groupName = gem.group().toString().split(":")[1];
-                int nameX = x + 60; // Right of the slot
-                int maxTextWidth = width - 60 - 10; // Space from slot to edge, minus padding
-                int nameColor = 0xFFFFD700; // White for gem name
-                int groupLabelColor = 0xFFAAAAAA; // Yellow for "Group:"
-                int groupNameColor = 0xFFFFD700; // White for group name
+                int nameX = x + 60;
+                int maxTextWidth = width - 60 - 10;
+                int nameColor = 0xFFFFD700;
+                int groupLabelColor = 0xFFAAAAAA;
+                int groupNameColor = 0xFFFFD700;
 
-                // Gem name (top, truncated, white)
-                int nameY = slotY + 5; // Near top of slot
+                int nameY = slotY + 5;
                 Text truncatedName = Text.literal(textRenderer.trimToWidth(gemName, maxTextWidth));
                 context.drawTextWithShadow(textRenderer, truncatedName, nameX, nameY, nameColor);
 
-                // Group info (below, "Group:" yellow, name white, truncated)
-                int groupY = slotY + 5 + textRenderer.fontHeight + 2; // Below name with 2px spacing
+                int groupY = slotY + 5 + textRenderer.fontHeight + 2;
                 int groupX = nameX;
                 context.drawTextWithShadow(textRenderer, groupLabel, groupX, groupY, groupLabelColor);
                 groupX += textRenderer.getWidth(groupLabel);
                 Text truncatedGroupName = Text.literal(textRenderer.trimToWidth(groupName, maxTextWidth - textRenderer.getWidth(groupLabel)));
                 context.drawTextWithShadow(textRenderer, truncatedGroupName, groupX, groupY, groupNameColor);
 
-                // Check hover for description panel
                 int descX = x + 60;
                 int descYStart = slotY + 5;
                 int descYEnd = slotY + 45;
@@ -187,9 +548,8 @@ public class GemTab extends Tab {
                 }
             }
 
-            // Render description panel if a gem is hovered
             descriptionPanel.setVisible(hoveredGemIndex != -1);
-            descriptionPanel.render(context, mouseX, mouseY, delta); // Always render to allow animation
+            descriptionPanel.render(context, mouseX, mouseY, delta);
 
             if (selectedGemIndex != -1 && contextMenu != null) {
                 contextMenu.render(context, mouseX, mouseY, delta);
@@ -215,16 +575,15 @@ public class GemTab extends Tab {
             descriptionLines.add(Text.literal("Group " + gem.group().toString().split(":")[1]));
             descriptionLines.add(Text.literal(String.format("▶ Equipped: %d/%d", gemData.getEquippedCountForGroup(gem.group()), gem.maxPresets())));
 
-            int panelHeight = descriptionLines.size() * (textRenderer.fontHeight + 2) + 10; // Padding included
-            int panelWidth = 200; // Fixed width, adjust as needed
+            int panelHeight = descriptionLines.size() * (textRenderer.fontHeight + 2) + 10;
+            int panelWidth = 200;
 
             int panelX = Math.min(x, client.getWindow().getScaledWidth() - panelWidth - 5);
-            int panelY = baseY - panelHeight - 5; // Position above the slot, with 5px gap
+            int panelY = baseY - panelHeight - 5;
 
-            // Ensure panel stays on-screen vertically
             panelY = Math.max(5, Math.min(panelY, client.getWindow().getScaledHeight() - panelHeight - 5));
 
-            descriptionPanel.update(gem, canEquip, panelX, panelY, panelWidth, panelHeight); // Update existing instance
+            descriptionPanel.update(gem, canEquip, panelX, panelY, panelWidth, panelHeight);
         }
 
         private void equipGem(GemComponent gem) {
@@ -236,6 +595,7 @@ public class GemTab extends Tab {
                     gemData.setPresetSlot(availableSlot.get(), gem);
                     updateContentHeight();
                     presetPanel.updateContentHeight();
+                    infoPanel.updateContent();
                     updateSlotsState();
                 }
             }
@@ -248,6 +608,7 @@ public class GemTab extends Tab {
                 GemActionPayloadC2S.sendRemoveGem(selectedGemIndex);
                 updateContentHeight();
                 presetPanel.updateContentHeight();
+                infoPanel.updateContent();
                 updateSlotsState();
                 selectedGemIndex = -1;
             });
@@ -377,10 +738,8 @@ public class GemTab extends Tab {
             GemActionPayloadC2S.sendUnequipGem(slot);
             updateContentHeight();
             inventoryPanel.updateContentHeight();
-
+            infoPanel.updateContent();
             gemData.setPresetSlot(slot, null);
-
-            // Update the enabled state of inventory panel slots
             inventoryPanel.updateSlotsState();
         }
 
