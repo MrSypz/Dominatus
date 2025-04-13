@@ -4,12 +4,12 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.client.screen.panel.TableStatsPanel;
+import sypztep.dominatus.common.stats.StatRegistry;
+import sypztep.dominatus.common.stats.StatRegistry.StatDefinition;
 import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
 import sypztep.tyrannus.client.screen.tab.Tab;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Tab for displaying player statistics with a split panel layout:
@@ -18,33 +18,6 @@ import java.util.Map;
  */
 public class StatsTab extends Tab {
     private String selectedStat = "";
-    private static final Map<String, TableStatsPanel.StatDescription> statDescriptions = new HashMap<>();
-
-    static {
-        statDescriptions.put("accuracy", new TableStatsPanel.StatDescription("stat.dominatus.accuracy", "stat.dominatus.accuracy.desc", "stat.dominatus.accuracy.details"));
-
-        statDescriptions.put("evasion", new TableStatsPanel.StatDescription("stat.dominatus.evasion", "stat.dominatus.evasion.desc", "stat.dominatus.evasion.details"));
-
-        statDescriptions.put("crit_chance", new TableStatsPanel.StatDescription("stat.dominatus.crit_chance", "stat.dominatus.crit_chance.desc", "stat.dominatus.crit_chance.details"));
-
-        statDescriptions.put("crit_damage", new TableStatsPanel.StatDescription("stat.dominatus.crit_damage", "stat.dominatus.crit_damage.desc", "stat.dominatus.crit_damage.details"));
-
-        statDescriptions.put("damage_reduction", new TableStatsPanel.StatDescription("stat.dominatus.damage_reduction", "stat.dominatus.damage_reduction.desc", "stat.dominatus.damage_reduction.details")); // New
-
-        statDescriptions.put("max_health", new TableStatsPanel.StatDescription("stat.dominatus.max_health", "stat.dominatus.max_health.desc", "stat.dominatus.max_health.details"));
-
-        statDescriptions.put("health_regen", new TableStatsPanel.StatDescription("stat.dominatus.health_regen","stat.dominatus.health_regen.desc","stat.dominatus.health_regen.details"));
-
-        statDescriptions.put("armor", new TableStatsPanel.StatDescription("stat.dominatus.armor", "stat.dominatus.armor.desc", "stat.dominatus.armor.details"));
-
-        statDescriptions.put("armor_toughness", new TableStatsPanel.StatDescription("stat.dominatus.armor_toughness", "stat.dominatus.armor_toughness.desc", "stat.dominatus.armor_toughness.details"));
-
-        statDescriptions.put("movement_speed", new TableStatsPanel.StatDescription("stat.dominatus.movement_speed", "stat.dominatus.movement_speed.desc", "stat.dominatus.movement_speed.details"));
-
-        statDescriptions.put("attack_damage", new TableStatsPanel.StatDescription("stat.dominatus.attack_damage", "stat.dominatus.attack_damage.desc", "stat.dominatus.attack_damage.details"));
-
-        statDescriptions.put("attack_speed", new TableStatsPanel.StatDescription("stat.dominatus.attack_speed", "stat.dominatus.attack_speed.desc", "stat.dominatus.attack_speed.details"));
-    }
 
     public StatsTab() {
         super("stats", Text.translatable("tab.dominatus.stats"), Identifier.ofVanilla("icon/accessibility"));
@@ -96,13 +69,13 @@ public class StatsTab extends Tab {
             // Track the current Y position as we render content
             int currentY = y + 10;
 
-            // Get selected stat description
-            TableStatsPanel.StatDescription description = statDescriptions.getOrDefault(selectedStat, new TableStatsPanel.StatDescription("stat.dominatus.unknown", "stat.dominatus.unknown.desc", ""));
+            // Get selected stat description from the registry
+            StatDefinition stat = StatRegistry.getStat(selectedStat);
 
             // Get translated text
-            Text titleText = Text.translatable(description.titleKey());
-            Text descText = Text.translatable(description.descriptionKey());
-            Text detailsText = description.detailsKey().isEmpty() ? Text.empty() : Text.translatable(description.detailsKey());
+            Text titleText = Text.translatable(stat.nameKey());
+            Text descText = Text.translatable(stat.descriptionKey());
+            Text detailsText = stat.detailsKey().isEmpty() ? Text.empty() : Text.translatable(stat.detailsKey());
 
             // Draw title
             int titleColor = 0xFFFFCC00; // Yellow color for titles

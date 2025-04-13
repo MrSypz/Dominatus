@@ -166,10 +166,6 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translate.add("stat.dominatus.crit_damage.details",
                 "The default critical hit multiplier is 150%. This stat increases that multiplier.");
 
-        translate.add("stat.dominatus.damage_reduction", "Damage Reduction");
-        translate.add("stat.dominatus.damage_reduction.label", "Damage Reduction: %s%%");
-        translate.add("stat.dominatus.damage_reduction.desc", "Reduces incoming damage by a percentage based on your Defense Power (DP) and Damage Reduction (DR) stats.");
-        translate.add("stat.dominatus.damage_reduction.details", "Max at 30%");
         // Health stat
         translate.add("stat.dominatus.max_health", "Max Health");
         translate.add("stat.dominatus.max_health.label", "Max Health %s");

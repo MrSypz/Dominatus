@@ -1,15 +1,10 @@
 package sypztep.dominatus.client.screen.panel;
 
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
-import sypztep.dominatus.common.init.ModEntityAttributes;
-import sypztep.dominatus.common.util.combatsystem.NewDamage;
+import sypztep.dominatus.common.stats.StatRegistry;
+import sypztep.dominatus.common.stats.StatRegistry.StatDefinition;
+import sypztep.dominatus.common.stats.StatRegistry.StatValue;
 import sypztep.tyrannus.client.screen.panel.ScrollablePanel;
 
 import java.util.ArrayList;
@@ -39,14 +34,15 @@ public class TableStatsPanel extends ScrollablePanel {
 
     // Animations
     private final Map<Integer, Float> hoverAnimations = new HashMap<>();
-    private final Map<Integer, Float> selectAnimations = new HashMap<>(); // Added selection animations
+    private final Map<Integer, Float> selectAnimations = new HashMap<>();
     private static final float HOVER_ANIMATION_SPEED = 0.2f;
-    private static final float SELECT_ANIMATION_SPEED = 0.15f; // Slightly slower than hover
+    private static final float SELECT_ANIMATION_SPEED = 0.15f;
 
     public TableStatsPanel(int x, int y, int width, int height, Text title) {
         super(x, y, width, height, title);
         initStats();
     }
+
     /**
      * Initialize the stats.
      */
@@ -56,30 +52,25 @@ public class TableStatsPanel extends ScrollablePanel {
     }
 
     /**
-     * Create the stat items to display.
+     * Create the stat items to display from the central registry.
      */
     private List<StatItem> createStatItems() {
         List<StatItem> items = new ArrayList<>();
 
-        // Combat stats header
-        items.add(new StatItem(Text.translatable("header.dominatus.combat_stats").getString(), true));
-
-        // Combat stats
-        items.add(new StatItem(Text.translatable("stat.dominatus.accuracy").getString(), "accuracy", false));
-        items.add(new StatItem(Text.translatable("stat.dominatus.evasion").getString(), "evasion", false));
-        items.add(new StatItem(Text.translatable("stat.dominatus.crit_chance").getString(), "crit_chance", false));
-        items.add(new StatItem(Text.translatable("stat.dominatus.crit_damage").getString(), "crit_damage", false));
-        items.add(new StatItem(Text.translatable("stat.dominatus.damage_reduction").getString(), "damage_reduction", false)); // New stat
-        // Player attributes header
-        items.add(new StatItem(Text.translatable("header.dominatus.player_attributes").getString(), true));
-
-        // Player attributes
-        items.add(new StatItem(Text.translatable("stat.dominatus.max_health").getString(), "max_health", false));
-        items.add(new StatItem(Text.translatable("stat.dominatus.armor").getString(), "armor", false));
-        items.add(new StatItem(Text.translatable("stat.dominatus.armor_toughness").getString(), "armor_toughness", false));
-        items.add(new StatItem(Text.translatable("stat.dominatus.movement_speed").getString(), "movement_speed", false));
-        items.add(new StatItem(Text.translatable("stat.dominatus.attack_damage").getString(), "attack_damage", false));
-        items.add(new StatItem(Text.translatable("stat.dominatus.attack_speed").getString(), "attack_speed", false));
+        // Get all stats from the central registry
+        for (StatDefinition stat : StatRegistry.getAllStats()) {
+            if (stat.isHeader()) {
+                // Add header
+                items.add(new StatItem(Text.translatable(stat.nameKey()).getString(), true));
+            } else {
+                // Add regular stat
+                items.add(new StatItem(
+                        Text.translatable(stat.nameKey()).getString(),
+                        stat.id(),
+                        false
+                ));
+            }
+        }
 
         return items;
     }
@@ -93,74 +84,8 @@ public class TableStatsPanel extends ScrollablePanel {
         }
         return keys;
     }
-    /**
-     * Update the stat values.
-     */
-    private Map<String, StatValue> collectStatValues() {
-        if (client.player == null) {
-            return new HashMap<>();
-        }
 
-        Map<String, StatValue> values = new HashMap<>();
-        ClientPlayerEntity player = client.player;
-
-        // Combat stats
-        values.put("accuracy", new StatValue(
-                /* base */ Math.round(getAttributeBaseValue(player, ModEntityAttributes.ACCURACY)),
-                /* addition */ Math.round(getAttributeValue(player, ModEntityAttributes.ACCURACY) - getAttributeBaseValue(player, ModEntityAttributes.ACCURACY))));
-
-        values.put("evasion", new StatValue(
-                /* base */ Math.round(getAttributeBaseValue(player, ModEntityAttributes.EVASION)),
-                /* addition */ Math.round(getAttributeValue(player, ModEntityAttributes.EVASION) - getAttributeBaseValue(player, ModEntityAttributes.EVASION))));
-
-        values.put("crit_chance", new StatValue(
-                /* base */ Math.round(getAttributeBaseValue(player, ModEntityAttributes.CRIT_CHANCE) * 100f),
-                /* addition */ Math.round((getAttributeValue(player, ModEntityAttributes.CRIT_CHANCE) - getAttributeBaseValue(player, ModEntityAttributes.CRIT_CHANCE)) * 100f)));
-
-        values.put("crit_damage", new StatValue(
-                /* base */ Math.round(getAttributeBaseValue(player, ModEntityAttributes.CRIT_DAMAGE) * 100f),
-                /* addition */ Math.round((getAttributeValue(player, ModEntityAttributes.CRIT_DAMAGE) - getAttributeBaseValue(player, ModEntityAttributes.CRIT_DAMAGE)) * 100f)));
-
-        // Player attributes
-        values.put("max_health", new StatValue(
-                /* base */ player.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH),
-                /* addition */ Math.round(player.getMaxHealth() - player.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH))));
-        values.put("damage_reduction", new StatValue(
-                0, // Base is 0 since DR is fully gear-dependent
-                Math.round(NewDamage.getDamageReductionPercent(player) * 100f))); // DR% as percentage
-
-        values.put("health_regen", new StatValue(
-                player.getAttributeBaseValue(ModEntityAttributes.HEALTH_REGEN),
-                Math.round(player.getAttributeValue(ModEntityAttributes.HEALTH_REGEN) - player.getAttributeBaseValue(ModEntityAttributes.HEALTH_REGEN))
-        ));
-
-        values.put("armor", new StatValue(
-                /* base */ player.getAttributeBaseValue(EntityAttributes.GENERIC_ARMOR),
-                /* addition */ player.getArmor()));
-        values.put("armor_toughness", new StatValue(
-                player.getAttributeBaseValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS),
-                Math.round(player.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS) - player.getAttributeBaseValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS))));
-
-        double baseSpeed = player.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-        double currentSpeed = player.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-
-        values.put("movement_speed", new StatValue(
-                /* base */ (int) (baseSpeed * 43.17),
-                /* addition */ (int) ((currentSpeed - baseSpeed) * 43.17)
-        ));
-
-        values.put("attack_damage", new StatValue(
-                /* base */ player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
-                /* addition */ (int) (player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) - player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE))));
-
-        values.put("attack_speed", new StatValue(
-                player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED),
-                Math.round(player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED) - player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED))
-        ));
-        return values;
-    }
-
-    public void setOnStatClicked(java.util.function.Consumer<Integer> onStatClicked) {
+    public void setOnStatClicked(Consumer<Integer> onStatClicked) {
         this.onStatClicked = onStatClicked;
     }
 
@@ -170,8 +95,8 @@ public class TableStatsPanel extends ScrollablePanel {
             return;
         }
 
-        // Get latest stat values
-        Map<String, StatValue> values = collectStatValues();
+        // Get latest stat values from the central registry
+        Map<String, StatValue> values = StatRegistry.calculateStatValues(client.player);
 
         int x = getContentX();
         int contentWidth = getContentWidth() - (enableScrollbar ? scrollbarWidth + scrollbarPadding + 5 : 0);
@@ -327,12 +252,13 @@ public class TableStatsPanel extends ScrollablePanel {
                 // Draw the values if we have them
                 if (statValue != null) {
                     // Format values appropriately based on stat
-                    String baseText = String.valueOf(statValue.base());
-                    String additionText = String.valueOf(statValue.addition());
-                    String totalText = String.valueOf(statValue.getTotal());
+                    String baseText = String.valueOf((int)statValue.base());
+                    String additionText = String.valueOf((int)statValue.addition());
+                    String totalText = String.valueOf((int)statValue.getTotal());
 
-                    // Add percentage sign for crit stats
-                    if (item.statKey().equals("crit_chance") || item.statKey().equals("crit_damage") || item.statKey.equals("damage_reduction")) {
+                    // Check if this stat should be displayed as percentage
+                    StatDefinition statDef = StatRegistry.getStat(item.statKey());
+                    if (statDef.isPercentage()) {
                         baseText += "%";
                         additionText += "%";
                         totalText += "%";
@@ -464,37 +390,12 @@ public class TableStatsPanel extends ScrollablePanel {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    // Helper methods from StatsTab
-    private double getAttributeValue(LivingEntity entity, RegistryEntry<EntityAttribute> attribute) {
-        EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
-        return instance != null ? instance.getValue() : 0;
-    }
-
-    private double getAttributeBaseValue(LivingEntity entity, RegistryEntry<EntityAttribute> attribute) {
-        EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
-        return instance != null ? instance.getBaseValue() : 0;
-    }
-
     /**
-     * Records for storing stat information
+     * Record for storing stat items in the table
      */
     public record StatItem(String name, String statKey, boolean isHeader) {
         public StatItem(String name, boolean isHeader) {
             this(name, "", isHeader);
         }
-    }
-
-    public record StatValue(double base, double addition) {
-        public double getTotal() {
-            return base + addition;
-        }
-
-        @Override
-        public String toString() {
-            return String.valueOf(getTotal());
-        }
-    }
-
-    public record StatDescription(String titleKey, String descriptionKey, String detailsKey) {
     }
 }
