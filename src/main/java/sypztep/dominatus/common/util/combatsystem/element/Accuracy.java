@@ -26,6 +26,6 @@ public final class Accuracy extends CombatAttribute {
         double hitChance = calculateEffect() - targetEvasion.calculateEffect();
         double armorEffect = targetArmor * 0.003;
         hitChance -= armorEffect;
-        return MathHelper.clamp(hitChance, 0.05, 0.95);
+        return MathHelper.clamp(hitChance, 0.05, 1);
     }
 }
