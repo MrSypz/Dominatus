@@ -117,9 +117,8 @@ public class GemTab extends Tab {
                             case ADD_VALUE:
                                 value += modifier.value();
                                 break;
-                            case ADD_MULTIPLIED_BASE:
-                            case ADD_MULTIPLIED_TOTAL:
-                                value += modifier.value() * 100; // Convert to percentage
+                            case ADD_MULTIPLIED_TOTAL, ADD_MULTIPLIED_BASE:
+                                value += modifier.value() * 100;
                                 break;
                         }
                         aggregatedModifiers.put(key, value);
@@ -139,10 +138,9 @@ public class GemTab extends Tab {
         } else {
             aggregatedModifiers.forEach((key, value) -> {
                 String operation = key.contains("crit_chance") || key.contains("crit_damage") ?
-                        "✕" : "➕";
+                        "x" : "+";
                 String format = value % 1 == 0 ? "%.0f" : "%.1f";
-                String symbol = key.contains("crit_chance") || key.contains("crit_damage") ? "%" : "";
-                String displayValue = String.format(format + symbol, value); // Show negative sign
+                String displayValue = String.format(format, value); // Show negative sign
                 int valueColor = value >= 0 ? 0xFF55FF55 : 0xFFFF5555;
 
                 statLines.add(Text.empty()
@@ -447,8 +445,7 @@ public class GemTab extends Tab {
         private final List<GemSlotPanel> gemSlots = new ArrayList<>();
         private final ContextMenuPanel contextMenu;
         private int selectedGemIndex = -1;
-        private GemDescriptionPanel descriptionPanel;
-        private int hoveredGemIndex = -1;
+        private final GemDescriptionPanel descriptionPanel;
 
         public InventoryPanel(int x, int y, int width, int height, Text title) {
             super(x, y, width, height, title);
@@ -497,7 +494,7 @@ public class GemTab extends Tab {
 
             List<GemComponent> gemInventory = gemData.getGemInventory();
             gemSlots.clear();
-            hoveredGemIndex = -1;
+            int hoveredGemIndex = -1;
 
             for (int i = 0; i < gemInventory.size(); i++) {
                 GemComponent gem = gemInventory.get(i);
@@ -565,9 +562,8 @@ public class GemTab extends Tab {
                 if (attribute != null) {
                     EntityAttributeModifier modifier = entry.getValue();
                     String operation = switch (modifier.operation()) {
-                        case ADD_VALUE -> "➕";
-                        case ADD_MULTIPLIED_BASE -> "✕";
-                        case ADD_MULTIPLIED_TOTAL -> "⚝";
+                        case ADD_VALUE -> "+";
+                        case ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL -> "x";
                     };
                     descriptionLines.add(Text.literal(operation + String.format(" %.1f ", modifier.value()) + Text.translatable(attribute.getTranslationKey()).getString()));
                 }

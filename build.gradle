@@ -130,12 +130,12 @@ modrinth {
     loaders = ["fabric"]
     changelog = """
 ## Bug Fixes
-- Fixed repair point system for SimplySwords weapon compatibility
-
+- Fixed repair point on runic item are 0 instead 1 for SimplySwords weapon compatibility
+## Add
+- Gem Tab Information
+- Range Weapon API Compatible
 ## Technical Changes
-- Centralized stats information system for consistency
 - Change accuracy cap to 100% from 95%
-
 ## Combat System Changes
 
 ### New Damage System v3

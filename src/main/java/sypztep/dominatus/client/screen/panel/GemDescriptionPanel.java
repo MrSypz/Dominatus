@@ -103,24 +103,14 @@ public class GemDescriptionPanel extends UIPanel {
             EntityAttribute attribute = Registries.ATTRIBUTE.get(entry.getKey());
             if (attribute != null) {
                 EntityAttributeModifier modifier = entry.getValue();
-                String operation = switch (modifier.operation()) {
-                    case ADD_VALUE -> "➕";
-                    case ADD_MULTIPLIED_BASE -> "✕";
-                    case ADD_MULTIPLIED_TOTAL -> "⚝";
-                };
                 String valueText = String.format("%.1f", modifier.value());
                 String attributeText = Text.translatable(attribute.getTranslationKey()).getString();
 
                 int xPos = x + padding;
-                int operationColor = (textAlpha << 24) | (0xFFAAAAAA & 0xFFFFFF); // Light gray
                 int valueColor = modifier.value() >= 0 ?
                         (textAlpha << 24) | (0xFF55FF55 & 0xFFFFFF) : // Green for positive
                         (textAlpha << 24) | (0xFFFF5555 & 0xFFFFFF); // Red for negative
-                int attributeColor = (textAlpha << 24) | (0xFFFFFF & 0xFFFFFF); // White
-
-                // Draw operation symbol
-                context.drawTextWithShadow(textRenderer, operation, xPos, currentY, operationColor);
-                xPos += textRenderer.getWidth(operation) + 2;
+                int attributeColor = (textAlpha << 24) | (0xFFFFFF); // White
 
                 // Draw value
                 context.drawTextWithShadow(textRenderer, valueText, xPos, currentY, valueColor);
