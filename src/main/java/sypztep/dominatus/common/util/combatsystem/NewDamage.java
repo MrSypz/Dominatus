@@ -6,11 +6,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 
-import static sypztep.dominatus.Dominatus.LOGGER;
-
 public final class NewDamage {
-    // Maximum damage reduction cap (90%)
-    private static final float MAX_REDUCTION = 0.9F;
+    private static final float MAX_REDUCTION = 0.99F;
 
     /**
      * Calculate damage after applying armor-based reduction using PoE-inspired formula.
