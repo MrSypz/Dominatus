@@ -30,8 +30,12 @@ public class GeepGoop implements DominatusLivingEntityEvents.PostArmorDamage, Do
     }
 
     @Override
-    public boolean modifyCondition(PlayerEntity player, boolean isCritical) {
-        return roll(player) < getCritChance(player);
+    public boolean modifyCondition(PlayerEntity player, Entity target, boolean vanillaCrit) {
+        if (!isHitable((LivingEntity) target, target.getDamageSources().playerAttack(player))) return false;
+
+        boolean isCrit = roll(player) < getCritChance(player);
+        if (isCrit) ParticleHandler.sendToAll(target, player, ModParticles.CRITICAL);
+        return isCrit;
     }
 
     @Override
@@ -42,7 +46,7 @@ public class GeepGoop implements DominatusLivingEntityEvents.PostArmorDamage, Do
     @Override
     public float modifyDamage(LivingEntity entity, DamageSource source, float amount) {
         if (source.getAttacker() instanceof LivingEntity attacker) {
-            float finalAmount = amount; // Start with base damage
+            float finalAmount = amount;
 
             if (roll(attacker) < getCritChance(attacker) && !(attacker instanceof PlayerEntity)) {
                 ParticleHandler.sendToAll(entity, attacker, ModParticles.CRITICAL);
