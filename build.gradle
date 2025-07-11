@@ -69,20 +69,12 @@ dependencies {
     modImplementation include("org.ladysnake.cardinal-components-api:cardinal-components-base:${cardinal_components_version}")
     modImplementation include("org.ladysnake.cardinal-components-api:cardinal-components-entity:${cardinal_components_version}")
 
-    modApi "com.github.MrSypz:Knumber:${knumber_version}"
-    modImplementation include("com.github.MrSypz:Tyrannus:${tyranus_version}")
-
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
     modRuntimeOnly "maven.modrinth:sodium:${sodium_version}"
     modApi "com.terraformersmc:modmenu:${project.modmenu_version}"
-
-    modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
-
-    modImplementation "curse.maven:jade-324717:${jade_version}"
-
-    modCompileOnly "maven.modrinth:ranged-weapon-api:${project.ranged_weapon_api_version}"
 }
 
 processResources {
@@ -95,9 +87,7 @@ processResources {
         expand "version": project.version,
                 "minecraft_version": project.minecraft_version,
                 "loader_version": project.loader_version,
-                "cloth_config_version": project.cloth_version,
-                "accessories_version" : project.accessories_version,
-                "knumber_veriosn": project.knumber_version
+                "cloth_config_version": project.cloth_version
     }
 }
 
@@ -158,14 +148,8 @@ The main goal of this is bypass the 30 armor points vanilla limit which prevents
         // The scope can be `required`, `optional`, `incompatible`, or `embedded`
         // The type can either be `project` or `version`
         required.project "fabric-api" // Creates a new required dependency on Fabric API
-        required.project "cloth-config"
-        required.project "modmenu"
-        required.project "accessories"
-        required.version "knumber", "1.0.2-1.21.1"
-        required.version "reduced-invincibility-frames", "1.0.1-1.21.1"
-        optional.project "jade"
-        incompatible.project "forgified-fabric-api"
-        incompatible.project "connector"
+        optional.project "cloth-config"
+        optional.project "modmenu"
         embedded.project "cardinal-components-api"
     }
 }

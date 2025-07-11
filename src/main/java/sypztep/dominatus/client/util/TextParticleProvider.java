@@ -1,19 +1,20 @@
 package sypztep.dominatus.client.util;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
-import sypztep.knumber.client.particle.util.ParticleUtil;
+import net.minecraft.util.math.Vec3d;
+import sypztep.dominatus.client.particle.TextParticle;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class TextParticleProvider {
-    private static final Map<Integer, TextParticleProvider> REGISTRY = new HashMap<>();
-    private static int nextFlag = 0;
+    private static final TextParticleProvider[] REGISTRY = new TextParticleProvider[8];
+    private static int nextId = 0;
 
-    private final int flag;
+    private final int id;
     private final Text text;
     private final Color color;
     private final float maxSize;
@@ -57,13 +58,14 @@ public class TextParticleProvider {
     }
 
     private TextParticleProvider(Text text, Color color, float maxSize, float yPos, Supplier<Boolean> configSupplier) {
-        this.flag = nextFlag++;
+        if (nextId >= REGISTRY.length) throw new IllegalStateException("Too many TextParticleProviders registered! Max: " + REGISTRY.length + "Go increasing the size in array");
+        this.id = nextId++;
         this.text = text;
         this.color = color;
         this.maxSize = maxSize;
         this.yPos = yPos;
         this.configSupplier = configSupplier;
-        REGISTRY.put(this.flag, this);
+        REGISTRY[this.id] = this;
     }
 
     public static Builder builder(Text text) {
@@ -75,49 +77,50 @@ public class TextParticleProvider {
     }
 
     public static TextParticleProvider register(Text text, float maxSize) {
-        return builder(text)
-                .maxSize(maxSize)
-                .build();
+        return builder(text).maxSize(maxSize).build();
     }
 
     public static TextParticleProvider register(Text text, Color color, float maxSize) {
-        return builder(text)
-                .color(color)
-                .maxSize(maxSize)
-                .build();
+        return builder(text).color(color).maxSize(maxSize).build();
     }
 
     public static TextParticleProvider register(Text text, Color color, float maxSize, float yPos) {
-        return builder(text)
-                .color(color)
-                .maxSize(maxSize)
-                .yPos(yPos)
-                .build();
+        return builder(text).color(color).maxSize(maxSize).yPos(yPos).build();
     }
 
     public static TextParticleProvider register(Text text, Color color, float maxSize, float yPos, Supplier<Boolean> configSupplier) {
-        return builder(text)
-                .color(color)
-                .maxSize(maxSize)
-                .yPos(yPos)
-                .config(configSupplier)
-                .build();
+        return builder(text).color(color).maxSize(maxSize).yPos(yPos).config(configSupplier).build();
     }
 
-    public int getFlag() {
-        return flag;
+    public int getId() {
+        return id;
     }
 
-    public static void handleParticle(Entity entity, int flag) {
-        TextParticleProvider particle = REGISTRY.get(flag);
-        if (particle != null && particle.configSupplier.get()) {
-            ParticleUtil.spawnTextParticle(
-                    entity,
-                    particle.text,
-                    particle.color,
-                    particle.maxSize,
-                    particle.yPos
-            );
+    public static void handleParticle(Entity entity, int id) {
+        if (id >= 0 && id < REGISTRY.length) {
+            TextParticleProvider particle = REGISTRY[id];
+            if (particle != null && particle.configSupplier.get()) {
+                spawnTextParticle(entity, particle.text, particle.color, particle.maxSize, particle.yPos);
+            }
         }
+    }
+
+    private static void spawnTextParticle(Entity target, Text text, Color color, float maxSize, float yPos) {
+        if (target.getWorld().isClient()) {
+            spawnParticle(target, text.getString(), color, maxSize, yPos);
+        }
+    }
+
+    private static void spawnParticle(Entity target, String text, Color color, float maxSize, float yPos) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        ClientWorld world = client.world;
+        if (world == null || !world.isClient()) return;
+
+        Vec3d particlePos = target.getPos().add(0.0, target.getHeight() + 0.95 + yPos, 0.0);
+        TextParticle particle = new TextParticle(world, particlePos.x, particlePos.y, particlePos.z);
+        particle.setText(text);
+        particle.setColor(color.getRed(), color.getGreen(), color.getBlue());
+        particle.setMaxSize(maxSize);
+        client.particleManager.addParticle(particle);
     }
 }

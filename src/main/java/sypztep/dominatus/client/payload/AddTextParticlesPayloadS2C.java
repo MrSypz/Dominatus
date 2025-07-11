@@ -22,20 +22,19 @@ public record AddTextParticlesPayloadS2C(int entityId, int selector) implements 
     );
 
     public static void send(ServerPlayerEntity player, int entityId, TextParticleProvider selector) {
-        ServerPlayNetworking.send(player, new AddTextParticlesPayloadS2C(entityId, selector.getFlag()));
+        ServerPlayNetworking.send(player, new AddTextParticlesPayloadS2C(entityId, selector.getId()));
     }
 
     @Override
     public Id<? extends CustomPayload> getId() {
         return ID;
     }
+
     public static class Receiver implements ClientPlayNetworking.PlayPayloadHandler<AddTextParticlesPayloadS2C> {
         @Override
         public void receive(AddTextParticlesPayloadS2C payload, ClientPlayNetworking.Context context) {
             Entity entity = context.player().getWorld().getEntityById(payload.entityId());
-            if (entity != null) {
-                TextParticleProvider.handleParticle(entity, payload.selector());
-            }
+            if (entity != null) TextParticleProvider.handleParticle(entity, payload.selector());
         }
     }
 }
