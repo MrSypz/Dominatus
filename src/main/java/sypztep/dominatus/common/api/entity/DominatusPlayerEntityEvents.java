@@ -2,6 +2,7 @@ package sypztep.dominatus.common.api.entity;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public final class DominatusPlayerEntityEvents {
@@ -17,11 +18,10 @@ public final class DominatusPlayerEntityEvents {
 
     public static final Event<ModifyAttackCondition> MODIFY_ATTACK_CONDITION = EventFactory.createArrayBacked(
             ModifyAttackCondition.class,
-            (listeners) -> (player, isCritical) -> {
-                for (ModifyAttackCondition listener : listeners) {
-                    isCritical = listener.modifyCondition(player, isCritical);
-                }
-                return isCritical;
+            (listeners) -> (player, target, vanillaCrit) -> {
+                for (ModifyAttackCondition listener : listeners)
+                    vanillaCrit = listener.modifyCondition(player, target, vanillaCrit);
+                return vanillaCrit;
             }
     );
 
@@ -32,6 +32,6 @@ public final class DominatusPlayerEntityEvents {
 
     @FunctionalInterface
     public interface ModifyAttackCondition {
-        boolean modifyCondition(PlayerEntity player, boolean isCritical);
+        boolean modifyCondition(PlayerEntity player, Entity target, boolean vanillaCrit);
     }
 }
