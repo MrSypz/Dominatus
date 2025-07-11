@@ -19,7 +19,7 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         if (source.getAttacker() instanceof LivingEntity attacker) {
             if (!LivingEntityUtil.isHitable(entity, source)) return false;
 
-            // Only check hit for non-player attackers (players already handled in allowAttack)
+            // Only check hit for non-player attackers (players already handled in PlayerEntityEvent.allowAttack)
             if (!(attacker instanceof PlayerEntity)) {
                 if (!LivingEntityUtil.hitCheck(attacker, entity)) {
                     ParticleHandler.sendToAll(entity, attacker, ModParticles.MISSING);
