@@ -7,7 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
 import sypztep.dominatus.common.api.entity.DominatusPlayerEntityEvents;
-import sypztep.dominatus.common.event.GeepGoop;
+import sypztep.dominatus.common.event.critevasion.LivingEntityEvent;
+import sypztep.dominatus.common.event.critevasion.PlayerEntityEvent;
 import sypztep.dominatus.common.init.*;
 
 public class Dominatus implements ModInitializer {
@@ -21,10 +22,11 @@ public class Dominatus implements ModInitializer {
     @Override
     public void onInitialize() {
         ModPayloads.init();
-        DominatusLivingEntityEvents.POST_ARMOR_DAMAGE.register(new GeepGoop());
-        DominatusPlayerEntityEvents.MODIFY_ATTACK_CONDITION.register(new GeepGoop());
-        DominatusPlayerEntityEvents.MODIFY_ATTACK_DAMAGE.register(new GeepGoop());
-        ServerLivingEntityEvents.ALLOW_DAMAGE.register(new GeepGoop());
 
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register(new LivingEntityEvent());
+        DominatusLivingEntityEvents.POST_ARMOR_DAMAGE.register(new LivingEntityEvent());
+        DominatusPlayerEntityEvents.MODIFY_ATTACK_CONDITION.register(new PlayerEntityEvent());
+        DominatusPlayerEntityEvents.MODIFY_ATTACK_DAMAGE.register(new PlayerEntityEvent());
+        DominatusPlayerEntityEvents.ALLOW_ATTACK.register(new PlayerEntityEvent());
     }
 }

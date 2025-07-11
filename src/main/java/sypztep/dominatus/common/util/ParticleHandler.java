@@ -13,14 +13,12 @@ public class ParticleHandler {
     private static void send(Entity target, Entity attacker, ParticleType<?> particle, boolean self, boolean others) {
         if (target == null) return;
 
-        if (self && attacker instanceof ServerPlayerEntity player) {
+        if (self && attacker instanceof ServerPlayerEntity player)
             AddEmitterParticlePayloadS2C.send(player, target.getId(), particle);
-        }
 
-        if (others && !attacker.getWorld().isClient()) {
-            PlayerLookup.tracking(attacker).forEach(p ->
-                    AddEmitterParticlePayloadS2C.send(p, target.getId(), particle));
-        }
+        if (others && !attacker.getWorld().isClient())
+            PlayerLookup.tracking(attacker).forEach(p -> AddEmitterParticlePayloadS2C.send(p, target.getId(), particle));
+
     }
 
     private static void send(Entity target, Entity attacker, TextParticleProvider particle, boolean self, boolean others) {
@@ -29,10 +27,8 @@ public class ParticleHandler {
         if (self && attacker instanceof ServerPlayerEntity player)
             AddTextParticlesPayloadS2C.send(player, target.getId(), particle);
 
-
         if (others && !attacker.getWorld().isClient())
-            PlayerLookup.tracking(attacker).forEach(p ->
-                    AddTextParticlesPayloadS2C.send(p, target.getId(), particle));
+            PlayerLookup.tracking(attacker).forEach(p -> AddTextParticlesPayloadS2C.send(p, target.getId(), particle));
 
     }
 
@@ -50,18 +46,21 @@ public class ParticleHandler {
     }
 
     // TextParticleProvider overloads
+
     /**
      * Send only to the attacker
      */
     public static void sendToSelf(Entity target, Entity attacker, TextParticleProvider particle) {
         send(target, attacker, particle, true, false);
     }
+
     /**
      * Send only to other players, not the attacker
      */
     public static void sendToOthers(Entity target, Entity attacker, TextParticleProvider particle) {
         send(target, attacker, particle, false, true);
     }
+
     /**
      * Send to everyone including the attacker
      */

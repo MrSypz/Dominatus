@@ -12,6 +12,7 @@ import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
+
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
