@@ -10,6 +10,9 @@ import sypztep.dominatus.Dominatus;
 import java.util.ArrayList;
 
 public final class ModEntityAttributes {
+    public ModEntityAttributes() {
+    }
+
     public static final ArrayList<RegistryEntry<EntityAttribute>> ENTRIES = new ArrayList<>();
 
     public static final RegistryEntry<EntityAttribute> ACCURACY = register("accuracy", new ClampedEntityAttribute("attribute.name.accuracy", 75, 0.0, 2048.0D).setTracked(true));
@@ -17,12 +20,6 @@ public final class ModEntityAttributes {
     public static final RegistryEntry<EntityAttribute> CRIT_DAMAGE = register("crit_damage", new ClampedEntityAttribute("attribute.name.crit_damage", 0.5, 0.0, 10.24D).setTracked(true));
     public static final RegistryEntry<EntityAttribute> CRIT_CHANCE = register("crit_chance", new ClampedEntityAttribute("attribute.name.crit_chance", 0.05, 0.0, 2.0D).setTracked(true));
     public static final RegistryEntry<EntityAttribute> BACK_ATTACK = register("back_attack", new ClampedEntityAttribute("attribute.name.back_attack", 0.5, 0.0, 10.24D).setTracked(true));
-
-    public ModEntityAttributes() {
-    }
-
-    public static final RegistryEntry<EntityAttribute> AIR_ATTACK = register("air_attack", new ClampedEntityAttribute("attribute.name.air_attack", 1.0, 0.0, 10.24D).setTracked(true));
-    public static final RegistryEntry<EntityAttribute> DOWN_ATTACK = register("down_attack", new ClampedEntityAttribute("attribute.name.down_attack", 0.5, 0.0, 10.24D).setTracked(true));
 
     private static RegistryEntry<EntityAttribute> register(String id, EntityAttribute attribute) {
         RegistryEntry<EntityAttribute> entry = Registry.registerReference(Registries.ATTRIBUTE, Dominatus.id(id), attribute);
