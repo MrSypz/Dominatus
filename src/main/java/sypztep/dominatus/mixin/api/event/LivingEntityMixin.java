@@ -4,15 +4,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import sypztep.dominatus.common.api.entity.ServerLivingEntityEvents;
-import sypztep.dominatus.common.init.ModEntityAttributes;
-import sypztep.dominatus.common.init.ModParticles;
-import sypztep.dominatus.common.util.ParticleHandler;
+import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -26,7 +22,7 @@ public abstract class LivingEntityMixin extends Entity {
     @ModifyVariable(method = "applyDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;applyArmorToDamage(Lnet/minecraft/entity/damage/DamageSource;F)F"), argsOnly = true)
     private float applyPreArmorDamageModification(float amount, DamageSource source) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        return ServerLivingEntityEvents.PRE_ARMOR_DAMAGE.invoker().modifyDamage(entity, source, amount);
+        return DominatusLivingEntityEvents.PRE_ARMOR_DAMAGE.invoker().modifyDamage(entity, source, amount);
     }
 
     /**
@@ -35,6 +31,6 @@ public abstract class LivingEntityMixin extends Entity {
     @ModifyVariable(method = "modifyAppliedDamage", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/enchantment/EnchantmentHelper;getProtectionAmount(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/damage/DamageSource;)F"), argsOnly = true)
     private float applyPostArmorDamageModification(float amount, DamageSource source) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        return ServerLivingEntityEvents.POST_ARMOR_DAMAGE.invoker().modifyDamage(entity, source, amount);
+        return DominatusLivingEntityEvents.POST_ARMOR_DAMAGE.invoker().modifyDamage(entity, source, amount);
     }
 }

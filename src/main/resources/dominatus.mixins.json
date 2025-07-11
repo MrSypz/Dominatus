@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "api.event.LivingEntityMixin",
+    "api.event.PlayerEntityMixin",
     "core.registry.attribute.LivingEntityMixin"
   ],
   "client": [

@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 
-public final class ServerLivingEntityEvents {
+public final class DominatusLivingEntityEvents {
 
     public static final Event<PreArmorDamage> PRE_ARMOR_DAMAGE = EventFactory.createArrayBacked(PreArmorDamage.class, callbacks -> (entity, source, amount) -> {
         for (PreArmorDamage callback : callbacks) {
