@@ -21,13 +21,13 @@ public record AddTextParticlesPayloadS2C(int entityId, int selector) implements 
             AddTextParticlesPayloadS2C::new
     );
 
-    public static void send(ServerPlayerEntity player, int entityId, TextParticleProvider selector) {
-        ServerPlayNetworking.send(player, new AddTextParticlesPayloadS2C(entityId, selector.getId()));
-    }
 
     @Override
     public Id<? extends CustomPayload> getId() {
         return ID;
+    }
+    public static void send(ServerPlayerEntity player, int entityId, TextParticleProvider selector) {
+        ServerPlayNetworking.send(player, new AddTextParticlesPayloadS2C(entityId, selector.getId()));
     }
 
     public static class Receiver implements ClientPlayNetworking.PlayPayloadHandler<AddTextParticlesPayloadS2C> {

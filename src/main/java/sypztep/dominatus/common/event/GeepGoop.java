@@ -5,6 +5,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
 import sypztep.dominatus.common.api.entity.DominatusPlayerEntityEvents;
@@ -12,7 +15,7 @@ import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModParticles;
 import sypztep.dominatus.common.util.ParticleHandler;
 
-public class GeepGoop implements DominatusLivingEntityEvents.PostArmorDamage, DominatusPlayerEntityEvents.ModifyAttackCondition,DominatusPlayerEntityEvents.ModifyAttackDamage, ServerLivingEntityEvents.AllowDamage {
+public class GeepGoop implements DominatusLivingEntityEvents.PostArmorDamage, DominatusPlayerEntityEvents.ModifyAttackCondition, DominatusPlayerEntityEvents.ModifyAttackDamage, ServerLivingEntityEvents.AllowDamage {
     @Override
     public boolean allowDamage(LivingEntity entity, DamageSource source, float amount) {
         if (source.getAttacker() instanceof LivingEntity attacker) {
@@ -25,21 +28,28 @@ public class GeepGoop implements DominatusLivingEntityEvents.PostArmorDamage, Do
         }
         return true;
     }
+
     @Override
     public boolean modifyCondition(PlayerEntity player, boolean isCritical) {
         return roll(player) < getCritChance(player);
     }
+
     @Override
     public float modifyDamage(PlayerEntity player, float damage) {
         return 1 + (float) player.getAttributeValue(ModEntityAttributes.CRIT_DAMAGE);
     }
+
     @Override
     public float modifyDamage(LivingEntity entity, DamageSource source, float amount) {
         if (source.getAttacker() instanceof LivingEntity attacker) {
             float finalAmount = amount; // Start with base damage
 
-            if (roll(attacker) < getCritChance(attacker) &&!(attacker instanceof PlayerEntity)) {
+            if (roll(attacker) < getCritChance(attacker) && !(attacker instanceof PlayerEntity)) {
                 ParticleHandler.sendToAll(entity, attacker, ModParticles.CRITICAL);
+                // this block I mimic ClientPlayerEntity when crit
+                ParticleHandler.sendToAll(entity, attacker, ParticleTypes.CRIT);
+                playCriticalSound(entity);
+                //
                 finalAmount *= (1.0f + (float) attacker.getAttributeValue(ModEntityAttributes.CRIT_DAMAGE));
             }
 
@@ -52,6 +62,10 @@ public class GeepGoop implements DominatusLivingEntityEvents.PostArmorDamage, Do
             return finalAmount;
         }
         return amount;
+    }
+
+    private void playCriticalSound(Entity target) {
+        target.getWorld().playSound(null, target.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.HOSTILE, 1, 1);
     }
 
     private boolean isHitable(LivingEntity entity, DamageSource source) {
