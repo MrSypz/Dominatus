@@ -17,5 +17,7 @@ public class DominatusClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(AddTextParticlesPayloadS2C.ID, new AddTextParticlesPayloadS2C.Receiver());
         ClientPlayNetworking.registerGlobalReceiver(AddEmitterParticlePayloadS2C.ID, new AddEmitterParticlePayloadS2C.Receiver());
+
+        LevelHudRenderer.register();
     }
 }

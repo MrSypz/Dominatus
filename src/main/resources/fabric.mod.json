@@ -38,6 +38,8 @@
   "accessWidener": "dominatus.accesswidener",
   "custom": {
     "cardinal-components": [
+      "dominatus:livinglevel",
+      "dominatus:dmgtracker"
     ]
   }
 }

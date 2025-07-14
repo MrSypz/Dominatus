@@ -139,7 +139,7 @@ public final class TextParticle extends Particle {
 
     private float ease(float t, float b, float c, float d) {
         float a = -1;
-        float p = 0;
+        float p;
         if (t == 0) return b;
         if ((t /= d) == 1) return b + c;
         p = d * .3f;

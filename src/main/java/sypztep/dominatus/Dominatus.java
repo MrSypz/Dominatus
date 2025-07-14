@@ -2,14 +2,18 @@ package sypztep.dominatus;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
 import sypztep.dominatus.common.api.entity.DominatusPlayerEntityEvents;
+import sypztep.dominatus.common.event.FabricEventsHandler;
 import sypztep.dominatus.common.event.critevasion.LivingEntityEvent;
 import sypztep.dominatus.common.event.critevasion.PlayerEntityEvent;
 import sypztep.dominatus.common.init.*;
+import sypztep.dominatus.common.reloadlistener.DominatusMobExpReloadListener;
 
 public class Dominatus implements ModInitializer {
     public static final String MODID = "dominatus";
@@ -28,5 +32,12 @@ public class Dominatus implements ModInitializer {
         DominatusPlayerEntityEvents.MODIFY_ATTACK_CONDITION.register(new PlayerEntityEvent());
         DominatusPlayerEntityEvents.MODIFY_ATTACK_DAMAGE.register(new PlayerEntityEvent());
         DominatusPlayerEntityEvents.ALLOW_ATTACK.register(new PlayerEntityEvent());
+
+        FabricEventsHandler.register();
+
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA)
+                .registerReloadListener(new DominatusMobExpReloadListener());
+
+
     }
 }
