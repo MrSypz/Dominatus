@@ -140,7 +140,6 @@ public class ModConfig implements ConfigData {
     public static final int textColor = 0xFFFFFFFF; // White
     public static final int textShadowColor = 0xFF000000; // Black
     public static final int maxLevelBarColor = ColorHelper.Argb.getArgb(255, 255, 215, 0); // Gold
-    public static final int glowColor = ColorHelper.Argb.getArgb(255, 255, 255, 100); // Light yellow glow
 
     // HUD Position
     @ConfigEntry.Category("hud_position")
