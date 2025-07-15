@@ -6,9 +6,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
-import sypztep.dominatus.common.util.level.CharacterLevelSystem;
-import sypztep.dominatus.common.util.level.LevelSystem;
-import sypztep.dominatus.common.util.level.LevelConfigs;
+import sypztep.dominatus.common.system.level.core.CharacterLevelSystem;
+import sypztep.dominatus.common.system.level.core.LevelSystem;
+import sypztep.dominatus.common.system.level.config.LevelConfigs;
 
 /**
  * Level component for all living entities.

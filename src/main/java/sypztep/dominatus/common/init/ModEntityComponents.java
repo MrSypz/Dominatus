@@ -19,7 +19,7 @@ public class ModEntityComponents implements EntityComponentInitializer {
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.beginRegistration(LivingEntity.class, LIVINGLEVEL).respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY).end(LivingLevelComponent::new);
-        registry.registerFor(MobEntity.class, DAMAGETRACKER, DamageTrackerComponent::new);
+        registry.registerFor(MobEntity.class, DAMAGETRACKER, entity -> new DamageTrackerComponent());
 //        registry.registerFor(PassiveEntity.class, DAMAGETRACKER, DamageTrackerComponent::new);
 //        registry.registerFor(AmbientEntity.class, DAMAGETRACKER, DamageTrackerComponent::new);
 //        registry.registerFor(WaterCreatureEntity.class, DAMAGETRACKER, DamageTrackerComponent::new);

@@ -1,8 +1,4 @@
-package sypztep.dominatus.common.util.level;
-
-import sypztep.dominatus.common.util.level.config.ArrayLevelConfig;
-import sypztep.dominatus.common.util.level.config.LevelConfiguration;
-import sypztep.dominatus.common.util.level.config.LinearLevelConfig;
+package sypztep.dominatus.common.system.level.config;
 
 public class LevelConfigs {
     // Character/Combat leveling

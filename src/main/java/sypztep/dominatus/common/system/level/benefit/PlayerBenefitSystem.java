@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util.level.benefit;
+package sypztep.dominatus.common.system.level.benefit;
 
 import net.minecraft.nbt.NbtCompound;
 import sypztep.dominatus.ModConfig;

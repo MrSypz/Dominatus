@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util.level.config;
+package sypztep.dominatus.common.system.level.config;
 
 /**
  * Linear level configuration (simple progression)

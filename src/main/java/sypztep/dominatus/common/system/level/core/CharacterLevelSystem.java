@@ -1,8 +1,9 @@
-package sypztep.dominatus.common.util.level;
+package sypztep.dominatus.common.system.level.core;
 
 import net.minecraft.nbt.NbtCompound;
-import sypztep.dominatus.common.util.level.benefit.BenefitCalculator;
-import sypztep.dominatus.common.util.level.benefit.PlayerBenefitSystem;
+import sypztep.dominatus.common.system.level.benefit.BenefitCalculator;
+import sypztep.dominatus.common.system.level.benefit.PlayerBenefitSystem;
+import sypztep.dominatus.common.system.level.config.LevelConfigs;
 
 public class CharacterLevelSystem {
     private final LevelSystem levelSystem;
@@ -37,7 +38,7 @@ public class CharacterLevelSystem {
     public int getAvailableBenefits() { return benefitSystem.getAvailableBenefits(); }
     public boolean spendBenefits(int amount) { return benefitSystem.spendBenefits(amount); }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public int getStatPoints() { return getAvailableBenefits(); }
 
     public void writeToNbt(NbtCompound tag) {

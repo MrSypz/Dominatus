@@ -1,6 +1,5 @@
 package sypztep.dominatus.common.component.living;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import org.ladysnake.cca.api.v3.component.Component;
@@ -14,21 +13,15 @@ import java.util.Map;
 import java.util.UUID;
 
 public class DamageTrackerComponent implements Component {
-    private final LivingEntity entity;
 
     private final Map<UUID, Float> damageMap = new HashMap<>();
     private float maxHealth = 0f;
 
-    public DamageTrackerComponent(LivingEntity entity) {
-        this.entity = entity;
+    public DamageTrackerComponent() {
     }
 
     public void setMaxHealth(float maxHealth) {
         this.maxHealth = maxHealth;
-    }
-
-    public float getMaxHealth() {
-        return this.maxHealth;
     }
 
     public void addDamage(PlayerEntity player, float damage) {

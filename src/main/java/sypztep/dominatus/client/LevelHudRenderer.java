@@ -11,7 +11,7 @@ import net.minecraft.util.math.ColorHelper;
 import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
-import sypztep.dominatus.common.util.level.CharacterLevelSystem;
+import sypztep.dominatus.common.system.level.core.CharacterLevelSystem;
 
 public class LevelHudRenderer implements HudRenderCallback {
 

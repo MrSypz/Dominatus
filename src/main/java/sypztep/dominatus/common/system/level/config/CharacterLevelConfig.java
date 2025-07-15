@@ -1,7 +1,6 @@
-package sypztep.dominatus.common.util.level;
+package sypztep.dominatus.common.system.level.config;
 
 import sypztep.dominatus.ModConfig;
-import sypztep.dominatus.common.util.level.config.LevelConfiguration;
 
 /**
  * Character/Combat level configuration

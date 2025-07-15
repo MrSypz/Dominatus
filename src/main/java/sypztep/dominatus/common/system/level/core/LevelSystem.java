@@ -1,7 +1,7 @@
-package sypztep.dominatus.common.util.level;
+package sypztep.dominatus.common.system.level.core;
 
 import net.minecraft.nbt.NbtCompound;
-import sypztep.dominatus.common.util.level.config.LevelConfiguration;
+import sypztep.dominatus.common.system.level.config.LevelConfiguration;
 
 public class LevelSystem {
     private int level;

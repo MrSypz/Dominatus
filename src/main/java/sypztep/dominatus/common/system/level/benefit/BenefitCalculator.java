@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util.level.benefit;
+package sypztep.dominatus.common.system.level.benefit;
 
 public interface BenefitCalculator {
     int getBenefitsForLevel(int level);

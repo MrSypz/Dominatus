@@ -1,6 +1,4 @@
-package sypztep.dominatus.common.util.level;
-
-import sypztep.dominatus.common.util.level.config.LevelConfiguration;
+package sypztep.dominatus.common.system.level.config;
 
 public class SkillLevelConfig implements LevelConfiguration {
     private final int maxLevel;

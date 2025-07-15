@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util.level.config;
+package sypztep.dominatus.common.system.level.config;
 
 public class ArrayLevelConfig implements LevelConfiguration {
     private final long[] experienceMap;
