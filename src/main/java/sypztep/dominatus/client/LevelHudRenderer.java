@@ -30,14 +30,11 @@ public class LevelHudRenderer implements HudRenderCallback {
     private static int getTextColor() { return ModConfig.textColor; }
     private static int getTextShadowColor() { return ModConfig.textShadowColor; }
     private static int getMaxLevelBarColor() { return ModConfig.maxLevelBarColor; }
-    private static int getGlowColor() { return ModConfig.glowColor; }
 
     // Animation variables
     private static long lastXp = 0;
     private static int lastLevel = 1;
     private static double lastXpPercentage = 0.0;
-    private static double startXpPercentage = 0.0;
-    private static double targetXpPercentage = 0.0;
     private static float animationTime = 0f;
     private static boolean isAnimating = false;
     private static boolean leveledUp = false;
@@ -217,8 +214,6 @@ public class LevelHudRenderer implements HudRenderCallback {
                 lastXp = currentXp;
                 lastLevel = currentLevel;
                 lastXpPercentage = currentXpPercentage;
-                startXpPercentage = currentXpPercentage;
-                targetXpPercentage = currentXpPercentage;
                 displayXp = currentXp;
                 startXp = currentXp;
                 targetXp = currentXp;
@@ -242,9 +237,6 @@ public class LevelHudRenderer implements HudRenderCallback {
             leveledUp = hasLeveledUp;
 
             if (hasLeveledUp) {
-                // Level up: animate from 0% to new percentage
-                startXpPercentage = 0.0;
-                targetXpPercentage = currentXpPercentage;
                 startXp = 0;
                 targetXp = currentXp;
 
@@ -256,9 +248,6 @@ public class LevelHudRenderer implements HudRenderCallback {
 
                 // Don't show exp gain for level up
             } else {
-                // Normal XP gain: animate from last percentage to current percentage
-                startXpPercentage = lastXpPercentage;
-                targetXpPercentage = currentXpPercentage;
                 startXp = lastXp;
                 targetXp = currentXp;
 
