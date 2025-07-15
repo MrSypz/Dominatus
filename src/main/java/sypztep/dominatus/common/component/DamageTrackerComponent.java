@@ -23,23 +23,15 @@ public class DamageTrackerComponent implements Component {
         this.entity = entity;
     }
 
-    private void ensureMaxHealthInitialized() {
-        if (maxHealth <= 0f && entity != null && entity.getAttributes() != null) {
-            this.maxHealth = entity.getMaxHealth();
-        }
-    }
-
     public void setMaxHealth(float maxHealth) {
         this.maxHealth = maxHealth;
     }
 
     public float getMaxHealth() {
-        ensureMaxHealthInitialized();
         return this.maxHealth;
     }
 
     public void addDamage(PlayerEntity player, float damage) {
-        ensureMaxHealthInitialized();
         UUID playerId = player.getUuid();
         damageMap.put(playerId, damageMap.getOrDefault(playerId, 0f) + damage);
     }
@@ -49,7 +41,6 @@ public class DamageTrackerComponent implements Component {
     }
 
     public float getDamagePercentage(PlayerEntity player) {
-        ensureMaxHealthInitialized();
         if (maxHealth <= 0) return 0f;
         float damage = getDamage(player);
         return Math.min(damage / maxHealth, 1.0f); // Cap at 100%
