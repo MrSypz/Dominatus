@@ -18,7 +18,7 @@ import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.init.ModParticles;
 import sypztep.dominatus.common.util.LivingEntityUtil;
 import sypztep.dominatus.common.util.ParticleHandler;
-import sypztep.dominatus.common.util.stats.ExpUtil;
+import sypztep.dominatus.common.util.level.ExpUtil;
 
 import java.util.Map;
 import java.util.UUID;

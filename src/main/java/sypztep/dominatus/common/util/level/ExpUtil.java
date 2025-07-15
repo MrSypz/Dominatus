@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util.stats;
+package sypztep.dominatus.common.util.level;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -192,7 +192,7 @@ public class ExpUtil {
     public static long getPlayerExperience(PlayerEntity player) {
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(player);
         if (levelComponent != null) {
-            return levelComponent.getXp();
+            return levelComponent.getExperience();
         }
         return player.totalExperience;
     }

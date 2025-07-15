@@ -11,7 +11,7 @@ import net.minecraft.util.math.ColorHelper;
 import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.common.component.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
-import sypztep.dominatus.common.util.stats.LevelSystem;
+import sypztep.dominatus.common.util.level.CharacterLevelSystem;
 
 public class LevelHudRenderer implements HudRenderCallback {
 
@@ -70,7 +70,7 @@ public class LevelHudRenderer implements HudRenderCallback {
         // Get level component
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(client.player);
 
-        LevelSystem levelSystem = levelComponent.getLevelSystem();
+        CharacterLevelSystem levelSystem = levelComponent.getPlayerLevelSystem();
         if (levelSystem == null) {
             return;
         }
@@ -78,7 +78,7 @@ public class LevelHudRenderer implements HudRenderCallback {
         renderLevelHud(drawContext, client, levelSystem);
     }
 
-    private void renderLevelHud(DrawContext drawContext, MinecraftClient client, LevelSystem levelSystem) {
+    private void renderLevelHud(DrawContext drawContext, MinecraftClient client, CharacterLevelSystem levelSystem) {
         TextRenderer textRenderer = client.textRenderer;
 
         // Update animation and slide states
@@ -127,9 +127,9 @@ public class LevelHudRenderer implements HudRenderCallback {
         currentY += textRenderer.fontHeight + 3;
 
         // XP Progress bar
-        long currentXp = levelSystem.getXp();
-        long xpToNext = levelSystem.getXpToNextLevel();
-        double actualXpPercentage = levelSystem.getXpPercentage();
+        long currentXp = levelSystem.getExperience();
+        long xpToNext = levelSystem.getExperience();
+        double actualXpPercentage = levelSystem.getExperiencePercentage();
 
         // Use animated percentage for BOTH progress bar and display
         double displayXpPercentage = isAnimating ? displayPercentage : actualXpPercentage;
@@ -200,10 +200,10 @@ public class LevelHudRenderer implements HudRenderCallback {
                 percentageX, currentY, getTextColor());
     }
 
-    private void updateAnimation(LevelSystem levelSystem, MinecraftClient client) {
-        long currentXp = levelSystem.getXp();
+    private void updateAnimation(CharacterLevelSystem levelSystem, MinecraftClient client) {
+        long currentXp = levelSystem.getExperience();
         int currentLevel = levelSystem.getLevel();
-        double currentXpPercentage = levelSystem.getXpPercentage();
+        double currentXpPercentage = levelSystem.getExperiencePercentage();
 
         // Check for level up
         boolean hasLeveledUp = currentLevel > lastLevel;

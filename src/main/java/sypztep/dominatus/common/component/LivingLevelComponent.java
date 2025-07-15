@@ -1,60 +1,112 @@
 package sypztep.dominatus.common.component;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
-import sypztep.dominatus.common.util.stats.LevelSystem;
+import sypztep.dominatus.common.util.level.CharacterLevelSystem;
+import sypztep.dominatus.common.util.level.LevelSystem;
+import sypztep.dominatus.common.util.level.LevelConfigs;
 
+/**
+ * Level component for all living entities.
+ * - Players: Get CharacterLevelSystem (levels + benefits)
+ * - Monsters: Get basic LevelSystem (levels only)
+ */
 public class LivingLevelComponent implements AutoSyncedComponent {
     private final LivingEntity living;
-    private final LevelSystem levelSystem;
+    private final LevelSystem monsterLevelSystem;
+    private final CharacterLevelSystem playerLevelSystem;
+    private final boolean isPlayer;
 
     public LivingLevelComponent(LivingEntity living) {
         this.living = living;
-        this.levelSystem = new LevelSystem();
+        this.isPlayer = living instanceof PlayerEntity;
+
+        if (isPlayer) {
+            this.playerLevelSystem = new CharacterLevelSystem();
+            this.monsterLevelSystem = null;
+        } else {
+            this.monsterLevelSystem = new LevelSystem(LevelConfigs.CHARACTER);
+            this.playerLevelSystem = null;
+        }
     }
 
     @Override
     public void readFromNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
-        levelSystem.readFromNbt(nbtCompound);
+        if (isPlayer) {
+            playerLevelSystem.readFromNbt(nbtCompound);
+        } else {
+            monsterLevelSystem.readFromNbt(nbtCompound, "");
+        }
     }
 
     @Override
     public void writeToNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
-        levelSystem.writeToNbt(nbtCompound);
+        if (isPlayer) {
+            playerLevelSystem.writeToNbt(nbtCompound);
+        } else {
+            monsterLevelSystem.writeToNbt(nbtCompound, "");
+        }
     }
 
-    // Getter for the level system
-    public LevelSystem getLevelSystem() {
-        return levelSystem;
-    }
-
-    // Convenience methods
+    // Universal methods (work for both players and monsters)
     public int getLevel() {
-        return levelSystem.getLevel();
+        return isPlayer ? playerLevelSystem.getLevel() : monsterLevelSystem.getLevel();
     }
 
-    public long getXp() {
-        return levelSystem.getXp();
+    public long getExperience() {
+        return isPlayer ? playerLevelSystem.getExperience() : monsterLevelSystem.getExperience();
     }
 
-    public long getXpToNextLevel() {
-        return levelSystem.getXpToNextLevel();
+    public long getExperienceToNextLevel() {
+        return isPlayer ? playerLevelSystem.getExperienceToNextLevel() : monsterLevelSystem.getExperienceToNextLevel();
     }
 
-    public double getXpPercentage() {
-        return levelSystem.getXpPercentage();
+    public double getExperiencePercentage() {
+        return isPlayer ? playerLevelSystem.getExperiencePercentage() : monsterLevelSystem.getExperiencePercentage();
     }
 
-    public int getStatPoints() {
-        return levelSystem.getStatPoints();
+    public boolean isMaxLevel() {
+        return isPlayer ? playerLevelSystem.isMaxLevel() : monsterLevelSystem.isMaxLevel();
     }
 
     public void addExperience(long amount) {
-        levelSystem.addExperience(amount);
+        if (isPlayer) playerLevelSystem.addExperience(amount);
+        else monsterLevelSystem.addExperience(amount);
         sync();
+    }
+
+    public boolean isPlayer() {
+        return isPlayer;
+    }
+
+    public int getAvailableBenefits() {
+        return isPlayer ? playerLevelSystem.getAvailableBenefits() : 0;
+    }
+
+    public boolean spendBenefits(int amount) {
+        if (isPlayer) {
+            boolean success = playerLevelSystem.spendBenefits(amount);
+            if (success) sync();
+            return success;
+        }
+        return false;
+    }
+
+    public LevelSystem getMonsterLevelSystem() {
+        return monsterLevelSystem;
+    }
+
+    public CharacterLevelSystem getPlayerLevelSystem() {
+        return playerLevelSystem;
+    }
+
+    @Deprecated
+    public int getStatPoints() {
+        return getAvailableBenefits();
     }
 
     public void sync() {
