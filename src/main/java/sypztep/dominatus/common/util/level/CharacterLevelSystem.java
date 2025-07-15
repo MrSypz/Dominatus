@@ -1,6 +1,8 @@
 package sypztep.dominatus.common.util.level;
 
 import net.minecraft.nbt.NbtCompound;
+import sypztep.dominatus.common.util.level.benefit.BenefitCalculator;
+import sypztep.dominatus.common.util.level.benefit.PlayerBenefitSystem;
 
 public class CharacterLevelSystem {
     private final LevelSystem levelSystem;
@@ -39,13 +41,18 @@ public class CharacterLevelSystem {
     public int getStatPoints() { return getAvailableBenefits(); }
 
     public void writeToNbt(NbtCompound tag) {
-        levelSystem.writeToNbt(tag, "Character");
-        benefitSystem.writeToNbt(tag);
+        tag.putInt("Level", levelSystem.getLevel());
+        tag.putLong("Experience", levelSystem.getExperience());
+        tag.putLong("ExperienceToNextLevel", levelSystem.getExperienceToNextLevel());
+        tag.putInt("AvailableBenefits", benefitSystem.getAvailableBenefits());
     }
 
     public void readFromNbt(NbtCompound tag) {
-        levelSystem.readFromNbt(tag, "Character");
-        benefitSystem.readFromNbt(tag);
+        levelSystem.setLevel(tag.getInt("Level"));
+        levelSystem.setExperience(tag.getLong("Experience"));
+        levelSystem.updateExperienceToNextLevel();
+        benefitSystem.setAvailableBenefits(tag.getInt("AvailableBenefits"));
     }
 }
+
 

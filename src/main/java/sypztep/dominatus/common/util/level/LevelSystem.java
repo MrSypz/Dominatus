@@ -34,20 +34,14 @@ public class LevelSystem {
             levelsGained++;
         }
 
-        if (level >= implConfig.getMaxLevel()) {
-            experience = Math.min(experience, experienceToNextLevel);
-        }
+        if (level >= implConfig.getMaxLevel()) experience = Math.min(experience, experienceToNextLevel);
 
         return levelsGained;
     }
 
     public void subtractExperience(long amount) {
-        if (level >= implConfig.getMaxLevel()) {
-            return;
-        }
-        if (amount < 0) {
-            throw new IllegalArgumentException("Amount to subtract cannot be negative");
-        }
+        if (level >= implConfig.getMaxLevel()) return;
+        if (amount < 0) throw new IllegalArgumentException("Amount to subtract cannot be negative");
         experience = Math.max(0L, experience - amount);
     }
 
@@ -55,9 +49,7 @@ public class LevelSystem {
         if (level >= implConfig.getMaxLevel()) return;
         experience -= experienceToNextLevel;
         level++;
-        if (level < implConfig.getMaxLevel()) {
-            updateExperienceToNextLevel();
-        }
+        if (level < implConfig.getMaxLevel()) updateExperienceToNextLevel();
     }
 
     public void updateExperienceToNextLevel() {
@@ -75,6 +67,11 @@ public class LevelSystem {
     public void setExperience(long experience) { this.experience = Math.max(0L, experience); }
 
     public long getExperienceToNextLevel() { return experienceToNextLevel; }
+
+    public long getExperienceForCurrentLevel() {
+        return experience;
+    }
+
     public int getMaxLevel() { return implConfig.getMaxLevel(); }
     public int getStartingLevel() { return implConfig.getStartingLevel(); }
 

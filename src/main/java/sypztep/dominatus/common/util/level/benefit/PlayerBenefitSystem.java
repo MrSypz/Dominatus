@@ -1,9 +1,9 @@
-package sypztep.dominatus.common.util.level;
+package sypztep.dominatus.common.util.level.benefit;
 
 import net.minecraft.nbt.NbtCompound;
 import sypztep.dominatus.ModConfig;
 
-class PlayerBenefitSystem {
+public class PlayerBenefitSystem {
     private int availableBenefits;
     private final BenefitCalculator calculator;
 
@@ -21,13 +21,9 @@ class PlayerBenefitSystem {
         addBenefits(benefitsGained);
     }
 
-    public int getAvailableBenefits() {
-        return availableBenefits;
-    }
-
-    public void addBenefits(int benefits) {
-        this.availableBenefits += benefits;
-    }
+    public int getAvailableBenefits() { return availableBenefits; }
+    public void setAvailableBenefits(int benefits) { this.availableBenefits = benefits; }
+    public void addBenefits(int benefits) { this.availableBenefits += benefits; }
 
     public boolean spendBenefits(int benefits) {
         if (availableBenefits >= benefits) {

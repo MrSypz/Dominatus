@@ -52,7 +52,6 @@ public class LivingLevelComponent implements AutoSyncedComponent {
         }
     }
 
-    // Universal methods (work for both players and monsters)
     public int getLevel() {
         return isPlayer ? playerLevelSystem.getLevel() : monsterLevelSystem.getLevel();
     }

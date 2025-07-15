@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.util.level;
+package sypztep.dominatus.common.util.level.benefit;
 
 class DefaultBenefitCalculator implements BenefitCalculator {
     @Override
