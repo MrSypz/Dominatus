@@ -5,6 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import sypztep.dominatus.common.component.LivingLevelComponent;
 import sypztep.dominatus.common.data.MobExpEntry;
 import sypztep.dominatus.common.init.ModEntityComponents;
 
@@ -22,9 +23,7 @@ public class ExpUtil {
         EntityType<?> entityType = target.getType();
         int baseExp = MobExpEntry.getExpReward(entityType);
 
-        if (baseExp <= 0) {
-            return 0;
-        }
+        if (baseExp <= 0) return 0;
 
         // Apply damage percentage
         float expFromDamage = baseExp * damagePercentage;
@@ -47,10 +46,8 @@ public class ExpUtil {
      */
     private static int getEntityLevel(LivingEntity entity) {
         // Try to get level from LivingLevelComponent first
-        var levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(entity);
-        if (levelComponent != null) {
-            return levelComponent.getLevel();
-        }
+        LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(entity);
+        if (levelComponent != null) return levelComponent.getLevel();
 
         // Fallback to health-based calculation if component not available
         float maxHealth = entity.getMaxHealth();
@@ -62,10 +59,8 @@ public class ExpUtil {
      * Get player level using LivingLevelComponent
      */
     private static int getPlayerLevel(PlayerEntity player) {
-        var levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(player);
-        if (levelComponent != null) {
-            return levelComponent.getLevel();
-        }
+        LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(player);
+        if (levelComponent != null) return levelComponent.getLevel();
 
         // Fallback to vanilla experience level
         return Math.max(1, player.experienceLevel);
@@ -127,15 +122,7 @@ public class ExpUtil {
             case -28 -> 0.35f; // -28 35%
             case -29 -> 0.35f; // -29 35%
             case -30 -> 0.35f; // -30 35%
-            default -> {
-                if (levelDiff > 16) {
-                    yield 0.40f; // Cap at 40% for very high level targets
-                } else if (levelDiff < -30) {
-                    yield 0.10f; // Cap at 10% for very low level targets
-                } else {
-                    yield 1.00f; // Default 100%
-                }
-            }
+            default -> levelDiff > 16 ? 0.4f : 0.1f;
         };
     }
     /**
@@ -148,7 +135,7 @@ public class ExpUtil {
     public static void awardExperience(PlayerEntity player, long amount, String source, boolean showMessage) {
         if (amount <= 0) return;
 
-        var levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(player);
+        LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(player);
         if (levelComponent != null) {
             int oldLevel = levelComponent.getLevel();
             levelComponent.addExperience(amount);
@@ -203,7 +190,7 @@ public class ExpUtil {
      * Get player's current experience using LivingLevelComponent
      */
     public static long getPlayerExperience(PlayerEntity player) {
-        var levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(player);
+        LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(player);
         if (levelComponent != null) {
             return levelComponent.getXp();
         }
