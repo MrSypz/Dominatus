@@ -1,18 +1,15 @@
 package sypztep.dominatus.common.init;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.WaterCreatureEntity;
-import net.minecraft.entity.passive.PassiveEntity;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
 import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 import sypztep.dominatus.Dominatus;
-import sypztep.dominatus.common.component.DamageTrackerComponent;
-import sypztep.dominatus.common.component.LivingLevelComponent;
+import sypztep.dominatus.common.component.living.DamageTrackerComponent;
+import sypztep.dominatus.common.component.living.LivingLevelComponent;
 
 public class ModEntityComponents implements EntityComponentInitializer {
     public ModEntityComponents() {}

@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ColorHelper;
 import sypztep.dominatus.ModConfig;
-import sypztep.dominatus.common.component.LivingLevelComponent;
+import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.util.level.CharacterLevelSystem;
 

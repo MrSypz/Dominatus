@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.component;
+package sypztep.dominatus.common.component.living;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;

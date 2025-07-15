@@ -12,7 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
-import sypztep.dominatus.common.component.DamageTrackerComponent;
+import sypztep.dominatus.common.component.living.DamageTrackerComponent;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.init.ModParticles;

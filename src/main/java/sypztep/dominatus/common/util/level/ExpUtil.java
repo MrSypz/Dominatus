@@ -5,7 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import sypztep.dominatus.common.component.LivingLevelComponent;
+import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.data.MobExpEntry;
 import sypztep.dominatus.common.init.ModEntityComponents;
 
