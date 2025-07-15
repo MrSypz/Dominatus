@@ -47,6 +47,8 @@ public class PlayerLevelData implements LevelData {
     // Benefit operations
     @Override public int getAvailableBenefits() { return benefitSystem.getAvailableBenefits(); }
     @Override public boolean spendBenefits(int amount) { return benefitSystem.spendBenefits(amount); }
+    @Override public void addBenefits(int amount) { benefitSystem.addBenefits(amount); }
+    @Override public void setBenefits(int amount) { benefitSystem.setAvailableBenefits(amount); }
 
     @Override public boolean isPlayer() { return true; }
 

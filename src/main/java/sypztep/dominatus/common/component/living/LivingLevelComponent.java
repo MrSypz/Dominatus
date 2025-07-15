@@ -49,6 +49,9 @@ public class LivingLevelComponent implements AutoSyncedComponent {
         if (success) sync();
         return success;
     }
+    public void addBenefits(int amount) { levelData.addBenefits(amount); sync(); }
+    public void setBenefits(int amount) { levelData.setBenefits(amount); sync(); }
+
 
     public boolean isPlayer() { return levelData.isPlayer(); }
 

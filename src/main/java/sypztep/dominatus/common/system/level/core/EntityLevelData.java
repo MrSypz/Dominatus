@@ -25,6 +25,8 @@ public class EntityLevelData implements LevelData {
 
     @Override public int getAvailableBenefits() { return 0; }
     @Override public boolean spendBenefits(int amount) { return false; }
+    @Override public void addBenefits(int amount) { /* No-op for entities */ }
+    @Override public void setBenefits(int amount) { /* No-op for entities */ }
 
     @Override public boolean isPlayer() { return false; }
 

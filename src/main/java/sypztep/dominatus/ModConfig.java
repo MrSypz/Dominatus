@@ -4,26 +4,29 @@ import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
-import net.minecraft.util.math.ColorHelper;
 
 @Config(name = Dominatus.MODID)
 public class ModConfig implements ConfigData {
     @ConfigEntry.Category("feature-client")
     @Comment("Crit Indicator (default : true)")
     public static boolean damageCritIndicator = true;
+
     @ConfigEntry.Category("feature-client")
-    @Comment("Missing Indicato (default : true)")
+    @Comment("Missing Indicator (default : true)")
     public static boolean missingIndicator = true;
+
     @ConfigEntry.Category("feature-client")
     @ConfigEntry.ColorPicker()
     @Comment("Color of the crit indicator")
     public static int critDamageColor = 0xFF4F00;
+
     @ConfigEntry.Category("statconfig_gameplay")
-    @ConfigEntry.BoundedDiscrete(min = 1,max = Integer.MAX_VALUE)
+    @ConfigEntry.BoundedDiscrete(min = 1, max = 99)
     public static int maxLevel = 99;
+
     @ConfigEntry.Category("statconfig_gameplay")
-    @ConfigEntry.BoundedDiscrete(min = 0,max = Integer.MAX_VALUE)
-    public static final long[] EXP_MAP = {0L,         // level 0 (unused)
+    @ConfigEntry.BoundedDiscrete(min = 0, max = Long.MAX_VALUE)
+    public static long[] EXP_MAP = {
             548L,       // level 1
             894L,       // level 2
             1486L,      // level 3
@@ -121,51 +124,10 @@ public class ModConfig implements ConfigData {
             918490L,    // level 95
             1018605L,   // level 96
             1129632L,   // level 97
-            1252761L,   // level 98
-            0L          // level 99 (max level, no next level)
+            1252761L,   // level 98 -> 99
     };
+
     @ConfigEntry.Category("statconfig_gameplay")
-    @ConfigEntry.BoundedDiscrete(min = 0,max = Integer.MAX_VALUE)
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 4096)
     public static int startStatpoints = 48;
-
-    // HUD Color Configuration (only these two colors can be changed, no alpha)
-    @ConfigEntry.Category("hud_colors")
-    @ConfigEntry.ColorPicker(allowAlpha = false)
-    @Comment("Progress bar color (default: Orange)")
-    public static int barColor = 0xFFA500; // Orange (no alpha)
-
-    public static final int hudBackgroundColor = ColorHelper.Argb.getArgb(180, 0, 0, 0); // Semi-transparent black
-    public static final int barBackgroundColor = ColorHelper.Argb.getArgb(255, 50, 50, 50); // Dark gray
-    public static final int borderColor = ColorHelper.Argb.getArgb(255, 255, 255, 255); // White
-    public static final int textColor = 0xFFFFFFFF; // White
-    public static final int textShadowColor = 0xFF000000; // Black
-    public static final int maxLevelBarColor = ColorHelper.Argb.getArgb(255, 255, 215, 0); // Gold
-
-    // HUD Position
-    @ConfigEntry.Category("hud_position")
-    @ConfigEntry.BoundedDiscrete(min = 0, max = 1920)
-    public static int hudX = 10;
-
-    @ConfigEntry.Category("hud_position")
-    @ConfigEntry.BoundedDiscrete(min = 0, max = 1080)
-    public static int hudY = 10;
-
-    // HUD Settings
-    @ConfigEntry.Category("hud_settings")
-    @ConfigEntry.BoundedDiscrete(min = 50, max = 300)
-    public static int barWidth = 140;
-
-    @ConfigEntry.Category("hud_settings")
-    @ConfigEntry.BoundedDiscrete(min = 4, max = 20)
-    public static int barHeight = 8;
-
-    @ConfigEntry.Category("hud_settings")
-    public static boolean enableAnimations = true;
-
-    @ConfigEntry.Category("hud_settings")
-    @ConfigEntry.BoundedDiscrete(min = 500, max = 5000)
-    public static int animationDurationMs = 1500; // 1.5 seconds
-
-    @ConfigEntry.Category("hud_settings")
-    public static boolean enableGlowEffect = true;
 }

@@ -28,6 +28,8 @@ public interface LevelData {
     // Benefit operations (returns 0 for non-players)
     int getAvailableBenefits();
     boolean spendBenefits(int amount);
+    void addBenefits(int amount);
+    void setBenefits(int amount);
 
     // Persistence
     void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup lookup);
