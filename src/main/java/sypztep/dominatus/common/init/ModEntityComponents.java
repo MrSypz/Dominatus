@@ -16,8 +16,8 @@ public class ModEntityComponents implements EntityComponentInitializer {
     public static final ComponentKey<DamageTrackerComponent> DAMAGETRACKER = ComponentRegistry.getOrCreate(Dominatus.id("dmgtracker"), DamageTrackerComponent.class);
 
     @Override
-    public void registerEntityComponentFactories(EntityComponentFactoryRegistry entityComponentFactoryRegistry) {
-        entityComponentFactoryRegistry.beginRegistration(LivingEntity.class, LIVINGLEVEL).respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY).end(LivingLevelComponent::new);
-        entityComponentFactoryRegistry.registerFor(LivingEntity.class, DAMAGETRACKER, DamageTrackerComponent::new);
+    public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
+        registry.beginRegistration(LivingEntity.class, LIVINGLEVEL).respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY).end(LivingLevelComponent::new);
+        registry.registerFor(LivingEntity.class, DAMAGETRACKER, DamageTrackerComponent::new);
     }
 }
