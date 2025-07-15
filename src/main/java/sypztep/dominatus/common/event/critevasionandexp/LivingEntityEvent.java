@@ -27,6 +27,13 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         ServerLivingEntityEvents.AllowDamage,
         ServerLivingEntityEvents.AfterDeath,
         ServerEntityEvents.Load {
+    private static final LivingEntityEvent INSTANCE = new LivingEntityEvent();
+    public static void register() {
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register(INSTANCE);
+        DominatusLivingEntityEvents.POST_ARMOR_DAMAGE.register(INSTANCE);
+        ServerEntityEvents.ENTITY_LOAD.register(INSTANCE);
+        ServerLivingEntityEvents.AFTER_DEATH.register(INSTANCE);
+    }
     @Override
     public boolean allowDamage(LivingEntity entity, DamageSource source, float amount) {
         if (source.getAttacker() instanceof LivingEntity attacker) {

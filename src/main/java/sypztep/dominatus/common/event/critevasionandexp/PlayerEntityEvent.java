@@ -18,6 +18,13 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
         DominatusPlayerEntityEvents.ModifyAttackCondition,
         DominatusPlayerEntityEvents.AllowAttack,
         DominatusLivingEntityEvents.DamageDealt {
+    private static final PlayerEntityEvent INSTANCE = new PlayerEntityEvent();
+    public static void register() {
+        DominatusPlayerEntityEvents.MODIFY_ATTACK_CONDITION.register(INSTANCE);
+        DominatusPlayerEntityEvents.MODIFY_ATTACK_DAMAGE.register(INSTANCE);
+        DominatusPlayerEntityEvents.ALLOW_ATTACK.register(INSTANCE);
+        DominatusLivingEntityEvents.DAMAGE_DEALT.register(INSTANCE);
+    }
     @Override
     public boolean allowAttack(PlayerEntity player, Entity target) {
         LivingEntity livingTarget = (LivingEntity) target;
