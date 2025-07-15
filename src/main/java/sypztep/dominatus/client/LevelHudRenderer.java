@@ -11,7 +11,7 @@ import net.minecraft.util.math.ColorHelper;
 import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
-import sypztep.dominatus.common.system.level.core.CharacterLevelSystem;
+import sypztep.dominatus.common.system.level.core.LevelData;
 
 public class LevelHudRenderer implements HudRenderCallback {
 
@@ -62,27 +62,27 @@ public class LevelHudRenderer implements HudRenderCallback {
     public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        // Only render for players and when not in debug screen
         if (client.player == null || client.getDebugHud().shouldShowDebugHud()) {
             return;
         }
 
-        // Get level component
+        // Get level component and use unified interface
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(client.player);
+        LevelData levelData = levelComponent.getLevelData(); // Unified access!
 
-        CharacterLevelSystem levelSystem = levelComponent.getPlayerLevelSystem();
-        if (levelSystem == null) {
+        // Only render for players
+        if (!levelData.isPlayer()) {
             return;
         }
 
-        renderLevelHud(drawContext, client, levelSystem);
+        renderLevelHud(drawContext, client, levelData);
     }
 
-    private void renderLevelHud(DrawContext drawContext, MinecraftClient client, CharacterLevelSystem levelSystem) {
+    private void renderLevelHud(DrawContext drawContext, MinecraftClient client, LevelData levelData) {
         TextRenderer textRenderer = client.textRenderer;
 
         // Update animation and slide states
-        updateAnimation(levelSystem, client);
+        updateAnimation(levelData, client);
         updateSlideAnimation(client);
 
         // Calculate slide offset
@@ -103,7 +103,11 @@ public class LevelHudRenderer implements HudRenderCallback {
 
         // Player name on left, level on right
         String playerName = client.player.getName().getString();
-        int level = levelSystem.getLevel();
+        long currentXpInLevel = levelData.getExperience();
+        long xpRequiredForNextLevel = levelData.getExperienceToNextLevel();
+        double actualXpPercentage = levelData.getExperiencePercentage();
+        int level = levelData.getLevel();
+        int maxlvl = levelData.getMaxLevel();
         String levelText = String.format("Lvl: %d", level);
 
         // Draw player name (left side) - no scaling animation
@@ -126,18 +130,13 @@ public class LevelHudRenderer implements HudRenderCallback {
 
         currentY += textRenderer.fontHeight + 3;
 
-        long currentXpInLevel = levelSystem.getExperience();
-        long xpRequiredForNextLevel = levelSystem.getExperienceToNextLevel(); // Total XP needed for next level
-        double actualXpPercentage = levelSystem.getExperiencePercentage();
-
-        // Use animated percentage for BOTH progress bar and display
         double displayXpPercentage = isAnimating ? displayPercentage : actualXpPercentage;
 
         // Draw XP bar background
         drawContext.fill(hudX, currentY, hudX + getBarWidth(), currentY + getBarHeight(), getBarBackgroundColor());
 
         // Draw XP progress with animation
-        if (level < levelSystem.getMaxLevel()) {
+        if (level < maxlvl) {
             int progressWidth = (int) (getBarWidth() * (displayXpPercentage / 100.0));
 
             // Add glow effect during XP gain
@@ -163,7 +162,7 @@ public class LevelHudRenderer implements HudRenderCallback {
 
         // XP numbers on the progress bar (centered) - FIX: Show current/required format
         String xpText;
-        if (level >= levelSystem.getMaxLevel()) {
+        if (level >= maxlvl) {
             xpText = "MAX";
         } else {
             long animatedCurrentXp = isAnimating ? displayXp : currentXpInLevel;
@@ -182,10 +181,9 @@ public class LevelHudRenderer implements HudRenderCallback {
         // Percentage text (bottom right of progress bar) - animated percentage
         currentY += getBarHeight() + 2;
         String percentageText;
-        if (level >= levelSystem.getMaxLevel()) {
+        if (level >= maxlvl) {
             percentageText = "MAX";
         } else {
-            // Use the SAME animated percentage as the progress bar
             percentageText = String.format("%.1f%%", displayXpPercentage);
         }
 
@@ -198,10 +196,10 @@ public class LevelHudRenderer implements HudRenderCallback {
                 percentageX, currentY, getTextColor());
     }
 
-    private void updateAnimation(CharacterLevelSystem levelSystem, MinecraftClient client) {
-        long currentXp = levelSystem.getExperience();
-        int currentLevel = levelSystem.getLevel();
-        double currentXpPercentage = levelSystem.getExperiencePercentage();
+    private void updateAnimation(LevelData levelData, MinecraftClient client) {
+        long currentXp = levelData.getExperience();
+        int currentLevel = levelData.getLevel();
+        double currentXpPercentage = levelData.getExperiencePercentage();
 
         // Check for level up
         boolean hasLeveledUp = currentLevel > lastLevel;
