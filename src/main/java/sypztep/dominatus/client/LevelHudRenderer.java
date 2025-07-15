@@ -126,9 +126,8 @@ public class LevelHudRenderer implements HudRenderCallback {
 
         currentY += textRenderer.fontHeight + 3;
 
-        // XP Progress bar
-        long currentXp = levelSystem.getExperience();
-        long xpToNext = levelSystem.getExperience();
+        long currentXpInLevel = levelSystem.getExperience();
+        long xpRequiredForNextLevel = levelSystem.getExperienceToNextLevel(); // Total XP needed for next level
         double actualXpPercentage = levelSystem.getExperiencePercentage();
 
         // Use animated percentage for BOTH progress bar and display
@@ -162,14 +161,13 @@ public class LevelHudRenderer implements HudRenderCallback {
         // Draw XP bar border
         drawContext.drawBorder(hudX, currentY, getBarWidth(), getBarHeight(), getBorderColor());
 
-        // XP numbers on the progress bar (centered) - animated numbers
+        // XP numbers on the progress bar (centered) - FIX: Show current/required format
         String xpText;
         if (level >= levelSystem.getMaxLevel()) {
             xpText = "MAX";
         } else {
-            // Use animated XP values
-            long animatedCurrentXp = isAnimating ? (long) displayXp : currentXp;
-            xpText = String.format("%s / %s", formatNumber(animatedCurrentXp), formatNumber(xpToNext));
+            long animatedCurrentXp = isAnimating ? displayXp : currentXpInLevel;
+            xpText = String.format("%s / %s", formatNumber(animatedCurrentXp), formatNumber(xpRequiredForNextLevel));
         }
 
         // Center the XP text on the bar
@@ -325,8 +323,6 @@ public class LevelHudRenderer implements HudRenderCallback {
             return -(getBarWidth() + 20) * easedProgress;
         }
     }
-
-    // Remove the old getAnimatedXpPercentage method since we're using displayPercentage directly
 
     /**
      * Ease-out-cubic: Fast start, slow end (smooth deceleration)
