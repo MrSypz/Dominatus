@@ -15,7 +15,7 @@ public final class ModEntityAttributes {
 
     public static final ArrayList<RegistryEntry<EntityAttribute>> ENTRIES = new ArrayList<>();
 
-    public static final RegistryEntry<EntityAttribute> HEALTH_REGEN = register("health_regen", new ClampedEntityAttribute("attribute.name.health_regen", 0, 0.0, 16).setTracked(true));
+    public static final RegistryEntry<EntityAttribute> HEALTH_REGEN = register("health_regen", new ClampedEntityAttribute("attribute.name.health_regen", 0, 0.0, 2048).setTracked(true));
 
     public static final RegistryEntry<EntityAttribute> ACCURACY = register("accuracy", new ClampedEntityAttribute("attribute.name.accuracy", 75, 0.0, 2048.0D).setTracked(true));
     public static final RegistryEntry<EntityAttribute> EVASION = register("evasion", new ClampedEntityAttribute("attribute.name.evasion", 0, 0.0, 2048.0D).setTracked(true));
@@ -24,13 +24,7 @@ public final class ModEntityAttributes {
     public static final RegistryEntry<EntityAttribute> CRIT_CHANCE = register("crit_chance", new ClampedEntityAttribute("attribute.name.crit_chance", 0.05, 0.0, 2.0D).setTracked(true));
     public static final RegistryEntry<EntityAttribute> BACK_ATTACK = register("back_attack", new ClampedEntityAttribute("attribute.name.back_attack", 0.5, 0.0, 10.24D).setTracked(true));
 
-    public static final RegistryEntry<EntityAttribute> BOW_DRAWSPEED = register("bow_drawspeed", new ClampedEntityAttribute("attribute.name.player_drawspeed", 0, 0.0, 2.0).setTracked(true));
-
     public static final RegistryEntry<EntityAttribute> MAGIC_ATTACK_DAMAGE = register("magic_attack_damage", new ClampedEntityAttribute("attribute.name.magic_attack_damage", 0, 0.0, 4.0).setTracked(true));
-    public static final RegistryEntry<EntityAttribute> MELEE_ATTACK_DAMAGE = register("melee_attack_damage", new ClampedEntityAttribute("attribute.name.melee_attack_damage", 0, 0.0, 4.0).setTracked(true));
-
-    public static final RegistryEntry<EntityAttribute> MAGIC_RESISTANCE = register("magic_resistance", new ClampedEntityAttribute("attribute.name.magic_resistance", 0, -2.0, 0.55).setTracked(true));
-    public static final RegistryEntry<EntityAttribute> PHYSICAL_RESISTANCE = register("physical_resistance", new ClampedEntityAttribute("attribute.name.physical_resistance", 0, -2.0, 0.55).setTracked(true));
 
     private static RegistryEntry<EntityAttribute> register(String id, EntityAttribute attribute) {
         RegistryEntry<EntityAttribute> entry = Registry.registerReference(Registries.ATTRIBUTE, Dominatus.id(id), attribute);

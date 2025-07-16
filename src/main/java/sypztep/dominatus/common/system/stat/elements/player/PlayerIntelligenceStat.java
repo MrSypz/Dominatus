@@ -110,12 +110,10 @@ public class PlayerIntelligenceStat extends IntelligenceStat implements PlayerSt
     @Override
     public List<Text> getEffectDescription() {
         double magicDamageBonus = calculateMagicDamageBonus() * 100;
-        double magicResistanceBonus = calculateMagicResistanceBonus() * 100;
 
         return List.of(
                 Text.literal(String.format("§6INT: §f%d §7(Points spent: %d)", currentValue, totalPointsSpent)),
-                Text.literal(String.format("§7Magic Damage: §f+%.1f%%", magicDamageBonus)),
-                Text.literal(String.format("§7Magic Resistance: §f+%.1f%%", magicResistanceBonus))
+                Text.literal(String.format("§7Magic Damage: §f+%.1f%%", magicDamageBonus))
         );
     }
 
@@ -127,9 +125,6 @@ public class PlayerIntelligenceStat extends IntelligenceStat implements PlayerSt
         double futureMagicDamage = (futureValue - baseValue) * MAGIC_DAMAGE_SCALING * 100;
         double magicDamageIncrease = futureMagicDamage - currentMagicDamage;
 
-        double currentMagicResistance = calculateMagicResistanceBonus() * 100;
-        double futureMagicResistance = (futureValue - baseValue) * MAGIC_RESISTANCE_SCALING * 100;
-        double magicResistanceIncrease = futureMagicResistance - currentMagicResistance;
 
         return List.of(
                 Text.literal(String.format("§6INT: §f%d §7→ §f%d", currentValue, futureValue)),
@@ -139,9 +134,7 @@ public class PlayerIntelligenceStat extends IntelligenceStat implements PlayerSt
                 Text.literal(String.format("  §7Magic Damage: §f+%.1f%% §7(§f%.1f%% §7→ §f%.1f%%§7)",
                         magicDamageIncrease, currentMagicDamage, futureMagicDamage)),
                 Text.literal(""),
-                Text.literal("§6Secondary Effects:").formatted(Formatting.GOLD),
-                Text.literal(String.format("  §7Magic Resistance: §f+%.1f%% §7(§f%.1f%% §7→ §f%.1f%%§7)",
-                        magicResistanceIncrease, currentMagicResistance, futureMagicResistance))
+                Text.literal("§6Secondary Effects:").formatted(Formatting.GOLD)
         );
     }
 }

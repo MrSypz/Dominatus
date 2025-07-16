@@ -13,7 +13,7 @@ import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.init.ModParticles;
 import sypztep.dominatus.common.util.LivingEntityUtil;
 import sypztep.dominatus.common.util.ParticleHandler;
-
+// NOTE : modifier damage are in LivingEntityPart in mixin is ApplyDamage method
 public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.ModifyAttackDamage,
         DominatusPlayerEntityEvents.ModifyAttackCondition,
         DominatusPlayerEntityEvents.AllowAttack,

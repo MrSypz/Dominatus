@@ -14,7 +14,6 @@ public class AgilityStat extends Stat {
     protected static final Identifier SECONDARY_MODIFIER_ID = Dominatus.id("agility_secondary");
 
     protected static final double ATTACK_SPEED_SCALING = 0.01; // 1% per point
-    protected static final double BOW_DRAW_SPEED_SCALING = 0.005; // 0.5% per point
 
     public AgilityStat() {
         super(1); // Base AGI of 1
@@ -39,14 +38,6 @@ public class AgilityStat extends Stat {
                 EntityAttributeModifier.Operation.ADD_VALUE,
                 baseValue -> (double)(currentValue - this.baseValue) // 1 per point
         );
-
-        // Bow draw speed bonus
-//        applyEffect(entity,
-//                ModEntityAttributes.BOW_DRAWSPEED,
-//                SECONDARY_MODIFIER_ID,
-//                EntityAttributeModifier.Operation.ADD_VALUE,
-//                baseValue -> (currentValue - this.baseValue) * BOW_DRAW_SPEED_SCALING
-//        );
     }
 
     @Override
@@ -66,9 +57,5 @@ public class AgilityStat extends Stat {
 
     protected int calculateEvasionBonus() {
         return currentValue - baseValue; // 1 per point
-    }
-
-    protected double calculateBowDrawSpeedBonus() {
-        return (currentValue - baseValue) * BOW_DRAW_SPEED_SCALING;
     }
 }

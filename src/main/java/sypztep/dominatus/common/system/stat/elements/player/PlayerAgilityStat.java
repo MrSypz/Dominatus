@@ -107,13 +107,11 @@ public class PlayerAgilityStat extends AgilityStat implements PlayerStatBehavior
     public List<Text> getEffectDescription() {
         double attackSpeedBonus = calculateAttackSpeedBonus() * 100;
         int evasionBonus = calculateEvasionBonus();
-        double bowDrawSpeedBonus = calculateBowDrawSpeedBonus() * 100;
 
         return List.of(
                 Text.literal(String.format("§6AGI: §f%d §7(Points spent: %d)", currentValue, totalPointsSpent)),
                 Text.literal(String.format("§7Attack Speed: §f+%.1f%%", attackSpeedBonus)),
-                Text.literal(String.format("§7Evasion: §f+%d", evasionBonus)),
-                Text.literal(String.format("§7Bow Draw Speed: §f+%.1f%%", bowDrawSpeedBonus))
+                Text.literal(String.format("§7Evasion: §f+%d", evasionBonus))
         );
     }
 
@@ -129,10 +127,6 @@ public class PlayerAgilityStat extends AgilityStat implements PlayerStatBehavior
         int futureEvasion = futureValue - baseValue;
         int evasionIncrease = futureEvasion - currentEvasion;
 
-        double currentBowDrawSpeed = calculateBowDrawSpeedBonus() * 100;
-        double futureBowDrawSpeed = (futureValue - baseValue) * BOW_DRAW_SPEED_SCALING * 100;
-        double bowDrawSpeedIncrease = futureBowDrawSpeed - currentBowDrawSpeed;
-
         return List.of(
                 Text.literal(String.format("§6AGI: §f%d §7→ §f%d", currentValue, futureValue)),
                 Text.literal(String.format("§7Cost: §f%d §7benefit points", calculateCost(additionalPoints))),
@@ -143,9 +137,7 @@ public class PlayerAgilityStat extends AgilityStat implements PlayerStatBehavior
                 Text.literal(""),
                 Text.literal("§6Secondary Effects:").formatted(Formatting.GOLD),
                 Text.literal(String.format("  §7Evasion: §f+%d §7(§f%d §7→ §f%d§7)",
-                        evasionIncrease, currentEvasion, futureEvasion)),
-                Text.literal(String.format("  §7Bow Draw Speed: §f+%.1f%% §7(§f%.1f%% §7→ §f%.1f%%§7)",
-                        bowDrawSpeedIncrease, currentBowDrawSpeed, futureBowDrawSpeed))
+                        evasionIncrease, currentEvasion, futureEvasion))
         );
     }
 }

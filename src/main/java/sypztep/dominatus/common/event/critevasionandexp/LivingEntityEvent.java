@@ -16,6 +16,7 @@ import sypztep.dominatus.common.component.living.DamageTrackerComponent;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.init.ModParticles;
+import sypztep.dominatus.common.util.DamageTypeUtil;
 import sypztep.dominatus.common.util.LivingEntityUtil;
 import sypztep.dominatus.common.util.ParticleHandler;
 import sypztep.dominatus.common.util.level.ExpUtil;
@@ -39,7 +40,6 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         if (source.getAttacker() instanceof LivingEntity attacker) {
             if (!LivingEntityUtil.isHitable(entity, source)) return false;
 
-            // Only check hit for non-player attackers (players already handled in PlayerEntityEvent.allowAttack)
             if (!(attacker instanceof PlayerEntity)) {
                 if (!LivingEntityUtil.hitCheck(attacker, entity)) {
                     ParticleHandler.sendToAll(entity, attacker, ModParticles.MISSING);
@@ -70,6 +70,8 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
                 ParticleHandler.sendToAll(entity, attacker, ModParticles.BACKATTACK);
                 totalMultiplier += (float) attacker.getAttributeValue(ModEntityAttributes.BACK_ATTACK);
             }
+
+            if (DamageTypeUtil.isMagicDamage(source)) totalMultiplier += (float) attacker.getAttributeValue(ModEntityAttributes.MAGIC_ATTACK_DAMAGE);
 
             float finalDamage = amount * totalMultiplier;
 

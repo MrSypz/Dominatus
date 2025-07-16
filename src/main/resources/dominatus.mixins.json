@@ -6,7 +6,8 @@
   "mixins": [
     "api.event.LivingEntityMixin",
     "api.event.PlayerEntityMixin",
-    "core.registry.attribute.LivingEntityMixin"
+    "core.registry.attribute.LivingEntityMixin",
+    "vanilla.LivingEntityMixin"
   ],
   "client": [
   ],

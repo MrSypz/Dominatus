@@ -18,7 +18,6 @@ public class VitalityStat extends Stat {
 
     protected static final double MAX_HEALTH_SCALING = 0.05; // 5% per point
     protected static final double HEALTH_REGEN_SCALING = 0.02; // 2% per point
-    protected static final double PHYSICAL_RESISTANCE_SCALING = 0.005; // 0.5% per point
 
     public VitalityStat() {
         super(1); // Base VIT of 1
@@ -42,12 +41,6 @@ public class VitalityStat extends Stat {
                         SECONDARY_MODIFIER_ID,
                         EntityAttributeModifier.Operation.ADD_VALUE,
                         baseValue -> (currentValue - this.baseValue) * HEALTH_REGEN_SCALING
-                ),
-                new AttributeModification(
-                        ModEntityAttributes.PHYSICAL_RESISTANCE,
-                        SECONDARY_MODIFIER_ID,
-                        EntityAttributeModifier.Operation.ADD_VALUE,
-                        baseValue -> (currentValue - this.baseValue) * PHYSICAL_RESISTANCE_SCALING
                 )
         );
         applyEffects(entity, modifications);
@@ -63,16 +56,11 @@ public class VitalityStat extends Stat {
         return SECONDARY_MODIFIER_ID;
     }
 
-    // Helper methods
     protected double calculateMaxHealthBonus(double baseHealth) {
         return baseHealth * (currentValue - this.baseValue) * MAX_HEALTH_SCALING;
     }
 
     protected double calculateHealthRegenBonus() {
         return (currentValue - baseValue) * HEALTH_REGEN_SCALING;
-    }
-
-    protected double calculatePhysicalResistanceBonus() {
-        return (currentValue - baseValue) * PHYSICAL_RESISTANCE_SCALING;
     }
 }

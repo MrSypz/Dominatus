@@ -111,13 +111,11 @@ public class PlayerVitalityStat extends VitalityStat implements PlayerStatBehavi
     public List<Text> getEffectDescription() {
         double maxHealthBonus = (currentValue - baseValue) * MAX_HEALTH_SCALING * 100;
         double healthRegenBonus = calculateHealthRegenBonus() * 100;
-        double physicalResistanceBonus = calculatePhysicalResistanceBonus() * 100;
 
         return List.of(
                 Text.literal(String.format("§6VIT: §f%d §7(Points spent: %d)", currentValue, totalPointsSpent)),
                 Text.literal(String.format("§7Max Health: §f+%.1f%%", maxHealthBonus)),
-                Text.literal(String.format("§7Health Regen: §f+%.1f%%", healthRegenBonus)),
-                Text.literal(String.format("§7Physical Resistance: §f+%.1f%%", physicalResistanceBonus))
+                Text.literal(String.format("§7Health Regen: §f+%.1f%%", healthRegenBonus))
         );
     }
 
@@ -133,9 +131,6 @@ public class PlayerVitalityStat extends VitalityStat implements PlayerStatBehavi
         double futureHealthRegen = (futureValue - baseValue) * HEALTH_REGEN_SCALING * 100;
         double healthRegenIncrease = futureHealthRegen - currentHealthRegen;
 
-        double currentPhysicalResistance = calculatePhysicalResistanceBonus() * 100;
-        double futurePhysicalResistance = (futureValue - baseValue) * PHYSICAL_RESISTANCE_SCALING * 100;
-        double physicalResistanceIncrease = futurePhysicalResistance - currentPhysicalResistance;
 
         return List.of(
                 Text.literal(String.format("§6VIT: §f%d §7→ §f%d", currentValue, futureValue)),
@@ -147,9 +142,7 @@ public class PlayerVitalityStat extends VitalityStat implements PlayerStatBehavi
                 Text.literal(""),
                 Text.literal("§6Secondary Effects:").formatted(Formatting.GOLD),
                 Text.literal(String.format("  §7Health Regen: §f+%.1f%% §7(§f%.1f%% §7→ §f%.1f%%§7)",
-                        healthRegenIncrease, currentHealthRegen, futureHealthRegen)),
-                Text.literal(String.format("  §7Physical Resistance: §f+%.1f%% §7(§f%.1f%% §7→ §f%.1f%%§7)",
-                        physicalResistanceIncrease, currentPhysicalResistance, futurePhysicalResistance))
+                        healthRegenIncrease, currentHealthRegen, futureHealthRegen))
         );
     }
 }
