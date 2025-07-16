@@ -28,7 +28,7 @@ public class DominatusMobExpReloadListener implements SimpleSynchronousResourceR
     @Override
     public void reload(ResourceManager manager) {
         // Clear existing data
-        MobExpEntry.MOBEXP_MAP.clear();
+        MobExpEntry.clearAll();
 
         AtomicInteger loadedCount = new AtomicInteger();
         AtomicInteger errorCount = new AtomicInteger();
@@ -71,7 +71,7 @@ public class DominatusMobExpReloadListener implements SimpleSynchronousResourceR
 
                             // Create and store the entry
                             MobExpEntry entry = new MobExpEntry(exp);
-                            MobExpEntry.MOBEXP_MAP.put(entityType, entry);
+                            MobExpEntry.addEntry(entityType, entry);
 
                             loadedCount.getAndIncrement();
 
