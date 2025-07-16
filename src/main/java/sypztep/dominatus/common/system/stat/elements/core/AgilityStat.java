@@ -41,12 +41,12 @@ public class AgilityStat extends Stat {
         );
 
         // Bow draw speed bonus
-        applyEffect(entity,
-                ModEntityAttributes.BOW_DRAWSPEED,
-                SECONDARY_MODIFIER_ID,
-                EntityAttributeModifier.Operation.ADD_VALUE,
-                baseValue -> (currentValue - this.baseValue) * BOW_DRAW_SPEED_SCALING
-        );
+//        applyEffect(entity,
+//                ModEntityAttributes.BOW_DRAWSPEED,
+//                SECONDARY_MODIFIER_ID,
+//                EntityAttributeModifier.Operation.ADD_VALUE,
+//                baseValue -> (currentValue - this.baseValue) * BOW_DRAW_SPEED_SCALING
+//        );
     }
 
     @Override

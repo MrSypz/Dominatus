@@ -5,6 +5,7 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import sypztep.dominatus.ModConfig;
+import sypztep.dominatus.client.input.ModKeyBindings;
 import sypztep.dominatus.client.payload.*;
 
 public class DominatusClient implements ClientModInitializer {
@@ -17,6 +18,8 @@ public class DominatusClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(AddTextParticlesPayloadS2C.ID, new AddTextParticlesPayloadS2C.Receiver());
         ClientPlayNetworking.registerGlobalReceiver(AddEmitterParticlePayloadS2C.ID, new AddEmitterParticlePayloadS2C.Receiver());
+
+        ModKeyBindings.register();
 
         LevelHudRenderer.register();
     }

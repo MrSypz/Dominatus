@@ -105,13 +105,13 @@ public class PlayerDexterityStat extends DexterityStat implements PlayerStatBeha
 
     @Override
     public List<Text> getEffectDescription() {
-        double accuracyBonus = calculateAccuracyBonus();
-        double evasionBonus = calculateEvasionBonus();
+        int accuracyBonus = calculateAccuracyBonus();
+        double attackSpeedBonus = calculateAttackSpeedBonus() * 100; // Convert to percentage
 
         return List.of(
                 Text.literal(String.format("§6DEX: §f%d §7(Points spent: %d)", currentValue, totalPointsSpent)),
-                Text.literal(String.format("§7Accuracy: §f+%.0f", accuracyBonus)),
-                Text.literal(String.format("§7Evasion: §f+%.0f", evasionBonus))
+                Text.literal(String.format("§7Accuracy: §f+%d", accuracyBonus)),
+                Text.literal(String.format("§7Attack Speed: §f+%.1f%%", attackSpeedBonus))
         );
     }
 
@@ -119,25 +119,25 @@ public class PlayerDexterityStat extends DexterityStat implements PlayerStatBeha
     public List<Text> getEffectDescriptionWithCost(int additionalPoints) {
         int futureValue = currentValue + additionalPoints;
 
-        double currentAccuracy = calculateAccuracyBonus();
-        double futureAccuracy = futureValue - baseValue; // From your original: +1 per DEX
-        double accuracyIncrease = futureAccuracy - currentAccuracy;
+        int currentAccuracy = calculateAccuracyBonus();
+        int futureAccuracy = futureValue - baseValue;
+        int accuracyIncrease = futureAccuracy - currentAccuracy;
 
-        double currentEvasion = calculateEvasionBonus();
-        double futureEvasion = (futureValue - baseValue) * EVASION_SCALING;
-        double evasionIncrease = futureEvasion - currentEvasion;
+        double currentAttackSpeed = calculateAttackSpeedBonus() * 100;
+        double futureAttackSpeed = (futureValue - baseValue) * ATTACK_SPEED_SCALING * 100;
+        double attackSpeedIncrease = futureAttackSpeed - currentAttackSpeed;
 
         return List.of(
                 Text.literal(String.format("§6DEX: §f%d §7→ §f%d", currentValue, futureValue)),
                 Text.literal(String.format("§7Cost: §f%d §7benefit points", calculateCost(additionalPoints))),
                 Text.literal(""),
                 Text.literal("§6Primary Effects:").formatted(Formatting.GOLD),
-                Text.literal(String.format("  §7Accuracy: §f+%.0f §7(§f%.0f §7→ §f%.0f§7)",
+                Text.literal(String.format("  §7Accuracy: §f+%d §7(§f%d §7→ §f%d§7)",
                         accuracyIncrease, currentAccuracy, futureAccuracy)),
                 Text.literal(""),
                 Text.literal("§6Secondary Effects:").formatted(Formatting.GOLD),
-                Text.literal(String.format("  §7Evasion: §f+%.1f §7(§f%.1f §7→ §f%.1f§7)",
-                        evasionIncrease, currentEvasion, futureEvasion))
+                Text.literal(String.format("  §7Attack Speed: §f+%.1f%% §7(§f%.1f%% §7→ §f%.1f%%§7)",
+                        attackSpeedIncrease, currentAttackSpeed, futureAttackSpeed))
         );
     }
 }

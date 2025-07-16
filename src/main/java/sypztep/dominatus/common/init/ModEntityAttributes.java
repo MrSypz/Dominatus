@@ -29,8 +29,8 @@ public final class ModEntityAttributes {
     public static final RegistryEntry<EntityAttribute> MAGIC_ATTACK_DAMAGE = register("magic_attack_damage", new ClampedEntityAttribute("attribute.name.magic_attack_damage", 0, 0.0, 4.0).setTracked(true));
     public static final RegistryEntry<EntityAttribute> MELEE_ATTACK_DAMAGE = register("melee_attack_damage", new ClampedEntityAttribute("attribute.name.melee_attack_damage", 0, 0.0, 4.0).setTracked(true));
 
-    public static final RegistryEntry<EntityAttribute> MAGIC_RESISTANCE = register("magic_resistance", new ClampedEntityAttribute("attribute.name.magic_resistance", 0, -2.0, 0.8).setTracked(true));
-    public static final RegistryEntry<EntityAttribute> PHYSICAL_RESISTANCE = register("physical_resistance", new ClampedEntityAttribute("attribute.name.physical_resistance", 0, -2.0, 0.8).setTracked(true));
+    public static final RegistryEntry<EntityAttribute> MAGIC_RESISTANCE = register("magic_resistance", new ClampedEntityAttribute("attribute.name.magic_resistance", 0, -2.0, 0.55).setTracked(true));
+    public static final RegistryEntry<EntityAttribute> PHYSICAL_RESISTANCE = register("physical_resistance", new ClampedEntityAttribute("attribute.name.physical_resistance", 0, -2.0, 0.55).setTracked(true));
 
     private static RegistryEntry<EntityAttribute> register(String id, EntityAttribute attribute) {
         RegistryEntry<EntityAttribute> entry = Registry.registerReference(Registries.ATTRIBUTE, Dominatus.id(id), attribute);
