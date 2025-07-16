@@ -61,11 +61,11 @@ public class ExpUtil {
             LevelData levelData = levelComponent.getLevelData(); // Unified access!
 
             int oldLevel = levelData.getLevel();
-            levelComponent.addExperience(amount); // This handles sync automatically
+            int levelgain = levelComponent.addExperience(amount); // This handles sync automatically
             int newLevel = levelData.getLevel();
 
             if (showMessage) {
-                if (newLevel > oldLevel) {
+                if (levelgain > 0) {
                     Text levelUpMessage = Text.literal(String.format("§b§lLEVEL UP! §r§b%d → %d", oldLevel, newLevel))
                             .formatted(Formatting.AQUA);
                     player.sendMessage(levelUpMessage, false);

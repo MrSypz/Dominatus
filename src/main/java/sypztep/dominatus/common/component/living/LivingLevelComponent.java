@@ -10,22 +10,37 @@ import sypztep.dominatus.common.system.level.config.LevelConfigs;
 import sypztep.dominatus.common.system.level.core.EntityLevelData;
 import sypztep.dominatus.common.system.level.core.LevelData;
 import sypztep.dominatus.common.system.level.core.PlayerLevelData;
+import sypztep.dominatus.common.system.stat.EntityStatManager;
+import sypztep.dominatus.common.system.stat.PlayerStatManager;
 
 public class LivingLevelComponent implements AutoSyncedComponent {
     private final LivingEntity living;
     private final LevelData levelData;
 
+    // Separate stat managers for different entity types
+    private final EntityStatManager entityStatManager;
+    private final PlayerStatManager playerStatManager;
+    private final boolean isPlayer;
+
     public LivingLevelComponent(LivingEntity living) {
         this.living = living;
-        if (living instanceof PlayerEntity) this.levelData = new PlayerLevelData(LevelConfigs.CHARACTER);
-        else this.levelData = new EntityLevelData(LevelConfigs.CHARACTER); // not write benefit
+        this.isPlayer = living instanceof PlayerEntity;
+
+        if (isPlayer) {
+            this.levelData = new PlayerLevelData(LevelConfigs.CHARACTER);
+            this.playerStatManager = new PlayerStatManager();
+            this.entityStatManager = null;
+        } else {
+            this.levelData = new EntityLevelData(LevelConfigs.CHARACTER);
+            this.entityStatManager = new EntityStatManager();
+            this.playerStatManager = null;
+        }
     }
 
     // ====================
     // UNIFIED ACCESS METHODS
     // ====================
 
-    // Direct delegation to levelData - no more conditional logic!
     public int getLevel() { return levelData.getLevel(); }
     public void setLevel(int level) { levelData.setLevel(level); sync(); }
 
@@ -52,24 +67,36 @@ public class LivingLevelComponent implements AutoSyncedComponent {
     public void addBenefits(int amount) { levelData.addBenefits(amount); sync(); }
     public void setBenefits(int amount) { levelData.setBenefits(amount); sync(); }
 
-
     public boolean isPlayer() { return levelData.isPlayer(); }
+
+    // ====================
+    // STAT MANAGER ACCESS
+    // ====================
+
+    public EntityStatManager getEntityStatManager() {
+        return entityStatManager;
+    }
+
+    public PlayerStatManager getPlayerStatManager() {
+        return playerStatManager;
+    }
+
+    public void applyAllStatEffects() {
+        if (isPlayer && playerStatManager != null) {
+            playerStatManager.applyAllEffects(living);
+        } else if (!isPlayer && entityStatManager != null) {
+            entityStatManager.applyAllEffects(living);
+        }
+    }
 
     // ====================
     // DIRECT ACCESS TO LEVEL DATA
     // ====================
 
-    /**
-     * Get the unified level data interface
-     * This is the preferred way to access level information
-     */
     public LevelData getLevelData() {
         return levelData;
     }
 
-    /**
-     * @deprecated Use getLevelData() instead
-     */
     @Deprecated
     public int getStatPoints() { return getAvailableBenefits(); }
 
@@ -80,11 +107,23 @@ public class LivingLevelComponent implements AutoSyncedComponent {
     @Override
     public void readFromNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         levelData.readFromNbt(nbtCompound, wrapperLookup);
+
+        if (isPlayer && playerStatManager != null) {
+            playerStatManager.readFromNbt(nbtCompound);
+        } else if (!isPlayer && entityStatManager != null) {
+            entityStatManager.readFromNbt(nbtCompound);
+        }
     }
 
     @Override
     public void writeToNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         levelData.writeToNbt(nbtCompound, wrapperLookup);
+
+        if (isPlayer && playerStatManager != null) {
+            playerStatManager.writeToNbt(nbtCompound);
+        } else if (!isPlayer && entityStatManager != null) {
+            entityStatManager.writeToNbt(nbtCompound);
+        }
     }
 
     public void sync() {
