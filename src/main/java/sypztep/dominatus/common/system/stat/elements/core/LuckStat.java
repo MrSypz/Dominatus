@@ -29,7 +29,6 @@ public class LuckStat extends Stat {
         applyEffect(entity,
                 ModEntityAttributes.CRIT_CHANCE,
                 PRIMARY_MODIFIER_ID,
-                EntityAttributeModifier.Operation.ADD_VALUE,
                 baseValue -> (currentValue - this.baseValue) * CRIT_CHANCE_SCALING
         );
     }
@@ -61,7 +60,6 @@ public class LuckStat extends Stat {
                 applyEffect(entity,
                         ModEntityAttributes.ACCURACY,
                         SECONDARY_MODIFIER_ID,
-                        EntityAttributeModifier.Operation.ADD_VALUE,
                         baseValue -> (double) accuracyBonus
                 );
             }
@@ -72,7 +70,6 @@ public class LuckStat extends Stat {
                 applyEffect(entity,
                         ModEntityAttributes.EVASION,
                         SECONDARY_MODIFIER_ID,
-                        EntityAttributeModifier.Operation.ADD_VALUE,
                         baseValue -> (double) evasionBonus
                 );
             }

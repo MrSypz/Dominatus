@@ -75,7 +75,7 @@ public abstract class Stat {
     // ====================
 
     protected void applyEffect(LivingEntity living, RegistryEntry<EntityAttribute> attribute,
-                               Identifier modifierId, EntityAttributeModifier.Operation operation,
+                               Identifier modifierId,
                                ToDoubleFunction<Double> effectFunction) {
         EntityAttributeInstance attributeInstance = living.getAttributeInstance(attribute);
         if (attributeInstance != null) {
@@ -93,7 +93,7 @@ public abstract class Stat {
             }
 
             // Apply new modifier
-            EntityAttributeModifier mod = new EntityAttributeModifier(modifierId, effectValue, operation);
+            EntityAttributeModifier mod = new EntityAttributeModifier(modifierId, effectValue, EntityAttributeModifier.Operation.ADD_VALUE);
             attributeInstance.addPersistentModifier(mod);
         }
     }

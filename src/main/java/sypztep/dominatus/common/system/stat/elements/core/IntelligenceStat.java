@@ -1,7 +1,6 @@
 package sypztep.dominatus.common.system.stat.elements.core;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.init.ModEntityAttributes;
@@ -23,7 +22,6 @@ public class IntelligenceStat extends Stat {
         applyEffect(entity,
                 ModEntityAttributes.MAGIC_ATTACK_DAMAGE,
                 PRIMARY_MODIFIER_ID,
-                EntityAttributeModifier.Operation.ADD_VALUE,
                 baseValue -> (currentValue - this.baseValue) * MAGIC_DAMAGE_SCALING
         );
     }

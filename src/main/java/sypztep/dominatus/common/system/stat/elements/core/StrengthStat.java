@@ -29,7 +29,6 @@ public class StrengthStat extends Stat {
         applyEffect(entity,
                 EntityAttributes.GENERIC_ATTACK_DAMAGE,
                 PRIMARY_MODIFIER_ID,
-                EntityAttributeModifier.Operation.ADD_VALUE,
                 baseValue -> (currentValue - this.baseValue) * MELEE_DAMAGE_SCALING
         );
     }

@@ -1,7 +1,6 @@
 package sypztep.dominatus.common.system.stat.elements.core;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
@@ -24,7 +23,6 @@ public class AgilityStat extends Stat {
         applyEffect(entity,
                 EntityAttributes.GENERIC_ATTACK_SPEED,
                 PRIMARY_MODIFIER_ID,
-                EntityAttributeModifier.Operation.ADD_VALUE,
                 baseValue -> (currentValue - this.baseValue) * ATTACK_SPEED_SCALING
         );
     }
@@ -35,7 +33,6 @@ public class AgilityStat extends Stat {
         applyEffect(entity,
                 ModEntityAttributes.EVASION,
                 SECONDARY_MODIFIER_ID,
-                EntityAttributeModifier.Operation.ADD_VALUE,
                 baseValue -> (double)(currentValue - this.baseValue) // 1 per point
         );
     }

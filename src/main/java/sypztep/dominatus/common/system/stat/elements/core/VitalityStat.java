@@ -28,7 +28,6 @@ public class VitalityStat extends Stat {
         applyEffect(entity,
                 EntityAttributes.GENERIC_MAX_HEALTH,
                 PRIMARY_MODIFIER_ID,
-                EntityAttributeModifier.Operation.ADD_VALUE,
                 baseValue -> baseValue * (currentValue - this.baseValue) * MAX_HEALTH_SCALING
         );
     }
