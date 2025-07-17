@@ -7,7 +7,7 @@ import sypztep.dominatus.common.command.DebugCommand;
 import sypztep.dominatus.common.command.ExpCommand;
 import sypztep.dominatus.common.command.LevelCommand;
 
-public class ModCommands {
+public final class ModCommands {
     public ModCommands() {}
     public static void init() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {

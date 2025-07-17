@@ -11,7 +11,7 @@ import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.component.living.DamageTrackerComponent;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 
-public class ModEntityComponents implements EntityComponentInitializer {
+public final class ModEntityComponents implements EntityComponentInitializer {
     public ModEntityComponents() {}
     public static final ComponentKey<LivingLevelComponent> LIVINGLEVEL = ComponentRegistry.getOrCreate(Dominatus.id("livinglevel"), LivingLevelComponent.class);
     public static final ComponentKey<DamageTrackerComponent> DAMAGETRACKER = ComponentRegistry.getOrCreate(Dominatus.id("dmgtracker"), DamageTrackerComponent.class);

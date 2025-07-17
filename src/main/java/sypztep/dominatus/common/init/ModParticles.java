@@ -6,7 +6,7 @@ import sypztep.dominatus.client.util.TextParticleProvider;
 
 import java.awt.Color;
 
-public class ModParticles {
+public final class ModParticles {
     public ModParticles() {
     }
 
