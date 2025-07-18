@@ -20,6 +20,10 @@ public class ModConfig implements ConfigData {
     @Comment("Color of the crit indicator")
     public static int critDamageColor = 0xFF4F00;
 
+    @ConfigEntry.Category("feature-client")
+    @Comment("Show toast notifications instead of chat messages (default: true)")
+    public static boolean enableToastNotifications = true;
+
     @ConfigEntry.Category("statconfig_gameplay")
     @ConfigEntry.BoundedDiscrete(min = 1, max = 99)
     public static int maxLevel = 99;
@@ -135,8 +139,7 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
     @Comment("Death penalty percentage (0-100). Player loses this % of next level exp when killed by monsters.")
     public static int deathPenaltyPercentage = 10;
-
     @ConfigEntry.Category("death_penalty")
-    @Comment("Enable death penalty when killed by monsters")
     public static boolean enableDeathPenalty = true;
+
 }

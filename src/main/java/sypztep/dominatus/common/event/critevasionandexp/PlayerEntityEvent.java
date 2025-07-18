@@ -7,10 +7,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.ModConfig;
+import sypztep.dominatus.client.payload.SendToastPayloadS2C;
 import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
 import sypztep.dominatus.common.api.entity.DominatusPlayerEntityEvents;
 import sypztep.dominatus.common.component.living.DamageTrackerComponent;
@@ -134,9 +132,6 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
 
         // Log the penalty
         String killerName = getKillerName(damageSource);
-        Dominatus.LOGGER.debug("Player {} lost {} exp due to death penalty (killed by {})",
-                player.getName().getString(), penaltyAmount, killerName);
-
         // Notify the player
         notifyPlayer(player, penaltyAmount, killerName);
     }
@@ -167,36 +162,6 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
      * Sends a death penalty notification to the player
      */
     private void notifyPlayer(ServerPlayerEntity player, long penaltyAmount, String killerName) {
-        // Format the penalty amount
-        String formattedPenalty = formatExperienceAmount(penaltyAmount);
-
-        // Create death penalty message
-        Text penaltyMessage = Text.literal(String.format(
-                "§c§lDEATH PENALTY! §r§cYou lost %s experience for being slain by %s",
-                formattedPenalty, killerName
-        )).formatted(Formatting.RED);
-
-        // Send to player
-        player.sendMessage(penaltyMessage, false);
-
-        // Optional: Send a subtitle for more visibility
-        Text subtitle = Text.literal(String.format("-%s EXP", formattedPenalty))
-                .formatted(Formatting.RED, Formatting.BOLD);
-
-        player.sendMessage(subtitle, true); // Send as action bar
-    }
-    private String formatExperienceAmount(long amount) {
-        if (amount >= 1_000_000_000L) {
-            return String.format("%.1fB", amount / 1_000_000_000.0);
-        } else if (amount >= 1_000_000L) {
-            return String.format("%.1fM", amount / 1_000_000.0);
-        } else if (amount >= 1_000L) {
-            return String.format("%.1fK", amount / 1_000.0);
-        } else {
-            return String.valueOf(amount);
-        }
-    }
-    public static double getDeathPenaltyPercentage() {
-        return DEATH_PENALTY_PERCENTAGE;
+        SendToastPayloadS2C.sendDeathPenalty(player, penaltyAmount, killerName);
     }
 }

@@ -3,8 +3,8 @@ package sypztep.dominatus.common.util.level;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.server.network.ServerPlayerEntity;
+import sypztep.dominatus.client.payload.SendToastPayloadS2C;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.data.MobExpEntry;
 import sypztep.dominatus.common.init.ModEntityComponents;
@@ -65,30 +65,9 @@ public class ExpUtil {
             int newLevel = levelData.getLevel();
 
             if (showMessage) {
-                if (levelgain > 0) {
-                    Text levelUpMessage = Text.literal(String.format("§b§lLEVEL UP! §r§b%d → %d", oldLevel, newLevel))
-                            .formatted(Formatting.AQUA);
-                    player.sendMessage(levelUpMessage, false);
-                }
-
-                String message = source != null ?
-                        String.format("§6+%d EXP §7(%s)", amount, source) :
-                        String.format("§6+%d EXP", amount);
-
-                Text expMessage = Text.literal(message).formatted(Formatting.GOLD);
-                player.sendMessage(expMessage, true);
-            }
-        } else {
-            // Fallback to vanilla
-            player.addExperience((int) Math.min(amount, Integer.MAX_VALUE));
-
-            if (showMessage) {
-                String message = source != null ?
-                        String.format("§6+%d EXP §7(%s)", amount, source) :
-                        String.format("§6+%d EXP", amount);
-
-                Text expMessage = Text.literal(message).formatted(Formatting.GOLD);
-                player.sendMessage(expMessage, true);
+                if (levelgain > 0)
+                    SendToastPayloadS2C.sendLevelUp((ServerPlayerEntity) player,oldLevel,newLevel);
+                SendToastPayloadS2C.sendExperience((ServerPlayerEntity) player, amount, source);
             }
         }
     }

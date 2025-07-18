@@ -10,7 +10,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
-import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
 import sypztep.dominatus.common.component.living.DamageTrackerComponent;
 import sypztep.dominatus.common.init.ModEntityAttributes;
@@ -93,8 +92,6 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
 
         ServerWorld world = (ServerWorld) entity.getWorld();
         String entityName = entity.getType().getName().getString();
-
-        Dominatus.LOGGER.debug("Distributing exp for {} to {} players", entityName, damageMap.size());
 
         for (Map.Entry<UUID, Float> entry : damageMap.entrySet()) {
             UUID playerId = entry.getKey();
