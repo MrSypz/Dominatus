@@ -136,9 +136,9 @@ public class ModConfig implements ConfigData {
     public static int startStatpoints = 48;
 
     @ConfigEntry.Category("death_penalty")
-    @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
-    @Comment("Death penalty percentage (0-100). Player loses this % of next level exp when killed by monsters.")
-    public static int deathPenaltyPercentage = 10;
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 1)
+    @Comment("Death penalty percentage (0.0 - 1.0). Player loses this % of next level exp when killed by monsters.")
+    public static float deathPenaltyPercentage = 0.1f;
     @ConfigEntry.Category("death_penalty")
     public static boolean enableDeathPenalty = true;
 
