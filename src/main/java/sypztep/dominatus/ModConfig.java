@@ -142,4 +142,18 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Category("death_penalty")
     public static boolean enableDeathPenalty = true;
 
+    @ConfigEntry.Category("feature-client")
+    @Comment("Toast position: left or right side of screen (default: false)")
+    public static boolean toastPositionLeft = false;
+
+    @ConfigEntry.Category("feature-client")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 500)
+    @Comment("Toast Y offset from top of screen (default: 20)")
+    public static int toastYOffset = 20;
+
+    @ConfigEntry.Category("feature-client")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
+    @Comment("Toast margin from screen edge (default: 0)")
+    public static int toastMargin = 0;
+
 }

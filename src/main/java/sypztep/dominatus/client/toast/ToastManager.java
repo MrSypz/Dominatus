@@ -20,20 +20,15 @@ public class ToastManager {
     }
 
     public void update(float deltaTime) {
-        for (ToastNotification toast : activeToasts) {
-            toast.update(deltaTime);
-        }
+        for (ToastNotification toast : activeToasts) toast.update(deltaTime);
 
         activeToasts.removeIf(ToastNotification::isExpired);
     }
 
     public void addToast(ToastNotification toast) {
         activeToasts.add(toast);
-
-        // Remove oldest toast if we exceed max limit
-        while (activeToasts.size() > MAX_TOASTS) {
-            activeToasts.removeFirst();
-        }
+        // FIFO
+        while (activeToasts.size() > MAX_TOASTS) activeToasts.removeFirst();
     }
 
     public List<ToastNotification> getActiveToasts() {
@@ -44,7 +39,6 @@ public class ToastManager {
         activeToasts.clear();
     }
 
-    // Convenience methods for different toast types
     public static void showExperience(Text message) {
         if (!ModConfig.enableToastNotifications) return;
         INSTANCE.addToast(new ToastNotification(message, ToastNotification.ToastType.EXPERIENCE));

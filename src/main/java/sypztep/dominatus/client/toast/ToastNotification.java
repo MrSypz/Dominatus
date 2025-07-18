@@ -2,6 +2,7 @@ package sypztep.dominatus.client.toast;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
+import sypztep.dominatus.ModConfig;
 
 public class ToastNotification {
     // Animation states
@@ -32,8 +33,8 @@ public class ToastNotification {
     }
 
     // Constants
-    private static final float SLIDE_DURATION = 0.3f; // 300ms
-    private static final float FADE_DURATION = 0.4f; // 400ms
+    private static final float SLIDE_DURATION = 0.5f; // .5 S
+    private static final float FADE_DURATION = 1f; // 1 S
 
     // Toast properties
     private final Text message;
@@ -88,7 +89,7 @@ public class ToastNotification {
             case FADING_OUT:
                 float fadeProgress = Math.min(stateTime / FADE_DURATION, 1.0f);
                 alpha = 1.0f - easeInCubic(fadeProgress);
-                slideOffset = 100f * easeInCubic(fadeProgress); // Slide out to the right
+                slideOffset = 100f * easeInCubic(fadeProgress);
 
                 if (fadeProgress >= 1.0f) {
                     state = AnimationState.FINISHED;
@@ -115,6 +116,17 @@ public class ToastNotification {
     public boolean isVisible() { return state != AnimationState.FINISHED && alpha > 0; }
     public long getCreationTime() { return creationTime; }
 
+    // Progress bar support
+    public float getProgress() {
+        long elapsed = System.currentTimeMillis() - creationTime;
+        float progress = Math.min((float) elapsed / type.durationMs, 1.0f);
+        return Math.max(0.0f, progress);
+    }
+
+    public float getRemainingProgress() {
+        return 1.0f - getProgress();
+    }
+
     // Get background color with alpha
     public int getBackgroundColor() {
         int baseAlpha = (int) (180 * alpha); // 70% opacity when fully visible
@@ -131,6 +143,24 @@ public class ToastNotification {
                 ColorHelper.Argb.getGreen(baseColor),
                 ColorHelper.Argb.getBlue(baseColor)
         );
+    }
+
+    // Get progress bar color with alpha
+    public int getProgressBarColor() {
+        int progressAlpha = (int) (120 * alpha); // Slightly transparent progress bar
+        int baseColor = type.color;
+        return ColorHelper.Argb.getArgb(
+                progressAlpha,
+                ColorHelper.Argb.getRed(baseColor),
+                ColorHelper.Argb.getGreen(baseColor),
+                ColorHelper.Argb.getBlue(baseColor)
+        );
+    }
+
+    // Get progress bar background color with alpha
+    public int getProgressBarBackgroundColor() {
+        int bgAlpha = (int) (60 * alpha); // Very transparent background
+        return ColorHelper.Argb.getArgb(bgAlpha, 100, 100, 100);
     }
 
     // Get text color with alpha

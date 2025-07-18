@@ -1,6 +1,7 @@
 package sypztep.dominatus.common.event.critevasionandexp;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -16,7 +17,6 @@ import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.init.ModParticles;
-import sypztep.dominatus.common.system.level.core.LevelData;
 import sypztep.dominatus.common.util.LivingEntityUtil;
 import sypztep.dominatus.common.util.ParticleHandler;
 // NOTE : modifier damage are in LivingEntityPart in mixin is ApplyDamage method
@@ -24,7 +24,8 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
         DominatusPlayerEntityEvents.ModifyAttackCondition,
         DominatusPlayerEntityEvents.AllowAttack,
         DominatusLivingEntityEvents.DamageDealt,
-        ServerLivingEntityEvents.AfterDeath {
+        ServerLivingEntityEvents.AfterDeath,
+        ServerPlayerEvents.AfterRespawn {
     private static final PlayerEntityEvent INSTANCE = new PlayerEntityEvent();
     private static final float DEATH_PENALTY_PERCENTAGE = ModConfig.deathPenaltyPercentage * 0.01f;
 
@@ -34,6 +35,7 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
         DominatusPlayerEntityEvents.ALLOW_ATTACK.register(INSTANCE);
         DominatusLivingEntityEvents.DAMAGE_DEALT.register(INSTANCE);
         ServerLivingEntityEvents.AFTER_DEATH.register(INSTANCE);
+        ServerPlayerEvents.AFTER_RESPAWN.register(INSTANCE);
     }
     @Override
     public boolean allowAttack(PlayerEntity player, Entity target) {
@@ -93,6 +95,13 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
         applyDeathPenalty(player, damageSource);
     }
 
+    @Override
+    public void afterRespawn(ServerPlayerEntity oldPlayer, ServerPlayerEntity newPlayer, boolean alive) {
+        LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(newPlayer);
+        levelComponent.applyAllStatEffects();
+        levelComponent.sync();
+        newPlayer.setHealth(newPlayer.getMaxHealth());
+    }
     private boolean isKilledByMonster(DamageSource damageSource) {
         // Direct attack from a living entity (excluding players)
         if (damageSource.getAttacker() instanceof LivingEntity attacker) {
@@ -109,15 +118,14 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
 
     private void applyDeathPenalty(ServerPlayerEntity player, DamageSource damageSource) {
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(player);
-        LevelData levelData = levelComponent.getLevelData();
 
         // No penalty if player is at max level
-        if (levelData.isMaxLevel()) {
+        if (levelComponent.isMaxLevel()) {
             return;
         }
 
         // Calculate penalty: 10% of experience needed for next level
-        long expToNextLevel = levelData.getExperienceToNextLevel();
+        long expToNextLevel = levelComponent.getExperienceToNextLevel();
         long penaltyAmount = Math.round(expToNextLevel * DEATH_PENALTY_PERCENTAGE);
 
         if (penaltyAmount <= 0) {
@@ -125,7 +133,7 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
         }
 
         // Apply the penalty by subtracting experience
-        long currentExp = levelData.getExperience();
+        long currentExp = levelComponent.getExperience();
         long newExp = Math.max(0, currentExp - penaltyAmount);
 
         levelComponent.setExperience(newExp);

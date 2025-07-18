@@ -77,10 +77,6 @@ public class ExpUtil {
         awardExperience(player, amount, source, true);
     }
 
-    public static void awardExperienceSilent(PlayerEntity player, long amount) {
-        awardExperience(player, amount, null, false);
-    }
-
     public static long getPlayerExperience(PlayerEntity player) {
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(player);
         if (levelComponent != null) {

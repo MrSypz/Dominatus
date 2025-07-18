@@ -6,7 +6,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
+import sypztep.dominatus.ModConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +14,12 @@ import java.util.List;
 public class ToastHudRenderer implements HudRenderCallback {
 
     // Position settings
-    private static final int TOAST_MARGIN_RIGHT = 10;
-    private static final int TOAST_MARGIN_TOP = 60; // Below level HUD
     private static final int TOAST_PADDING = 8;
-    private static final int TOAST_SPACING = 5;
+    private static final int TOAST_SPACING = 2;
     private static final int MIN_TOAST_WIDTH = 200;
-    private static final int MAX_TOAST_WIDTH = 350;
-
+    private static final int MAX_TOAST_WIDTH = 300;
     // Border settings
-    private static final int BORDER_SIZE = 2;
+    private static final int STRIPTLINE_SIZE = 1;
 
     public ToastHudRenderer() {
     }
@@ -50,7 +47,7 @@ public class ToastHudRenderer implements HudRenderCallback {
         if (toasts.isEmpty()) return;
 
         int screenWidth = client.getWindow().getScaledWidth();
-        int currentY = TOAST_MARGIN_TOP;
+        int currentY = ModConfig.toastYOffset;
 
         // Render toasts from bottom to top (newer toasts appear on top)
         for (int i = toasts.size() - 1; i >= 0; i--) {
@@ -61,8 +58,8 @@ public class ToastHudRenderer implements HudRenderCallback {
             // Calculate toast dimensions
             ToastDimensions dimensions = calculateToastDimensions(textRenderer, toast.getMessage());
 
-            // Calculate position with slide animation
-            int toastX = (int) (screenWidth - dimensions.width - TOAST_MARGIN_RIGHT + toast.getSlideOffset());
+            // Calculate position with slide animation based on config
+            int toastX = calculateToastX(screenWidth, dimensions.width, toast.getSlideOffset());
             int toastY = currentY;
 
             // Render the toast
@@ -73,6 +70,13 @@ public class ToastHudRenderer implements HudRenderCallback {
         }
     }
 
+    private int calculateToastX(int screenWidth, int toastWidth, float slideOffset) {
+        if (ModConfig.toastPositionLeft) {
+            return (int) (ModConfig.toastMargin - slideOffset);
+        } else {
+            return (int) (screenWidth - toastWidth - ModConfig.toastMargin + slideOffset);
+        }
+    }
     private void renderToast(DrawContext drawContext, TextRenderer textRenderer,
                              ToastNotification toast, int x, int y, ToastDimensions dimensions) {
 
@@ -80,16 +84,30 @@ public class ToastHudRenderer implements HudRenderCallback {
         int backgroundColor = toast.getBackgroundColor();
         int borderColor = toast.getBorderColor();
         int textColor = toast.getTextColor();
+        int progressBarColor = toast.getProgressBarColor();
+        int progressBarBgColor = toast.getProgressBarBackgroundColor();
 
         // Draw background
         drawContext.fill(x, y, x + dimensions.width, y + dimensions.height, backgroundColor);
 
-        // Draw border
-        drawContext.drawBorder(x, y, dimensions.width, dimensions.height, borderColor);
+        // Draw vertical line on the correct side based on position
+        if (ModConfig.toastPositionLeft) {
+            drawContext.fill(x + dimensions.width - STRIPTLINE_SIZE, y, x + dimensions.width, y + dimensions.height, borderColor);
+        } else {
+            drawContext.fill(x, y, x + STRIPTLINE_SIZE, y + dimensions.height, borderColor);
+        }
 
-        // Draw inner border for extra emphasis
-        drawContext.drawBorder(x + 1, y + 1, dimensions.width - 2, dimensions.height - 2,
-                ColorHelper.Argb.getArgb((int) (255 * toast.getAlpha() * 0.3), 255, 255, 255));
+        // Draw progress bar at the bottom
+        int progressBarHeight = 2;
+        int progressBarY = y + dimensions.height - progressBarHeight;
+
+        // Progress bar background
+        drawContext.fill(x, progressBarY, x + dimensions.width, y + dimensions.height, progressBarBgColor);
+
+        // Progress bar fill (remaining time)
+        float remainingProgress = toast.getRemainingProgress();
+        int progressWidth = (int) (dimensions.width * remainingProgress);
+        drawContext.fill(x, progressBarY, x + progressWidth, y + dimensions.height, progressBarColor);
 
         // Draw text
         renderWrappedText(drawContext, textRenderer, toast.getMessage(),
@@ -119,32 +137,37 @@ public class ToastHudRenderer implements HudRenderCallback {
 
     private List<String> wrapText(TextRenderer textRenderer, String text, int maxWidth) {
         List<String> lines = new ArrayList<>();
-        String[] words = text.split(" ");
 
-        if (words.length == 0) {
-            lines.add("");
-            return lines;
-        }
+        String[] explicitLines = text.split("\\n"); // for spacing
 
-        StringBuilder currentLine = new StringBuilder();
+        for (String line : explicitLines) {
+            String[] words = line.split(" ");
 
-        for (String word : words) {
-            String testLine = currentLine.isEmpty() ? word : currentLine + " " + word;
+            if (words.length == 0) {
+                lines.add("");
+                continue;
+            }
 
-            if (textRenderer.getWidth(testLine) <= maxWidth) {
-                currentLine = new StringBuilder(testLine);
-            } else {
-                if (!currentLine.isEmpty()) {
-                    lines.add(currentLine.toString());
-                    currentLine = new StringBuilder(word);
+            StringBuilder currentLine = new StringBuilder();
+
+            for (String word : words) {
+                String testLine = currentLine.isEmpty() ? word : currentLine + " " + word;
+
+                if (textRenderer.getWidth(testLine) <= maxWidth) {
+                    currentLine = new StringBuilder(testLine);
                 } else {
-                    lines.add(word);
+                    if (!currentLine.isEmpty()) {
+                        lines.add(currentLine.toString());
+                        currentLine = new StringBuilder(word);
+                    } else {
+                        lines.add(word);
+                    }
                 }
             }
-        }
 
-        if (!currentLine.isEmpty()) {
-            lines.add(currentLine.toString());
+            if (!currentLine.isEmpty()) {
+                lines.add(currentLine.toString());
+            }
         }
 
         return lines;

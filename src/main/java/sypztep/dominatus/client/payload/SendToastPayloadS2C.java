@@ -30,51 +30,53 @@ public record SendToastPayloadS2C(String message, int toastTypeOrdinal) implemen
     // Static methods to send different types of toasts
     public static void sendExperience(ServerPlayerEntity player, long amount, String source) {
         String message = source != null ?
-                String.format("§6+%s EXP §7(%s)", formatNumber(amount), source) :
-                String.format("§6+%s EXP", formatNumber(amount));
+                String.format("§l§6⚡ EXPERIENCE GAINED ⚡§r\n§e+%s EXP §8• §7%s", formatNumber(amount), source) :
+                String.format("§l§6⚡ EXPERIENCE GAINED ⚡§r\n§e+%s EXP", formatNumber(amount));
 
         send(player, message, ToastNotification.ToastType.EXPERIENCE);
     }
 
     public static void sendLevelUp(ServerPlayerEntity player, int oldLevel, int newLevel) {
-        String message = String.format("§l§bLEVEL UP!§r§7 %d → §b%d", oldLevel, newLevel);
+        String message = String.format("§l§6⚔ LEVEL GAINED ⚔§r\n§7You are now level §e§l%d§r§7!", newLevel);
         send(player, message, ToastNotification.ToastType.LEVEL_UP);
     }
 
     public static void sendDeathPenalty(ServerPlayerEntity player, long expLost, String killerName) {
         String formattedPenalty = formatNumber(expLost);
         String message = killerName != null ?
-                String.format("§l§cDEATH PENALTY!§r§7 Lost %s experience from %s",
-                        formattedPenalty, killerName) :
-                String.format("§l§cDEATH PENALTY!§r§7 Lost %s experience", formattedPenalty);
+                String.format("§l§8☠ DEATH PENALTY ☠§r\n§7Lost §c%s EXP §8• §7%s", formattedPenalty, killerName) :
+                String.format("§l§8☠ DEATH PENALTY ☠§r\n§7Lost §c%s EXP", formattedPenalty);
 
         send(player, message, ToastNotification.ToastType.DEATH_PENALTY);
     }
 
     public static void sendStatIncrease(ServerPlayerEntity player, String statName, int points, int cost) {
-        String message = String.format("§l§e%s Increased!§r§7 +%d points (Cost: %d benefits)",
-                statName, points, cost);
+        String message = String.format("§l§6✦ %s ENHANCED ✦§r\n§7+%d Points §8• §e%d Benefits Spent",
+                statName.toUpperCase(), points, cost);
         send(player, message, ToastNotification.ToastType.INFO);
     }
 
     public static void sendBenefitsGained(ServerPlayerEntity player, int amount, String reason) {
         String message = reason != null ?
-                String.format("§l§dBenefit Points!§r§7 +%d from %s", amount, reason) :
-                String.format("§l§dBenefit Points!§r§7 +%d points gained", amount);
+                String.format("§l§e⬟ BENEFIT POINTS ⬟§r\n§6+%d Points §8• §7%s", amount, reason) :
+                String.format("§l§e⬟ BENEFIT POINTS ⬟§r\n§6+%d Points Gained", amount);
 
         send(player, message, ToastNotification.ToastType.INFO);
     }
 
     public static void sendInfo(ServerPlayerEntity player, String message) {
-        send(player, message, ToastNotification.ToastType.INFO);
+        String formattedMessage = String.format("§l§6◈ NOTICE ◈§r\n§7%s", message);
+        send(player, formattedMessage, ToastNotification.ToastType.INFO);
     }
 
     public static void sendWarning(ServerPlayerEntity player, String message) {
-        send(player, message, ToastNotification.ToastType.WARNING);
+        String formattedMessage = String.format("§l§e⚠ WARNING ⚠§r\n§7%s", message);
+        send(player, formattedMessage, ToastNotification.ToastType.WARNING);
     }
 
     public static void sendError(ServerPlayerEntity player, String message) {
-        send(player, message, ToastNotification.ToastType.ERROR);
+        String formattedMessage = String.format("§l§8✖ ERROR ✖§r\n§7%s", message);
+        send(player, formattedMessage, ToastNotification.ToastType.ERROR);
     }
 
     // Generic send method
