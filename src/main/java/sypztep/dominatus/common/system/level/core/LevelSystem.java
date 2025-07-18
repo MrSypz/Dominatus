@@ -17,7 +17,7 @@ public class LevelSystem {
     }
 
     private long calculateExperienceForNextLevel(int level) {
-        return implConfig.getExperienceRequiredForLevel(level + 1);
+        return implConfig.getExperienceRequiredForLevel(level);
     }
 
     public int addExperience(long amount) {

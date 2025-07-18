@@ -18,8 +18,8 @@ public class CharacterLevelConfig implements LevelConfiguration {
 
     @Override
     public long getExperienceRequiredForLevel(int level) {
-        if (level < 1 || level >= ModConfig.EXP_MAP.length) return 0L;
-        return ModConfig.EXP_MAP[level];
+        if (level < 1 || level >= ModConfig.maxLevel) return 0L;
+        return ModConfig.EXP_MAP[level - 1];
     }
 }
 
