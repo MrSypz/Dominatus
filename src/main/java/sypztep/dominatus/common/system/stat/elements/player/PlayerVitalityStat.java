@@ -123,7 +123,7 @@ public class PlayerVitalityStat extends VitalityStat implements PlayerStatBehavi
     public List<Text> getEffectDescriptionWithCost(int additionalPoints) {
         int futureValue = currentValue + additionalPoints;
 
-        double currentMaxHealth = (currentValue - baseValue) * MAX_HEALTH_SCALING * 100;
+        double currentMaxHealth = calculateMaxHealthBonus(20) * 100;
         double futureMaxHealth = (futureValue - baseValue) * MAX_HEALTH_SCALING * 100;
         double maxHealthIncrease = futureMaxHealth - currentMaxHealth;
 
