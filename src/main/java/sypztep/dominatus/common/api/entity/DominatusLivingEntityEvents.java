@@ -22,14 +22,7 @@ public final class DominatusLivingEntityEvents {
         }
         return amount;
     });
-    public static final Event<DamageDealt> DAMAGE_DEALT = EventFactory.createArrayBacked(
-            DamageDealt.class,
-            (listeners) -> (entity, source, finalDamage) -> {
-                for (DamageDealt listener : listeners) {
-                    listener.onDamageDealt(entity, source, finalDamage);
-                }
-            }
-    );
+
     @FunctionalInterface
     public interface PreArmorDamage {
         /**
@@ -55,16 +48,5 @@ public final class DominatusLivingEntityEvents {
          */
         float modifyDamage(LivingEntity entity, DamageSource source, float amount);
     }
-    @FunctionalInterface
-    public interface DamageDealt {
-        /**
-         * Called when damage is being dealt to an entity.
-         * This is called after all damage calculations are complete.
-         *
-         * @param entity The entity taking damage
-         * @param source The damage source
-         * @param finalDamage The final damage amount that will be applied
-         */
-        void onDamageDealt(LivingEntity entity, DamageSource source, float finalDamage);
-    }
+
 }

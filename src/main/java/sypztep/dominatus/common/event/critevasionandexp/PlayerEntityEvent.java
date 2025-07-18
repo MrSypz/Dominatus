@@ -9,7 +9,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import sypztep.dominatus.ModConfig;
-import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
 import sypztep.dominatus.common.api.entity.DominatusPlayerEntityEvents;
 import sypztep.dominatus.common.component.living.DamageTrackerComponent;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
@@ -23,7 +22,7 @@ import sypztep.dominatus.common.util.ParticleHandler;
 public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.ModifyAttackDamage,
         DominatusPlayerEntityEvents.ModifyAttackCondition,
         DominatusPlayerEntityEvents.AllowAttack,
-        DominatusLivingEntityEvents.DamageDealt,
+        DominatusPlayerEntityEvents.DamageDealt,
         ServerLivingEntityEvents.AfterDeath,
         ServerPlayerEvents.AfterRespawn {
     private static final PlayerEntityEvent INSTANCE = new PlayerEntityEvent();
@@ -32,7 +31,7 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
         DominatusPlayerEntityEvents.MODIFY_ATTACK_CONDITION.register(INSTANCE);
         DominatusPlayerEntityEvents.MODIFY_ATTACK_DAMAGE.register(INSTANCE);
         DominatusPlayerEntityEvents.ALLOW_ATTACK.register(INSTANCE);
-        DominatusLivingEntityEvents.DAMAGE_DEALT.register(INSTANCE);
+        DominatusPlayerEntityEvents.DAMAGE_DEALT.register(INSTANCE);
         ServerLivingEntityEvents.AFTER_DEATH.register(INSTANCE);
         ServerPlayerEvents.AFTER_RESPAWN.register(INSTANCE);
     }

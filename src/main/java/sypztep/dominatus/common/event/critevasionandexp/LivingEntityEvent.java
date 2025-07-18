@@ -13,6 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import sypztep.dominatus.client.util.TextParticleProvider;
 import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
+import sypztep.dominatus.common.api.entity.DominatusPlayerEntityEvents;
 import sypztep.dominatus.common.component.living.DamageTrackerComponent;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityAttributes;
@@ -81,7 +82,7 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
 
             float finalDamage = amount * totalMultiplier;
 
-            DominatusLivingEntityEvents.DAMAGE_DEALT.invoker().onDamageDealt(entity, source, finalDamage);
+            DominatusPlayerEntityEvents.DAMAGE_DEALT.invoker().onDamageDealt(entity, source, finalDamage);
 
             return finalDamage;
         }
@@ -101,17 +102,16 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         ServerWorld world = (ServerWorld) entity.getWorld();
         String entityName = entity.getType().getName().getString();
 
-        for (Map.Entry<UUID, Float> entry : damageMap.entrySet()) {
+        damageMap.entrySet().parallelStream().forEach(entry -> {
             UUID playerId = entry.getKey();
 
             ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(playerId);
-            if (player == null) continue; // Player is offline
 
             LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(player);
-            if (levelComponent.isMaxLevel()) continue;
+            if (levelComponent.isMaxLevel()) return;
 
             float damagePercentage = tracker.getDamagePercentage(player);
-            if (damagePercentage <= 0) continue;
+            if (damagePercentage <= 0) return;
 
             int expReward = ExpUtil.calculateExpReward(player, entity, damagePercentage);
 
@@ -121,7 +121,10 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
 
                 ExpUtil.awardExperience(player, expReward, source);
             }
-        }
+        });
+//        for (Map.Entry<UUID, Float> entry : damageMap.entrySet()) {
+//
+//        }
         tracker.clearDamage();
     }
 
