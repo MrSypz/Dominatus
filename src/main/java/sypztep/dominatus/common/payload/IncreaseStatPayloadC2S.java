@@ -26,30 +26,6 @@ public record IncreaseStatPayloadC2S(String statName, int points) implements Cus
         ClientPlayNetworking.send(new IncreaseStatPayloadC2S(statName, points));
     }
 
-    public static void sendStrength(int points) {
-        send("strength", points);
-    }
-
-    public static void sendAgility(int points) {
-        send("agility", points);
-    }
-
-    public static void sendVitality(int points) {
-        send("vitality", points);
-    }
-
-    public static void sendIntelligence(int points) {
-        send("intelligence", points);
-    }
-
-    public static void sendDexterity(int points) {
-        send("dexterity", points);
-    }
-
-    public static void sendLuck(int points) {
-        send("luck", points);
-    }
-
     public static class Receiver implements ServerPlayNetworking.PlayPayloadHandler<IncreaseStatPayloadC2S> {
         @Override
         public void receive(IncreaseStatPayloadC2S payload, ServerPlayNetworking.Context context) {
