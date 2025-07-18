@@ -1,6 +1,7 @@
 package sypztep.dominatus.common.system.stat.elements.core;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.init.ModEntityAttributes;
@@ -12,6 +13,7 @@ public class IntelligenceStat extends Stat {
     protected static final Identifier SECONDARY_MODIFIER_ID = Dominatus.id("intelligence_secondary");
 
     protected static final double MAGIC_DAMAGE_SCALING = 0.02; // 2% per point
+    protected static final double MAGIC_RESISTANCE_SCALING = 0.005; // 0.5% per point
 
     public IntelligenceStat() {
         super(1); // Base INT of 1
@@ -29,12 +31,11 @@ public class IntelligenceStat extends Stat {
     @Override
     public void applySecondaryEffect(LivingEntity entity) {
         //TODO: replace with mana
-//        applyEffect(entity,
-//                ModEntityAttributes.MAGIC_RESISTANCE,
-//                SECONDARY_MODIFIER_ID,
-//                EntityAttributeModifier.Operation.ADD_VALUE,
-//                baseValue -> (currentValue - this.baseValue) * MAGIC_RESISTANCE_SCALING
-//        );
+        applyEffect(entity,
+                ModEntityAttributes.MAGIC_RESISTANCE,
+                SECONDARY_MODIFIER_ID,
+                baseValue -> (currentValue - this.baseValue) * MAGIC_RESISTANCE_SCALING
+        );
 
     }
 

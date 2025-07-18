@@ -35,10 +35,9 @@ public class VitalityStat extends Stat {
     @Override
     public void applySecondaryEffect(LivingEntity entity) {
         List<AttributeModification> modifications = List.of(
-                new AttributeModification(
+                AttributeModification.addValue(
                         ModEntityAttributes.HEALTH_REGEN,
                         SECONDARY_MODIFIER_ID,
-                        EntityAttributeModifier.Operation.ADD_VALUE,
                         baseValue -> (currentValue - this.baseValue) * HEALTH_REGEN_SCALING
                 )
         );

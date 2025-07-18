@@ -36,16 +36,14 @@ public class StrengthStat extends Stat {
     @Override
     public void applySecondaryEffect(LivingEntity entity) {
         List<AttributeModification> modifications = List.of(
-                new AttributeModification(
+                AttributeModification.addValue(
                         ModEntityAttributes.CRIT_CHANCE,
                         SECONDARY_MODIFIER_ID,
-                        EntityAttributeModifier.Operation.ADD_VALUE,
                         baseValue -> (currentValue - this.baseValue) * CRIT_CHANCE_SCALING
                 ),
-                new AttributeModification(
+                AttributeModification.addValue(
                         EntityAttributes.GENERIC_ATTACK_SPEED,
                         SECONDARY_MODIFIER_ID,
-                        EntityAttributeModifier.Operation.ADD_VALUE,
                         baseValue -> (currentValue - this.baseValue) * ATTACK_SPEED_SCALING
                 )
         );
