@@ -39,6 +39,11 @@ public class VitalityStat extends Stat {
                         ModEntityAttributes.HEALTH_REGEN,
                         SECONDARY_MODIFIER_ID,
                         baseValue -> (currentValue - this.baseValue) * HEALTH_REGEN_SCALING
+                ),
+                AttributeModification.addValue(
+                        ModEntityAttributes.PHYSICAL_RESISTANCE,
+                        getSecondaryModifierId(),
+                        baseValue -> (currentValue - this.baseValue) * MAX_HEALTH_SCALING
                 )
         );
         applyEffects(entity, modifications);
