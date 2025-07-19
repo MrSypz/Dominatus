@@ -27,7 +27,7 @@ public class StrengthStat extends Stat {
     @Override
     public void applyPrimaryEffect(LivingEntity entity) {
         applyEffect(entity,
-                EntityAttributes.GENERIC_ATTACK_DAMAGE,
+                ModEntityAttributes.MELEE_ATTACK_DAMAGE,
                 PRIMARY_MODIFIER_ID,
                 baseValue -> (currentValue - this.baseValue) * MELEE_DAMAGE_SCALING
         );
