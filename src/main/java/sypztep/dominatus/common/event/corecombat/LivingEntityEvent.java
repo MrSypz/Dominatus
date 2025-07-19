@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.event.critevasionandexp;
+package sypztep.dominatus.common.event.corecombat;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -50,7 +50,7 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
     }
 
     @Override
-    public float modifyDamage(LivingEntity entity, DamageSource source, float amount) {
+    public float postModifyDamage(LivingEntity entity, DamageSource source, float amount) {
         if (source.getAttacker() instanceof LivingEntity attacker) {
             float totalMultiplier = 1.0f;
 
@@ -69,7 +69,6 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
             Vec3d damageVector = attackerPos.subtract(entityPos).normalize();
 
             float damageDirection = (float) Math.toDegrees(Math.atan2(-damageVector.x, damageVector.z));
-
             float angleDifference = Math.abs(MathHelper.subtractAngles(entity.getHeadYaw(), damageDirection));
 
             if (angleDifference >= 75) {
@@ -77,10 +76,15 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
                 totalMultiplier += (float) attacker.getAttributeValue(ModEntityAttributes.BACK_ATTACK);
             }
 
-            if (DamageTypeUtil.isMagicDamage(source))
-                totalMultiplier += (float) attacker.getAttributeValue(ModEntityAttributes.MAGIC_ATTACK_DAMAGE);
+            // === DAMAGE TYPE BONUSES (Using utility method) ===
+            totalMultiplier += DamageTypeUtil.calculateDamageBonus(attacker, source);
 
             float finalDamage = amount * totalMultiplier;
+
+            // === RESISTANCE CALCULATIONS (Using utility method) ===
+            float totalResistance = DamageTypeUtil.calculateResistance(entity, source);
+            float resistanceReduction = Math.max(1.0f - totalResistance, 0.25f); // Min 25% damage
+            finalDamage *= resistanceReduction;
 
             DominatusPlayerEntityEvents.DAMAGE_DEALT.invoker().onDamageDealt(entity, source, finalDamage);
 
@@ -122,9 +126,6 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
                 ExpUtil.awardExperience(player, expReward, source);
             }
         });
-//        for (Map.Entry<UUID, Float> entry : damageMap.entrySet()) {
-//
-//        }
         tracker.clearDamage();
     }
 

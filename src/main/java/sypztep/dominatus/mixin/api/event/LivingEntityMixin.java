@@ -23,7 +23,7 @@ public abstract class LivingEntityMixin extends Entity {
     @ModifyVariable(method = "applyDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;applyArmorToDamage(Lnet/minecraft/entity/damage/DamageSource;F)F"), argsOnly = true)
     private float applyPreArmorDamageModification(float amount, DamageSource source) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        return DominatusLivingEntityEvents.PRE_ARMOR_DAMAGE.invoker().modifyDamage(entity, source, amount);
+        return DominatusLivingEntityEvents.PRE_ARMOR_DAMAGE.invoker().preModifyDamage(entity, source, amount);
     }
 
     /**
@@ -32,6 +32,6 @@ public abstract class LivingEntityMixin extends Entity {
     @ModifyVariable(method = "modifyAppliedDamage", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/enchantment/EnchantmentHelper;getProtectionAmount(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/damage/DamageSource;)F"), argsOnly = true)
     private float applyPostArmorDamageModification(float amount, DamageSource source) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        return DominatusLivingEntityEvents.POST_ARMOR_DAMAGE.invoker().modifyDamage(entity, source, amount);
+        return DominatusLivingEntityEvents.POST_ARMOR_DAMAGE.invoker().postModifyDamage(entity, source, amount);
     }
 }
