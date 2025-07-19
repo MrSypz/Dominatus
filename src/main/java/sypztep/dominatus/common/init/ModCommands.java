@@ -2,10 +2,7 @@ package sypztep.dominatus.common.init;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
-import sypztep.dominatus.common.command.BenefitsCommand;
-import sypztep.dominatus.common.command.DebugCommand;
-import sypztep.dominatus.common.command.ExpCommand;
-import sypztep.dominatus.common.command.LevelCommand;
+import sypztep.dominatus.common.command.*;
 
 public final class ModCommands {
     public ModCommands() {}
@@ -16,6 +13,9 @@ public final class ModCommands {
                     .then(ExpCommand.register())
                     .then(BenefitsCommand.register())
                     .then(DebugCommand.register())
+                    .then(MobStatsCommand.register())
+                    .then(MobDynamicScalingCommand.register())
+                    .then(StatsPlayerCommand.register())
             );
         });
     }
