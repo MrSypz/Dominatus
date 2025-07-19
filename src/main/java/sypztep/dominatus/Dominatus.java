@@ -6,8 +6,9 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sypztep.dominatus.common.event.critevasionandexp.LivingEntityEvent;
-import sypztep.dominatus.common.event.critevasionandexp.PlayerEntityEvent;
+import sypztep.dominatus.common.event.applystats.MobSpawnStatsEvent;
+import sypztep.dominatus.common.event.corecombat.LivingEntityEvent;
+import sypztep.dominatus.common.event.corecombat.PlayerEntityEvent;
 import sypztep.dominatus.common.init.*;
 import sypztep.dominatus.common.reloadlistener.DominatusMobExpReloadListener;
 
@@ -27,6 +28,7 @@ public class Dominatus implements ModInitializer {
 
         LivingEntityEvent.register();
         PlayerEntityEvent.register();
+        MobSpawnStatsEvent.register();
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusMobExpReloadListener());
     }
