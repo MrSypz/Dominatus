@@ -27,10 +27,10 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow @Final private DamageTracker damageTracker;
 
-    @Inject(method = "tickMovement", at = @At("TAIL"))
+    @Inject(method = "tickMovement", at = @At("TAIL")) //TODO: for some reason when first join the work it not work util player got hit by monster to init damagetracker..
     private void natureHealthRegen(CallbackInfo ci) {
         float natureHealthRegen = (float) this.getAttributeValue(ModEntityAttributes.HEALTH_REGEN);
-        if (natureHealthRegen > 0.00f && this.age % 60 == 0 && this.damageTracker.getTimeSinceLastAttack() > 300) { // 16 thing? and 3 sec
+        if (natureHealthRegen > 0.00f && this.age % 60 == 0 && this.damageTracker.getTimeSinceLastAttack() > 300) {
             this.heal(natureHealthRegen);
         }
     }
