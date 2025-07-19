@@ -1,4 +1,5 @@
 package sypztep.dominatus.client.data.provider;
+
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.data.DataProvider;
@@ -7,6 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
+import sypztep.dominatus.common.data.MobExpEntry;
 
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -26,98 +28,123 @@ public class ModMobDataGenerator implements DataProvider {
 
     private CompletableFuture<?> generateMobExp(DataWriter writer) {
         CompletableFuture<?>[] futures = new CompletableFuture[]{
-                // Hostile Mobs
-                createMobExpFile(writer, EntityType.ZOMBIE, 5),
-                createMobExpFile(writer, EntityType.SKELETON, 5),
-                createMobExpFile(writer, EntityType.SPIDER, 5),
-                createMobExpFile(writer, EntityType.CREEPER, 5),
-                createMobExpFile(writer, EntityType.ENDERMAN, 5),
-                createMobExpFile(writer, EntityType.WITCH, 5),
+                // === HOSTILE MOBS (Level 5-15) ===
+                // Basic undead (warrior type)
+                createMobExpFile(writer, EntityType.ZOMBIE, MobExpEntry.warrior(5, 8)),
+                createMobExpFile(writer, EntityType.ZOMBIE_VILLAGER, MobExpEntry.warrior(6, 8)),
+                createMobExpFile(writer, EntityType.HUSK, MobExpEntry.warrior(6, 9)),
+                createMobExpFile(writer, EntityType.DROWNED, MobExpEntry.warrior(7, 10)),
 
-                // Nether Mobs
-                createMobExpFile(writer, EntityType.ZOMBIFIED_PIGLIN, 5),
-                createMobExpFile(writer, EntityType.PIGLIN, 5),
-                createMobExpFile(writer, EntityType.PIGLIN_BRUTE, 10),
-                createMobExpFile(writer, EntityType.BLAZE, 10),
-                createMobExpFile(writer, EntityType.GHAST, 5),
-                createMobExpFile(writer, EntityType.WITHER_SKELETON, 5),
-                createMobExpFile(writer, EntityType.MAGMA_CUBE, 4),
-                createMobExpFile(writer, EntityType.HOGLIN, 5),
-                createMobExpFile(writer, EntityType.ZOGLIN, 5),
-                createMobExpFile(writer, EntityType.STRIDER, 1),
+                // Ranged attackers (archer type)
+                createMobExpFile(writer, EntityType.SKELETON, MobExpEntry.archer(5, 8)),
+                createMobExpFile(writer, EntityType.STRAY, MobExpEntry.archer(6, 9)),
 
-                // End Mobs
-                createMobExpFile(writer, EntityType.ENDERMITE, 3),
-                createMobExpFile(writer, EntityType.SHULKER, 5),
+                // Agile mobs
+                createMobExpFile(writer, EntityType.SPIDER, MobExpEntry.archer(5, 7)),
+                createMobExpFile(writer, EntityType.CAVE_SPIDER, MobExpEntry.archer(6, 6)),
 
-                // Ocean Mobs
-                createMobExpFile(writer, EntityType.DROWNED, 5),
-                createMobExpFile(writer, EntityType.GUARDIAN, 10),
-                createMobExpFile(writer, EntityType.ELDER_GUARDIAN, 10),
+                // Explosive/special
+                createMobExpFile(writer, EntityType.CREEPER, MobExpEntry.withLevelStats(8, 10)),
 
-                // Cave Mobs
-                createMobExpFile(writer, EntityType.CAVE_SPIDER, 5),
-                createMobExpFile(writer, EntityType.SILVERFISH, 5),
+                // Magic users
+                createMobExpFile(writer, EntityType.WITCH, MobExpEntry.mage(12, 15)),
+                createMobExpEntry(writer, EntityType.ENDERMAN, 15, 20, 18, 25, 15, 30, 18, 22), // Teleporting entity
 
-                // Illagers
-                createMobExpFile(writer, EntityType.PILLAGER, 5),
-                createMobExpFile(writer, EntityType.VINDICATOR, 5),
-                createMobExpFile(writer, EntityType.EVOKER, 10),
-                createMobExpFile(writer, EntityType.VEX, 3),
-                createMobExpFile(writer, EntityType.RAVAGER, 20),
-                createMobExpFile(writer, EntityType.ILLUSIONER, 5),
+                // === NETHER MOBS (Level 15-25) ===
+                createMobExpFile(writer, EntityType.ZOMBIFIED_PIGLIN, MobExpEntry.warrior(8, 15)),
+                createMobExpFile(writer, EntityType.PIGLIN, MobExpEntry.warrior(10, 16)),
+                createMobExpFile(writer, EntityType.PIGLIN_BRUTE, MobExpEntry.tank(15, 20)),
+                createMobExpFile(writer, EntityType.BLAZE, MobExpEntry.mage(12, 18)),
+                createMobExpFile(writer, EntityType.GHAST, MobExpEntry.mage(15, 20)),
+                createMobExpFile(writer, EntityType.WITHER_SKELETON, MobExpEntry.warrior(12, 20)),
+                createMobExpEntry(writer, EntityType.MAGMA_CUBE, 8, 15, 12, 8, 20, 8, 8, 10), // Tank-like
+                createMobExpFile(writer, EntityType.HOGLIN, MobExpEntry.tank(10, 18)),
+                createMobExpFile(writer, EntityType.ZOGLIN, MobExpEntry.tank(12, 20)),
+                createMobExpFile(writer, EntityType.STRIDER, MobExpEntry.withLevelStats(3, 5)),
 
-                // Slimes
-                createMobExpFile(writer, EntityType.SLIME, 4),
+                // === END MOBS (Level 20-30) ===
+                createMobExpFile(writer, EntityType.ENDERMITE, MobExpEntry.archer(5, 8)),
+                createMobExpFile(writer, EntityType.SHULKER, MobExpEntry.tank(15, 25)),
 
-                // Bosses
-                createMobExpFile(writer, EntityType.WITHER, 50),
-                createMobExpFile(writer, EntityType.ENDER_DRAGON, 500),
-                createMobExpFile(writer, EntityType.WARDEN, 100),
+                // === OCEAN MOBS (Level 10-20) ===
+                createMobExpFile(writer, EntityType.GUARDIAN, MobExpEntry.tank(15, 18)),
+                createMobExpFile(writer, EntityType.ELDER_GUARDIAN, MobExpEntry.boss(50, 35)),
 
-                // Passive Mobs
-                createMobExpFile(writer, EntityType.COW, 1),
-                createMobExpFile(writer, EntityType.PIG, 1),
-                createMobExpFile(writer, EntityType.SHEEP, 1),
-                createMobExpFile(writer, EntityType.CHICKEN, 1),
-                createMobExpFile(writer, EntityType.RABBIT, 1),
-                createMobExpFile(writer, EntityType.HORSE, 1),
-                createMobExpFile(writer, EntityType.DONKEY, 1),
-                createMobExpFile(writer, EntityType.MULE, 1),
-                createMobExpFile(writer, EntityType.LLAMA, 1),
-                createMobExpFile(writer, EntityType.TRADER_LLAMA, 1),
-                createMobExpFile(writer, EntityType.VILLAGER, 0),
-                createMobExpFile(writer, EntityType.WANDERING_TRADER, 0),
+                // === ILLAGERS (Level 12-25) ===
+                createMobExpFile(writer, EntityType.PILLAGER, MobExpEntry.archer(8, 12)),
+                createMobExpFile(writer, EntityType.VINDICATOR, MobExpEntry.warrior(10, 15)),
+                createMobExpFile(writer, EntityType.EVOKER, MobExpEntry.mage(20, 25)),
+                createMobExpFile(writer, EntityType.VEX, MobExpEntry.archer(5, 8)),
+                createMobExpFile(writer, EntityType.RAVAGER, MobExpEntry.tank(25, 30)),
+                createMobExpFile(writer, EntityType.ILLUSIONER, MobExpEntry.mage(18, 22)),
 
-                // Neutral Mobs
-                createMobExpFile(writer, EntityType.WOLF, 1),
-                createMobExpFile(writer, EntityType.POLAR_BEAR, 1),
-                createMobExpFile(writer, EntityType.PANDA, 1),
-                createMobExpFile(writer, EntityType.BEE, 1),
-                createMobExpFile(writer, EntityType.GOAT, 1),
-                createMobExpFile(writer, EntityType.AXOLOTL, 1),
-                createMobExpFile(writer, EntityType.GLOW_SQUID, 1),
-                createMobExpFile(writer, EntityType.SQUID, 1),
+                // === SLIMES (Variable) ===
+                createMobExpEntry(writer, EntityType.SLIME, 4, 6, 8, 4, 12, 4, 4, 6), // Tank-like
 
-                // 1.19+ Mobs
-                createMobExpFile(writer, EntityType.ALLAY, 0),
-                createMobExpFile(writer, EntityType.FROG, 1),
-                createMobExpFile(writer, EntityType.TADPOLE, 1),
+                // === BOSSES (Level 40-80) ===
+                createMobExpFile(writer, EntityType.WITHER, MobExpEntry.boss(500, 60)),
+                createMobExpEntry(writer, EntityType.ENDER_DRAGON, 1000, 80, 45, 35, 50, 40, 35, 40), // Unique boss
+                createMobExpFile(writer, EntityType.WARDEN, MobExpEntry.boss(200, 70)),
 
-                // 1.20+ Mobs
-                createMobExpFile(writer, EntityType.CAMEL, 1),
-                createMobExpFile(writer, EntityType.SNIFFER, 1),
+                // === PASSIVE MOBS (Level 1-3) ===
+                createMobExpFile(writer, EntityType.COW, MobExpEntry.withLevelStats(1, 2)),
+                createMobExpFile(writer, EntityType.PIG, MobExpEntry.withLevelStats(1, 2)),
+                createMobExpFile(writer, EntityType.SHEEP, MobExpEntry.withLevelStats(1, 2)),
+                createMobExpFile(writer, EntityType.CHICKEN, MobExpEntry.withLevelStats(1, 1)),
+                createMobExpFile(writer, EntityType.RABBIT, MobExpEntry.archer(1, 1)), // Fast
+                createMobExpFile(writer, EntityType.HORSE, MobExpEntry.withLevelStats(2, 3)),
+                createMobExpFile(writer, EntityType.DONKEY, MobExpEntry.withLevelStats(2, 3)),
+                createMobExpFile(writer, EntityType.MULE, MobExpEntry.withLevelStats(2, 3)),
+                createMobExpFile(writer, EntityType.LLAMA, MobExpEntry.withLevelStats(2, 3)),
+                createMobExpFile(writer, EntityType.TRADER_LLAMA, MobExpEntry.withLevelStats(2, 3)),
+                createMobExpFile(writer, EntityType.VILLAGER, MobExpEntry.withLevelStats(0, 1)),
+                createMobExpFile(writer, EntityType.WANDERING_TRADER, MobExpEntry.withLevelStats(0, 2)),
 
-                // 1.21+ Mobs
-                createMobExpFile(writer, EntityType.ARMADILLO, 1),
-                createMobExpFile(writer, EntityType.BOGGED, 5),
-                createMobExpFile(writer, EntityType.BREEZE, 10)
+                // === NEUTRAL MOBS (Level 2-8) ===
+                createMobExpFile(writer, EntityType.WOLF, MobExpEntry.archer(3, 5)),
+                createMobExpFile(writer, EntityType.POLAR_BEAR, MobExpEntry.tank(5, 8)),
+                createMobExpFile(writer, EntityType.PANDA, MobExpEntry.tank(3, 6)),
+                createMobExpFile(writer, EntityType.BEE, MobExpEntry.archer(2, 3)),
+                createMobExpFile(writer, EntityType.GOAT, MobExpEntry.withLevelStats(3, 4)),
+                createMobExpFile(writer, EntityType.AXOLOTL, MobExpEntry.withLevelStats(2, 3)),
+                createMobExpFile(writer, EntityType.GLOW_SQUID, MobExpEntry.withLevelStats(2, 3)),
+                createMobExpFile(writer, EntityType.SQUID, MobExpEntry.withLevelStats(2, 3)),
+
+                // === 1.19+ MOBS ===
+                createMobExpFile(writer, EntityType.ALLAY, MobExpEntry.mage(0, 5)),
+                createMobExpFile(writer, EntityType.FROG, MobExpEntry.archer(2, 3)),
+                createMobExpFile(writer, EntityType.TADPOLE, MobExpEntry.withLevelStats(1, 1)),
+
+                // === 1.20+ MOBS ===
+                createMobExpFile(writer, EntityType.CAMEL, MobExpEntry.withLevelStats(3, 5)),
+                createMobExpFile(writer, EntityType.SNIFFER, MobExpEntry.withLevelStats(5, 8)),
+
+                // === 1.21+ MOBS ===
+                createMobExpFile(writer, EntityType.ARMADILLO, MobExpEntry.tank(2, 4)),
+                createMobExpFile(writer, EntityType.BOGGED, MobExpEntry.archer(8, 12)),
+                createMobExpFile(writer, EntityType.BREEZE, MobExpEntry.mage(15, 18))
         };
 
         return CompletableFuture.allOf(futures);
     }
 
-    private CompletableFuture<?> createMobExpFile(DataWriter writer, EntityType<?> entityType, int expReward) {
+    // Helper method for MobExpEntry
+    private CompletableFuture<?> createMobExpFile(DataWriter writer, EntityType<?> entityType, MobExpEntry mobEntry) {
+        return createMobExpFile(writer, entityType, mobEntry.expReward(), mobEntry.baseLevel(),
+                mobEntry.stats().strength, mobEntry.stats().agility, mobEntry.stats().vitality,
+                mobEntry.stats().intelligence, mobEntry.stats().dexterity, mobEntry.stats().luck);
+    }
+
+    // Custom stats method
+    private CompletableFuture<?> createMobExpEntry(DataWriter writer, EntityType<?> entityType,
+                                                   int expReward, int baseLevel, int str, int agi, int vit, int intel, int dex, int luck) {
+        return createMobExpFile(writer, entityType, expReward, baseLevel, str, agi, vit, intel, dex, luck);
+    }
+
+    private CompletableFuture<?> createMobExpFile(DataWriter writer, EntityType<?> entityType,
+                                                  int expReward, int baseLevel, int strength, int agility, int vitality,
+                                                  int intelligence, int dexterity, int luck) {
+
         Identifier entityId = Registries.ENTITY_TYPE.getId(entityType);
         String namespace = entityId.getNamespace();
         String path = entityId.getPath();
@@ -130,19 +157,31 @@ public class ModMobDataGenerator implements DataProvider {
                 .resolve(namespace)
                 .resolve(path + ".json");
 
-        JsonObject jsonObject = createJsonObject(expReward);
+        JsonObject jsonObject = createJsonObject(expReward, baseLevel, strength, agility, vitality, intelligence, dexterity, luck);
 
         return DataProvider.writeToPath(writer, jsonObject, filePath);
     }
 
-    private JsonObject createJsonObject(int expReward) {
+    private JsonObject createJsonObject(int expReward, int baseLevel, int strength, int agility,
+                                        int vitality, int intelligence, int dexterity, int luck) {
         JsonObject root = new JsonObject();
         root.addProperty("expReward", expReward);
+        root.addProperty("baseLevel", baseLevel);
+
+        JsonObject stats = new JsonObject();
+        stats.addProperty("strength", strength);
+        stats.addProperty("agility", agility);
+        stats.addProperty("vitality", vitality);
+        stats.addProperty("intelligence", intelligence);
+        stats.addProperty("dexterity", dexterity);
+        stats.addProperty("luck", luck);
+
+        root.add("stats", stats);
         return root;
     }
 
     @Override
     public String getName() {
-        return "Mob Exp Data";
+        return "Mob Exp and Stats Data";
     }
 }
