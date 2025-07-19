@@ -12,11 +12,11 @@ import sypztep.dominatus.common.system.level.core.LevelData;
 import sypztep.dominatus.common.system.stat.PlayerStatBehavior;
 import sypztep.dominatus.common.system.stat.PlayerStatManager;
 import sypztep.dominatus.common.system.stat.StatUI;
-import sypztep.dominatus.common.system.stat.elements.player.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated (forRemoval = true)
 public class StatAllocationScreen extends Screen {
     private static final int BUTTON_WIDTH = 60;
     private static final int BUTTON_HEIGHT = 20;
@@ -128,25 +128,19 @@ public class StatAllocationScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        // Draw background
-        this.renderBackground(context, mouseX, mouseY, delta);
-
-        // Draw title
+        super.render(context, mouseX, mouseY, delta);
         context.drawCenteredTextWithShadow(this.textRenderer, this.title,
                 this.width / 2, 20, 0xFFFFFF);
 
-        // Draw level and benefits info
         String levelInfo = String.format("Level: %d | Available Benefits: %d",
                 levelData.getLevel(), levelData.getAvailableBenefits());
         context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(levelInfo),
                 this.width / 2, 40, 0xFFFF55);
 
-        // Draw stat information
         for (StatRow row : statRows) {
             renderStatRow(context, row, mouseX, mouseY);
         }
 
-        super.render(context, mouseX, mouseY, delta);
     }
 
     private void renderStatRow(DrawContext context, StatRow row, int mouseX, int mouseY) {
@@ -180,21 +174,10 @@ public class StatAllocationScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        // Allow ESC to close
-        if (keyCode == 256) { // ESC key
-            this.close();
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
     public boolean shouldPause() {
         return false; // Don't pause the game
     }
 
-    // Helper class to store stat row components
     private static class StatRow {
         String statName;
         StatUI stat;
