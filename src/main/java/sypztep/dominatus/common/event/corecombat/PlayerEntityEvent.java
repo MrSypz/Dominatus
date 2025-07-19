@@ -1,4 +1,4 @@
-package sypztep.dominatus.common.event.critevasionandexp;
+package sypztep.dominatus.common.event.corecombat;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
