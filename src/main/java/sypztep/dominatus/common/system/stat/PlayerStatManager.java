@@ -4,6 +4,7 @@ package sypztep.dominatus.common.system.stat;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import sypztep.dominatus.common.system.stat.elements.core.*;
 import sypztep.dominatus.common.system.stat.elements.player.*;
 
 import java.util.Collection;
@@ -14,12 +15,12 @@ public class PlayerStatManager {
     private final Map<String, PlayerStatBehavior> stats = new HashMap<>();
 
     public PlayerStatManager() {
-        stats.put("strength", new PlayerStrengthStat());
-        stats.put("agility", new PlayerAgilityStat());
-        stats.put("vitality", new PlayerVitalityStat());
-        stats.put("intelligence", new PlayerIntelligenceStat());
-        stats.put("dexterity", new PlayerDexterityStat());
-        stats.put("luck", new PlayerLuckStat());
+        stats.put("strength", new BasePlayerStat(new StrengthStat(), "Strength"));
+        stats.put("agility", new BasePlayerStat(new AgilityStat(), "Agility"));
+        stats.put("vitality", new BasePlayerStat(new VitalityStat(), "Vitality"));
+        stats.put("intelligence", new BasePlayerStat(new IntelligenceStat(), "Intelligence"));
+        stats.put("dexterity", new BasePlayerStat(new DexterityStat(), "Dexterity"));
+        stats.put("luck", new BasePlayerStat(new LuckStat(), "Luck"));
     }
 
     public PlayerStatBehavior getStat(String name) {
@@ -27,12 +28,12 @@ public class PlayerStatManager {
     }
 
     // Convenience getters
-    public PlayerStrengthStat getStrength() { return (PlayerStrengthStat) stats.get("strength"); }
-    public PlayerAgilityStat getAgility() { return (PlayerAgilityStat) stats.get("agility"); }
-    public PlayerVitalityStat getVitality() { return (PlayerVitalityStat) stats.get("vitality"); }
-    public PlayerIntelligenceStat getIntelligence() { return (PlayerIntelligenceStat) stats.get("intelligence"); }
-    public PlayerDexterityStat getDexterity() { return (PlayerDexterityStat) stats.get("dexterity"); }
-    public PlayerLuckStat getLuck() { return (PlayerLuckStat) stats.get("luck"); }
+    public BasePlayerStat getStrength() { return (BasePlayerStat) stats.get("strength"); }
+    public BasePlayerStat getAgility() { return (BasePlayerStat) stats.get("agility"); }
+    public BasePlayerStat getVitality() { return (BasePlayerStat) stats.get("vitality"); }
+    public BasePlayerStat getIntelligence() { return (BasePlayerStat) stats.get("intelligence"); }
+    public BasePlayerStat getDexterity() { return (BasePlayerStat) stats.get("dexterity"); }
+    public BasePlayerStat getLuck() { return (BasePlayerStat) stats.get("luck"); }
 
     public Collection<StatUI> getUIStats() {
         return stats.values().stream()
