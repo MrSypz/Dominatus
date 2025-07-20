@@ -37,7 +37,8 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
     }
     @Override
     public boolean allowAttack(PlayerEntity player, Entity target) {
-        LivingEntity livingTarget = (LivingEntity) target;
+        if (!(target instanceof LivingEntity livingTarget)) return true;
+
         DamageSource damageSource = target.getDamageSources().playerAttack(player);
 
         if (!LivingEntityUtil.isHitable(livingTarget, damageSource)) return false;
