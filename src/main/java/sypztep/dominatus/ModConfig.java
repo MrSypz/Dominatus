@@ -155,6 +155,20 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
     @Comment("Toast margin from screen edge (default: 0)")
     public static int toastMargin = 0;
+    @ConfigEntry.Category("statconfig")
+    public static boolean tooltipinfo = true;
+    @ConfigEntry.Category("statconfig")
+    @ConfigEntry.ColorPicker(allowAlpha = true)
+    public static int barColor = 0xFFFFFFFF;
+    @ConfigEntry.Category("statconfig")
+    @ConfigEntry.ColorPicker(allowAlpha = true)
+    public static int barBGColor = 0xFFAB5C00;
+    @ConfigEntry.Category("statconfig")
+    public static RenderStyle renderStyle = RenderStyle.SLATE;
+    public enum RenderStyle {
+        BAR,
+        SLATE
+    }
     @ConfigEntry.Category("mob_scaling")
     @Comment("Enable dynamic mob scaling based on nearby player levels (default: true)")
     public static boolean enableDynamicMobScaling = true;
