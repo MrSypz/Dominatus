@@ -15,42 +15,31 @@ public class PlayerStatManager {
     private final Map<String, PlayerStatBehavior> stats = new HashMap<>();
 
     public PlayerStatManager() {
-        stats.put("strength", new BasePlayerStat(new StrengthStat(), "Strength"));
-        stats.put("agility", new BasePlayerStat(new AgilityStat(), "Agility"));
-        stats.put("vitality", new BasePlayerStat(new VitalityStat(), "Vitality"));
-        stats.put("intelligence", new BasePlayerStat(new IntelligenceStat(), "Intelligence"));
-        stats.put("dexterity", new BasePlayerStat(new DexterityStat(), "Dexterity"));
-        stats.put("luck", new BasePlayerStat(new LuckStat(), "Luck"));
+        stats.put("strength", new PlayerStrengthStat());
+        stats.put("agility", new PlayerAgilityStat());
+        stats.put("vitality", new PlayerVitalityStat());
+        stats.put("intelligence", new PlayerIntelligenceStat());
+        stats.put("dexterity", new PlayerDexterityStat());
+        stats.put("luck", new PlayerLuckStat());
     }
 
     public PlayerStatBehavior getStat(String name) {
         return stats.get(name);
     }
 
-    // Convenience getters
-    public BasePlayerStat getStrength() { return (BasePlayerStat) stats.get("strength"); }
-    public BasePlayerStat getAgility() { return (BasePlayerStat) stats.get("agility"); }
-    public BasePlayerStat getVitality() { return (BasePlayerStat) stats.get("vitality"); }
-    public BasePlayerStat getIntelligence() { return (BasePlayerStat) stats.get("intelligence"); }
-    public BasePlayerStat getDexterity() { return (BasePlayerStat) stats.get("dexterity"); }
-    public BasePlayerStat getLuck() { return (BasePlayerStat) stats.get("luck"); }
-
-    public Collection<StatUI> getUIStats() {
-        return stats.values().stream()
-                .filter(stat -> stat instanceof StatUI)
-                .map(stat -> (StatUI) stat)
-                .toList();
-    }
+    public PlayerStatBehavior getStrength() { return stats.get("strength"); }
+    public PlayerStatBehavior getAgility() { return stats.get("agility"); }
+    public PlayerStatBehavior getVitality() { return stats.get("vitality"); }
+    public PlayerStatBehavior getIntelligence() { return stats.get("intelligence"); }
+    public PlayerStatBehavior getDexterity() { return stats.get("dexterity"); }
+    public PlayerStatBehavior getLuck() { return stats.get("luck"); }
 
     public void applyAllEffects(LivingEntity entity) {
         for (PlayerStatBehavior stat : stats.values()) {
-            if (stat instanceof Stat baseStat) {
-                baseStat.applyPrimaryEffect(entity);
-                baseStat.applySecondaryEffect(entity);
-            }
+            stat.applyPrimaryEffect(entity);    // No casting needed!
+            stat.applySecondaryEffect(entity);
         }
     }
-
     public void resetAllStats(ServerPlayerEntity player) {
         for (PlayerStatBehavior stat : stats.values()) {
             stat.resetWithRefund(player);
@@ -62,15 +51,24 @@ public class PlayerStatManager {
                 .mapToInt(PlayerStatBehavior::getTotalPointsSpent)
                 .sum();
     }
+    public PlayerStatBehavior getStatByName(String statName) {
+        return switch (statName.toLowerCase()) {
+            case "strength" -> getStrength();
+            case "agility" -> getAgility();
+            case "vitality" -> getVitality();
+            case "intelligence" -> getIntelligence();
+            case "dexterity" -> getDexterity();
+            case "luck" -> getLuck();
+            default -> null;
+        };
+    }
 
     public void writeToNbt(NbtCompound tag) {
         NbtCompound statsTag = new NbtCompound();
         for (Map.Entry<String, PlayerStatBehavior> entry : stats.entrySet()) {
-            if (entry.getValue() instanceof Stat baseStat) {
-                NbtCompound statTag = new NbtCompound();
-                baseStat.writeToNbt(statTag);
-                statsTag.put(entry.getKey(), statTag);
-            }
+            NbtCompound statTag = new NbtCompound();
+            entry.getValue().writeToNbt(statTag); // Use the complete writeToNbt
+            statsTag.put(entry.getKey(), statTag);
         }
         tag.put("Stats", statsTag);
     }
@@ -80,9 +78,9 @@ public class PlayerStatManager {
             NbtCompound statsTag = tag.getCompound("Stats");
             for (Map.Entry<String, PlayerStatBehavior> entry : stats.entrySet()) {
                 String statName = entry.getKey();
-                if (statsTag.contains(statName) && entry.getValue() instanceof Stat baseStat) {
+                if (statsTag.contains(statName)) {
                     NbtCompound statTag = statsTag.getCompound(statName);
-                    baseStat.readFromNbt(statTag);
+                    entry.getValue().readFromNbt(statTag); // Use the complete readFromNbt
                 }
             }
         }

@@ -16,7 +16,7 @@ import java.util.function.ToDoubleFunction;
  * Base stat class for all living entities (players and monsters)
  * Clean and simple - no UI methods, pure functionality
  */
-public abstract class Stat {
+public abstract class Stat implements StatEffect {
     protected final int baseValue;
     protected int currentValue;
 

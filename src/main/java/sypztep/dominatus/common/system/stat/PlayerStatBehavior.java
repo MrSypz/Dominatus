@@ -3,12 +3,14 @@ package sypztep.dominatus.common.system.stat;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+
 import java.util.List;
 
 /**
  * Interface for player-specific stat behaviors (point tracking, cost calculation)
+ * Extends StatUI to provide display capabilities
  */
-public interface PlayerStatBehavior {
+public interface PlayerStatBehavior extends StatUI , StatEffect {
 
     int getTotalPointsSpent();
 
@@ -32,6 +34,11 @@ public interface PlayerStatBehavior {
      */
     void resetWithRefund(ServerPlayerEntity player);
 
+    /**
+     * Core NBT key
+     */
+    void writeToNbt(NbtCompound tag);
+    void readFromNbt(NbtCompound tag);
     /**
      * Enhanced NBT methods for point tracking
      */

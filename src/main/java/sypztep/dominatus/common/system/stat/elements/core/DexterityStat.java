@@ -1,7 +1,6 @@
 package sypztep.dominatus.common.system.stat.elements.core;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
@@ -66,11 +65,14 @@ public class DexterityStat extends Stat {
     // HELPER METHODS FOR SUBCLASSES
     // ====================
 
-    protected int calculateAccuracyBonus() {
+    public static int calculateAccuracyBonus(int currentValue, int baseValue) {
         return currentValue - baseValue; // +1 accuracy per point
     }
 
-    protected double calculateAttackSpeedBonus() {
+    public static double calculateAttackSpeedBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * ATTACK_SPEED_SCALING;
+    }
+    public static double calculateProjectileDamageBonus(int futureValue, int baseValue) {
+        return (futureValue - baseValue) * PROJECTILE_DAMAGE_SCALING;
     }
 }

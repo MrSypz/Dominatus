@@ -61,15 +61,15 @@ public class StrengthStat extends Stat {
     }
 
     // Helper methods for subclasses
-    protected double calculateMeleeDamageBonus() {
+    public static double calculateMeleeDamageBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * MELEE_DAMAGE_SCALING;
     }
 
-    protected double calculateCritChanceBonus() {
+    public static double calculateCritChanceBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * CRIT_CHANCE_SCALING;
     }
 
-    protected double calculateAttackSpeedBonus() {
+    public static double calculateAttackSpeedBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * ATTACK_SPEED_SCALING;
     }
 }

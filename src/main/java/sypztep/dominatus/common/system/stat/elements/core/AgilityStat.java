@@ -29,11 +29,10 @@ public class AgilityStat extends Stat {
 
     @Override
     public void applySecondaryEffect(LivingEntity entity) {
-        // Add 1 evasion per AGI point (flat bonus)
         applyEffect(entity,
                 ModEntityAttributes.EVASION,
                 SECONDARY_MODIFIER_ID,
-                baseValue -> (double)(currentValue - this.baseValue) // 1 per point
+                baseValue -> (double)(currentValue - this.baseValue)
         );
     }
 
@@ -47,12 +46,11 @@ public class AgilityStat extends Stat {
         return SECONDARY_MODIFIER_ID;
     }
 
-    // Helper methods
-    protected double calculateAttackSpeedBonus() {
+    public static double calculateAttackSpeedBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * ATTACK_SPEED_SCALING;
     }
 
-    protected int calculateEvasionBonus() {
-        return currentValue - baseValue; // 1 per point
+    public static int calculateEvasionBonus(int currentValue, int baseValue) {
+        return currentValue - baseValue;
     }
 }

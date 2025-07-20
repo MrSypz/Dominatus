@@ -50,7 +50,10 @@ public class IntelligenceStat extends Stat {
     }
 
     // Helper methods
-    protected double calculateMagicDamageBonus() {
+    public static double calculateMagicDamageBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * MAGIC_DAMAGE_SCALING;
+    }
+    public static double calculateMagicResistanceBonus(int currentValue, int baseValue) {
+        return (currentValue - baseValue) * MAGIC_RESISTANCE_SCALING;
     }
 }

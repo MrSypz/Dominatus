@@ -1,7 +1,6 @@
 package sypztep.dominatus.common.system.stat.elements.core;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
@@ -18,6 +17,7 @@ public class VitalityStat extends Stat {
 
     protected static final double MAX_HEALTH_SCALING = 0.05; // 5% per point
     protected static final double HEALTH_REGEN_SCALING = 0.02; // 2% per point
+    protected static final double PHYSICAL_RESISTANCE_SCALING = 0.01; // 1% per point
 
     public VitalityStat() {
         super(1); // Base VIT of 1
@@ -59,11 +59,14 @@ public class VitalityStat extends Stat {
         return SECONDARY_MODIFIER_ID;
     }
 
-    protected double calculateMaxHealthBonus(double baseHealth) {
-        return baseHealth * (currentValue - this.baseValue) * MAX_HEALTH_SCALING;
+    public static double calculateMaxHealthBonus(int currentValue, int baseValue) {
+        return 20 * (currentValue - baseValue) * MAX_HEALTH_SCALING;
     }
 
-    protected double calculateHealthRegenBonus() {
+    public static double calculateHealthRegenBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * HEALTH_REGEN_SCALING;
+    }
+    public static double calculatePhysicalResistanceBonus(int currentValue, int baseValue) {
+        return (currentValue - baseValue) * PHYSICAL_RESISTANCE_SCALING;
     }
 }

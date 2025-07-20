@@ -85,23 +85,23 @@ public class LuckStat extends Stat {
     }
 
     // Helper methods
-    protected double calculateCritChanceBonus() {
+    public static double calculateCritChanceBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * CRIT_CHANCE_SCALING;
     }
 
-    protected double calculateMagicDamageBonus() {
+    public static double calculateMagicDamageBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * MAGIC_DAMAGE_SCALING;
     }
 
-    protected double calculateAttackSpeedBonus() {
+    public static double calculateAttackSpeedBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * ATTACK_SPEED_SCALING;
     }
 
-    protected int calculateAccuracyBonus() {
+    public static int calculateAccuracyBonus(int currentValue, int baseValue) {
         return Math.max(0, (currentValue - baseValue) / 3);
     }
 
-    protected int calculateEvasionBonus() {
+    public static int calculateEvasionBonus(int currentValue, int baseValue) {
         return Math.max(0, (currentValue - baseValue) / 5);
     }
 }
