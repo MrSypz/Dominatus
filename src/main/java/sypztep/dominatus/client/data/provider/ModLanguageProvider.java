@@ -72,101 +72,81 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translator.add(key + "projectile_resistance", "Projectile Resistance: $projsis %");
     }
     private void generateConfigTranslations(TranslationBuilder translator) {
-        String configBase = "text.autoconfig.dominatus";
+        String base = "text.autoconfig.dominatus";
 
         // Main config title
-        translator.add(configBase + ".title", "Dominatus Configuration");
+        translator.add(base + ".title", "Dominatus Configuration");
 
-        // Category translations
-        generateClientFeatureConfig(translator, configBase);
-        generateGameplayConfig(translator, configBase);
-        generateStatConfig(translator, configBase);
-        generateDeathPenaltyConfig(translator, configBase);
-    }
+        // =====================================
+        // CATEGORIES
+        // =====================================
 
-    private void generateClientFeatureConfig(TranslationBuilder translator, String base) {
-        String categoryBase = base + ".category.feature-client";
+        translator.add(base + ".category.client_features", "Client Features");
+        translator.add(base + ".category.notifications", "Notifications");
+        translator.add(base + ".category.progress_bars", "Progress Bars");
+        translator.add(base + ".category.gameplay", "Gameplay Settings");
+        translator.add(base + ".category.death_penalty", "Death Penalty");
 
-        // Category
-        translator.add(categoryBase, "Client Features");
+        // =====================================
+        // CLIENT FEATURES
+        // =====================================
 
-        // Options
         translator.add(base + ".option.damageCritIndicator", "Critical Hit Indicator");
-        translator.add(base + ".option.damageCritIndicator.@Tooltip", "Show visual indicator when landing critical hits");
 
         translator.add(base + ".option.missingIndicator", "Miss Indicator");
-        translator.add(base + ".option.missingIndicator.@Tooltip", "Show visual indicator when attacks miss");
 
         translator.add(base + ".option.critDamageColor", "Critical Hit Color");
-        translator.add(base + ".option.critDamageColor.@Tooltip", "Color for critical hit damage indicators");
+
+        translator.add(base + ".option.tooltipinfo", "Show Tooltip Info");
+
+        // =====================================
+        // NOTIFICATIONS
+        // =====================================
 
         translator.add(base + ".option.enableToastNotifications", "Toast Notifications");
-        translator.add(base + ".option.enableToastNotifications.@Tooltip", "Show toast notifications instead of chat messages");
 
         translator.add(base + ".option.toastPositionLeft", "Toast Position Left");
-        translator.add(base + ".option.toastPositionLeft.@Tooltip", "Show toasts on the left side of screen");
 
         translator.add(base + ".option.toastYOffset", "Toast Y Offset");
-        translator.add(base + ".option.toastYOffset.@Tooltip", "Vertical offset from top of screen for toast notifications");
 
         translator.add(base + ".option.toastMargin", "Toast Margin");
-        translator.add(base + ".option.toastMargin.@Tooltip", "Distance from screen edge for toast notifications");
-    }
 
-    private void generateGameplayConfig(TranslationBuilder translator, String base) {
-        String categoryBase = base + ".category.statconfig_gameplay";
+        translator.add(base + ".option.toastScale", "Toast Scale");
 
-        // Category
-        translator.add(categoryBase, "Gameplay Settings");
 
-        // Options
-        translator.add(base + ".option.maxLevel", "Maximum Level");
-        translator.add(base + ".option.maxLevel.@Tooltip", "The highest level players can reach");
-
-        translator.add(base + ".option.EXP_MAP", "Experience Table");
-        translator.add(base + ".option.EXP_MAP.@Tooltip", "Experience required for each level");
-
-        translator.add(base + ".option.startStatpoints", "Starting Benefit Points");
-        translator.add(base + ".option.startStatpoints.@Tooltip", "Number of benefit points new players start with");
-    }
-
-    private void generateStatConfig(TranslationBuilder translator, String base) {
-        String categoryBase = base + ".category.statconfig";
-
-        // Category
-        translator.add(categoryBase, "Stat Configuration");
-
-        // Options
-        translator.add(base + ".option.tooltipinfo", "Show Tooltip Info");
-        translator.add(base + ".option.tooltipinfo.@Tooltip", "Display detailed information in tooltips");
+        // =====================================
+        // PROGRESS BARS
+        // =====================================
 
         translator.add(base + ".option.barColor", "Progress Bar Color");
-        translator.add(base + ".option.barColor.@Tooltip", "Color of the experience progress bar");
 
         translator.add(base + ".option.barBGColor", "Progress Bar Background");
-        translator.add(base + ".option.barBGColor.@Tooltip", "Background color of the experience progress bar");
 
         translator.add(base + ".option.renderStyle", "Render Style");
-        translator.add(base + ".option.renderStyle.@Tooltip", "Visual style for progress bars");
 
         // Render style enum values
         translator.add(base + ".option.renderStyle.BAR", "Bar Style");
         translator.add(base + ".option.renderStyle.SLATE", "Slate Style");
-    }
 
-    private void generateDeathPenaltyConfig(TranslationBuilder translator, String base) {
-        String categoryBase = base + ".category.death_penalty";
+        // =====================================
+        // GAMEPLAY SETTINGS
+        // =====================================
 
-        // Category
-        translator.add(categoryBase, "Death Penalty");
+        translator.add(base + ".option.maxLevel", "Maximum Level");
 
-        // Options
-        translator.add(base + ".option.deathPenaltyPercentage", "Death Penalty Percentage");
-        translator.add(base + ".option.deathPenaltyPercentage.@Tooltip", "Percentage of next level experience lost on death");
+        translator.add(base + ".option.startStatpoints", "Starting Benefit Points");
+
+        translator.add(base + ".option.EXP_MAP", "Experience Table");
+
+        // =====================================
+        // DEATH PENALTY
+        // =====================================
 
         translator.add(base + ".option.enableDeathPenalty", "Enable Death Penalty");
-        translator.add(base + ".option.enableDeathPenalty.@Tooltip", "Whether players lose experience when killed by monsters");
+
+        translator.add(base + ".option.deathPenaltyPercentage", "Death Penalty Percentage");
     }
+
     private void generateAttributeTranslations(TranslationBuilder translator) {
         translator.add("attribute.name.health_regen", "Health Regeneration");
         translator.add("attribute.name.accuracy", "Accuracy");

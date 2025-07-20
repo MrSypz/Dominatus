@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import sypztep.dominatus.ModConfig;
 
@@ -46,8 +47,20 @@ public class ToastHudRenderer implements HudRenderCallback {
 
         if (toasts.isEmpty()) return;
 
+        // Get scale from config (convert percentage to decimal)
+        float toastScale = ModConfig.toastScale / 100.0f;
+
         int screenWidth = client.getWindow().getScaledWidth();
         int currentY = ModConfig.toastYOffset;
+
+        // Apply scaling to the entire toast rendering
+        MatrixStack matrixStack = drawContext.getMatrices();
+        matrixStack.push();
+        matrixStack.scale(toastScale, toastScale, 1.0f);
+
+        // Adjust calculations for scaling
+        int scaledScreenWidth = (int) (screenWidth / toastScale);
+        int scaledCurrentY = (int) (currentY / toastScale);
 
         // Render toasts from bottom to top (newer toasts appear on top)
         for (int i = toasts.size() - 1; i >= 0; i--) {
@@ -58,23 +71,29 @@ public class ToastHudRenderer implements HudRenderCallback {
             // Calculate toast dimensions
             ToastDimensions dimensions = calculateToastDimensions(textRenderer, toast.getMessage());
 
-            // Calculate position with slide animation based on config
-            int toastX = calculateToastX(screenWidth, dimensions.width, toast.getSlideOffset());
-            int toastY = currentY;
+            // Calculate position with slide animation
+            int toastX = calculateScaledToastX(scaledScreenWidth, dimensions.width, toast.getSlideOffset(), toastScale);
+            int toastY = scaledCurrentY;
 
             // Render the toast
             renderToast(drawContext, textRenderer, toast, toastX, toastY, dimensions);
 
             // Update Y position for next toast
-            currentY += dimensions.height + TOAST_SPACING;
+            scaledCurrentY += dimensions.height + TOAST_SPACING;
         }
+
+        matrixStack.pop(); // Restore original scale
     }
 
-    private int calculateToastX(int screenWidth, int toastWidth, float slideOffset) {
+    private int calculateScaledToastX(int scaledScreenWidth, int toastWidth, float slideOffset, float scale) {
+        // Apply scale to margin and slide offset
+        float scaledMargin = ModConfig.toastMargin / scale;
+        float scaledSlideOffset = slideOffset / scale;
+
         if (ModConfig.toastPositionLeft) {
-            return (int) (ModConfig.toastMargin - slideOffset);
+            return (int) (scaledMargin - scaledSlideOffset);
         } else {
-            return (int) (screenWidth - toastWidth - ModConfig.toastMargin + slideOffset);
+            return (int) (scaledScreenWidth - toastWidth - scaledMargin + scaledSlideOffset);
         }
     }
     private void renderToast(DrawContext drawContext, TextRenderer textRenderer,

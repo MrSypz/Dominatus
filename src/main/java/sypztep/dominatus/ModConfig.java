@@ -7,29 +7,89 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 
 @Config(name = Dominatus.MODID)
 public class ModConfig implements ConfigData {
-    @ConfigEntry.Category("feature-client")
-    @Comment("Crit Indicator (default : true)")
+
+    // =====================================
+    // CLIENT FEATURES
+    // =====================================
+
+    @ConfigEntry.Category("client_features")
+    @Comment("Show visual indicator when landing critical hits")
     public static boolean damageCritIndicator = true;
 
-    @ConfigEntry.Category("feature-client")
-    @Comment("Missing Indicator (default : true)")
+    @ConfigEntry.Category("client_features")
+    @Comment("Show visual indicator when attacks miss")
     public static boolean missingIndicator = true;
 
-    @ConfigEntry.Category("feature-client")
+    @ConfigEntry.Category("client_features")
     @ConfigEntry.ColorPicker()
-    @Comment("Color of the crit indicator")
+    @Comment("Color of the critical hit damage indicator")
     public static int critDamageColor = 0xFF4F00;
 
-    @ConfigEntry.Category("feature-client")
-    @Comment("Show toast notifications instead of chat messages (default: true)")
+    @ConfigEntry.Category("client_features")
+    @Comment("Show tooltip information in stat screens")
+    public static boolean tooltipinfo = true;
+
+    // =====================================
+    // NOTIFICATIONS
+    // =====================================
+
+    @ConfigEntry.Category("notifications")
+    @Comment("Show toast notifications instead of chat messages")
     public static boolean enableToastNotifications = true;
 
-    @ConfigEntry.Category("statconfig_gameplay")
-    @ConfigEntry.BoundedDiscrete(min = 1, max = 99)
+    @ConfigEntry.Category("notifications")
+    @Comment("Show toasts on the left side of screen (false = right side)")
+    public static boolean toastPositionLeft = false;
+
+    @ConfigEntry.Category("notifications")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 500)
+    @Comment("Vertical offset from top of screen for toast notifications")
+    public static int toastYOffset = 20;
+
+    @ConfigEntry.Category("notifications")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 200)
+    @Comment("Distance from screen edge for toast notifications")
+    public static int toastMargin = 0;
+
+    @ConfigEntry.Category("notifications")
+    @ConfigEntry.BoundedDiscrete(min = 25, max = 150)
+    @Comment("Scale of toast notifications as percentage (50 = half size, 100 = normal size)")
+    public static int toastScale = 50;
+
+    // =====================================
+    // PROGRESS BARS
+    // =====================================
+
+    @ConfigEntry.Category("progress_bars")
+    @ConfigEntry.ColorPicker(allowAlpha = true)
+    @Comment("Color of the experience progress bar fill")
+    public static int barColor = 0xFFFFFFFF;
+
+    @ConfigEntry.Category("progress_bars")
+    @ConfigEntry.ColorPicker(allowAlpha = true)
+    @Comment("Background color of the experience progress bar")
+    public static int barBGColor = 0xFFAB5C00;
+
+    @ConfigEntry.Category("progress_bars")
+    @Comment("Visual style for progress bars")
+    public static RenderStyle renderStyle = RenderStyle.SLATE;
+
+    // =====================================
+    // GAMEPLAY SETTINGS
+    // =====================================
+
+    @ConfigEntry.Category("gameplay")
+    @ConfigEntry.BoundedDiscrete(min = 1, max = 199)
+    @Comment("The highest level players can reach")
     public static int maxLevel = 99;
 
-    @ConfigEntry.Category("statconfig_gameplay")
-    @ConfigEntry.BoundedDiscrete(min = 0, max = Long.MAX_VALUE)
+    @ConfigEntry.Category("gameplay")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 4096)
+    @Comment("Number of benefit points new players start with")
+    public static int startStatpoints = 48;
+
+    @ConfigEntry.Category("gameplay")
+    @Comment("Experience required for each level (array)")
     public static long[] EXP_MAP = {
             548L,       // level 1
             894L,       // level 2
@@ -131,40 +191,23 @@ public class ModConfig implements ConfigData {
             1252761L,   // level 98 -> 99
     };
 
-    @ConfigEntry.Category("statconfig_gameplay")
-    @ConfigEntry.BoundedDiscrete(min = 0, max = 4096)
-    public static int startStatpoints = 48;
+    // =====================================
+    // DEATH PENALTY
+    // =====================================
+
+    @ConfigEntry.Category("death_penalty")
+    @Comment("Whether players lose experience when killed by monsters")
+    public static boolean enableDeathPenalty = true;
 
     @ConfigEntry.Category("death_penalty")
     @ConfigEntry.BoundedDiscrete(min = 0, max = 1)
-    @Comment("Death penalty percentage (0.0 - 1.0). Player loses this % of next level exp when killed by monsters.")
+    @Comment("Percentage of next level experience lost on death (0.0 - 1.0)")
     public static float deathPenaltyPercentage = 0.1f;
-    @ConfigEntry.Category("death_penalty")
-    public static boolean enableDeathPenalty = true;
 
-    @ConfigEntry.Category("feature-client")
-    @Comment("Toast position: left or right side of screen (default: false)")
-    public static boolean toastPositionLeft = false;
+    // =====================================
+    // ENUMS
+    // =====================================
 
-    @ConfigEntry.Category("feature-client")
-    @ConfigEntry.BoundedDiscrete(min = 0, max = 500)
-    @Comment("Toast Y offset from top of screen (default: 20)")
-    public static int toastYOffset = 20;
-
-    @ConfigEntry.Category("feature-client")
-    @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
-    @Comment("Toast margin from screen edge (default: 0)")
-    public static int toastMargin = 0;
-    @ConfigEntry.Category("statconfig")
-    public static boolean tooltipinfo = true;
-    @ConfigEntry.Category("statconfig")
-    @ConfigEntry.ColorPicker(allowAlpha = true)
-    public static int barColor = 0xFFFFFFFF;
-    @ConfigEntry.Category("statconfig")
-    @ConfigEntry.ColorPicker(allowAlpha = true)
-    public static int barBGColor = 0xFFAB5C00;
-    @ConfigEntry.Category("statconfig")
-    public static RenderStyle renderStyle = RenderStyle.SLATE;
     public enum RenderStyle {
         BAR,
         SLATE
