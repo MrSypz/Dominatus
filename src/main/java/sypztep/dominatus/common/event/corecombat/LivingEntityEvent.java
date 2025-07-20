@@ -110,7 +110,7 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
             UUID playerId = entry.getKey();
 
             ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(playerId);
-
+            if (player == null) return;
             LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(player);
             if (levelComponent.isMaxLevel()) return;
 
