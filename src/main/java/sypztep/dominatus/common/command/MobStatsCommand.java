@@ -176,7 +176,7 @@ public class MobStatsCommand {
             source.sendError(Text.literal("No level component found for " + entity.getName().getString()));
             return;
         }
-
+        EntityStatManager statManager = levelComponent.getEntityStatManager();
         Text message;
         if (levelComponent.isPlayer()) {
             message = Text.literal(String.format(
@@ -184,14 +184,21 @@ public class MobStatsCommand {
                             "§7Level: §f%d\n" +
                             "§7Experience: §f%d\n" +
                             "§7Benefits: §f%d\n" +
-                            "§eUse player stat commands for detailed stat info.",
+                            "§7Stats:\n" +
+                            "  §7STR: §f%d §7| AGI: §f%d §7| VIT: §f%d\n" +
+                            "  §7INT: §f%d §7| DEX: §f%d §7| LUK: §f%d",
                     entity.getName().getString(),
                     levelComponent.getLevel(),
                     levelComponent.getExperience(),
-                    levelComponent.getAvailableBenefits()
+                    levelComponent.getAvailableBenefits(),
+                    statManager.getStrength() != null ? statManager.getStrength().getValue() : 0,
+                    statManager.getAgility() != null ? statManager.getAgility().getValue() : 0,
+                    statManager.getVitality() != null ? statManager.getVitality().getValue() : 0,
+                    statManager.getIntelligence() != null ? statManager.getIntelligence().getValue() : 0,
+                    statManager.getDexterity() != null ? statManager.getDexterity().getValue() : 0,
+                    statManager.getLuck() != null ? statManager.getLuck().getValue() : 0
             ));
         } else {
-            EntityStatManager statManager = levelComponent.getEntityStatManager();
             if (statManager != null) {
                 message = Text.literal(String.format(
                         "§6=== MOB STATS: %s ===\n" +

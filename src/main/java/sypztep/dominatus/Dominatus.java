@@ -6,7 +6,7 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sypztep.dominatus.common.event.applystats.MobSpawnStatsEvent;
+import sypztep.dominatus.common.event.applylivingstats.MobSpawnStatsEvent;
 import sypztep.dominatus.common.event.corecombat.LivingEntityEvent;
 import sypztep.dominatus.common.event.corecombat.PlayerEntityEvent;
 import sypztep.dominatus.common.init.*;

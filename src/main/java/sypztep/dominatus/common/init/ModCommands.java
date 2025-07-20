@@ -14,7 +14,6 @@ public final class ModCommands {
                     .then(BenefitsCommand.register())
                     .then(DebugCommand.register())
                     .then(MobStatsCommand.register())
-                    .then(MobDynamicScalingCommand.register())
                     .then(StatsPlayerCommand.register())
             );
         });
