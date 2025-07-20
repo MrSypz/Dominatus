@@ -2,6 +2,7 @@ package sypztep.dominatus.client.screen.widget;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.payload.IncreaseStatPayloadC2S;
 import sypztep.dominatus.common.system.stat.PlayerStatBehavior;
@@ -68,10 +69,14 @@ public final class IncreasePointButton extends ActionWidgetButton {
         if (stat != null) {
             this.requiredStatPoints = stat.calculateCost(pointsToIncrease);
 
-            tooltip.add(Text.of("§6" + stat.getStatName()));
-            tooltip.add(Text.of("   §7Current: §f" + ((PlayerStat<?>)stat).getValue())); // Cast to PlayerStat instead
-            tooltip.add(Text.of("   §7Cost: §e" + this.requiredStatPoints + " §7benefit points"));
-            tooltip.add(Text.of("   §7Points spent: §f" + stat.getTotalPointsSpent()));
+            tooltip.add(Text.of("§6§l" + stat.getStatName()));
+            tooltip.add(Text.literal("♣  ").formatted(Formatting.DARK_GREEN)
+                    .append(Text.literal("Current: ").formatted(Formatting.GRAY))
+                    .append(Text.literal(String.valueOf(((PlayerStat<?>)stat).getValue())).formatted(Formatting.WHITE)));
+
+            tooltip.add(Text.literal("♦  ").formatted(Formatting.RED)
+                    .append(Text.literal("Points spent: ").formatted(Formatting.GRAY))
+                    .append(Text.literal(String.valueOf(stat.getTotalPointsSpent())).formatted(Formatting.WHITE)));
 
             List<Text> descriptions = stat.getEffectDescriptionWithCost(pointsToIncrease);
             tooltip.addAll(descriptions);
