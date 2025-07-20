@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
-import sypztep.dominatus.client.screen.StatAllocationScreen;
+import sypztep.dominatus.client.screen.PlayerInfoScreen;
 
 public class ModKeyBindings {
 
@@ -26,7 +26,7 @@ public class ModKeyBindings {
     private static void handleKeyInputs(MinecraftClient client) {
         if (OPEN_STAT_SCREEN.wasPressed()) {
             if (client.player != null && client.currentScreen == null) {
-                client.setScreen(new StatAllocationScreen());
+                client.setScreen(new PlayerInfoScreen(client));
             }
         }
     }
