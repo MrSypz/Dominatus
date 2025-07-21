@@ -9,6 +9,7 @@ import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.data.MobExpEntry;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.stat.EntityStatManager;
+import sypztep.dominatus.common.world.DungeonDimension;
 
 public class MobSpawnStatsEvent implements ServerEntityEvents.Load {
 
@@ -23,6 +24,9 @@ public class MobSpawnStatsEvent implements ServerEntityEvents.Load {
         // Only apply to living entities that are not players
         if (!(entity instanceof LivingEntity livingEntity) || entity instanceof PlayerEntity) return;
 
+//        if (!world.getRegistryKey().equals(DungeonDimension.DUNGEON_WORLD)) {
+//            return;
+//        }
         // Check if we have mob data for this entity type
         MobExpEntry mobEntry = MobExpEntry.getEntry(livingEntity.getType());
         if (mobEntry == null) return;
