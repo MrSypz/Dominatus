@@ -16,7 +16,7 @@ public class LuckStat extends Stat {
     protected static final Identifier PRIMARY_MODIFIER_ID = Dominatus.id("luck_primary");
     protected static final Identifier SECONDARY_MODIFIER_ID = Dominatus.id("luck_secondary");
 
-    protected static final double CRIT_CHANCE_SCALING = 0.0025; // 0.25% per point (every 4 points = 1%)
+    protected static final double CRIT_CHANCE_SCALING = 0.003; // 0.3% per point (every 4 points = 1%)
     protected static final double MAGIC_DAMAGE_SCALING = 0.002; // 0.2% per point
     protected static final double ATTACK_SPEED_SCALING = 0.002; // 0.2% per point
 
