@@ -15,8 +15,8 @@ public class StrengthStat extends Stat {
     protected static final Identifier PRIMARY_MODIFIER_ID = Dominatus.id("strength_primary");
     protected static final Identifier SECONDARY_MODIFIER_ID = Dominatus.id("strength_secondary");
 
-    protected static final double MELEE_DAMAGE_SCALING = 0.02; // 2% per point
-    protected static final double BLOCK_BREAK_SPEED_SCALING = 0.001; // 0.1% per point
+    protected static final double MELEE_DAMAGE_SCALING = 0.05; // 5% per point
+    protected static final double BLOCK_BREAK_SPEED_SCALING = 0.025; // 0.1% per point
     protected static final double ATTACK_SPEED_SCALING = 0.002; // 0.2% per point
 
     public StrengthStat() {

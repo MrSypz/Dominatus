@@ -17,6 +17,33 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 public final class ItemStackHelper {
+    public static float getBaseWeaponAttackDamage(ItemStack itemStack) {
+        if (itemStack.isEmpty()) {
+            return 0.0f;
+        }
+
+        // Check custom modifiers first
+        AttributeModifiersComponent customModifiers = itemStack.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
+        if (!customModifiers.modifiers().isEmpty()) {
+            for (AttributeModifiersComponent.Entry entry : customModifiers.modifiers()) {
+                if (entry.attribute().equals(EntityAttributes.GENERIC_ATTACK_DAMAGE) &&
+                        entry.modifier().idMatches(Item.BASE_ATTACK_DAMAGE_MODIFIER_ID)) {
+                    return (float) entry.modifier().value();
+                }
+            }
+        }
+
+        // Check item's default modifiers
+        return itemStack.getItem()
+                .getAttributeModifiers()
+                .modifiers()
+                .stream()
+                .filter(entry -> entry.attribute().equals(EntityAttributes.GENERIC_ATTACK_DAMAGE) &&
+                        entry.modifier().idMatches(Item.BASE_ATTACK_DAMAGE_MODIFIER_ID))
+                .findFirst()
+                .map(entry -> (float) entry.modifier().value())
+                .orElse(0.0f);
+    }
     public static Map<String, Double> getAttributeAmounts(PlayerEntity player, double extraAttackDamage) {
         Map<String, Double> attributeAmounts = new HashMap<>();
 
@@ -38,7 +65,7 @@ public final class ItemStackHelper {
     private static void accumulateAttributeModifiersValue(@Nullable PlayerEntity player, ItemStack stack, Map<String, Double> attributeAmounts) {
         for (AttributeModifierSlot attributeModifierSlot : AttributeModifierSlot.values()) {
             applyAttributeModifier(attributeModifierSlot, (attribute, modifier) -> {
-                double value = calculateFinalAttributeValue(player, modifier, stack);
+                double value = calculateFinalAttributeValue(player, modifier);
                 String attributeName = attribute.value().getTranslationKey();
 
                 attributeAmounts.merge(attributeName, value, Double::sum);
@@ -46,7 +73,7 @@ public final class ItemStackHelper {
         }
     }
 
-    private static double calculateFinalAttributeValue(@Nullable PlayerEntity player, EntityAttributeModifier modifier,ItemStack stack) {
+    private static double calculateFinalAttributeValue(@Nullable PlayerEntity player, EntityAttributeModifier modifier) {
         double d = modifier.value();
         if (player != null) {
             if (modifier.idMatches(Item.BASE_ATTACK_DAMAGE_MODIFIER_ID)) {
