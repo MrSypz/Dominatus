@@ -192,9 +192,6 @@ public final class ScrollableTextList {
         }
     }
 
-
-
-
     public int getX() {
         return x;
     }
