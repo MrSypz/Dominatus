@@ -72,7 +72,7 @@ public class ModConfig implements ConfigData {
 
     @ConfigEntry.Category("progress_bars")
     @Comment("Visual style for progress bars")
-    public static RenderStyle renderStyle = RenderStyle.SLATE;
+    public static RenderStyle renderStyle = RenderStyle.BAR;
 
     // =====================================
     // GAMEPLAY SETTINGS
