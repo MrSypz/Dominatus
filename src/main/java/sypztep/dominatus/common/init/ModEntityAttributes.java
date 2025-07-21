@@ -29,8 +29,8 @@ public final class ModEntityAttributes {
     public static final RegistryEntry<EntityAttribute> PROJECTILE_ATTACK_DAMAGE = register("projectile_attack_damage", new ClampedEntityAttribute("attribute.name.projectile_attack_damage", 0, 0.0, 10.24D).setTracked(true));
 
     public static final RegistryEntry<EntityAttribute> MAGIC_RESISTANCE = register("magic_resistance", new ClampedEntityAttribute("attribute.name.magic_resistance", 0, -10.0D, 0.75D).setTracked(true));
-    public static final RegistryEntry<EntityAttribute> PHYSICAL_RESISTANCE = register("physical_resistance", new ClampedEntityAttribute("attribute.name.physical_resistance", 0, -10.0D, 0.75D).setTracked(true));
 
+    public static final RegistryEntry<EntityAttribute> HEAL_EFFECTIVE = register("heal_effective", new ClampedEntityAttribute("attribute.name.heal_effective", 0, -10.0D, 10.24D).setTracked(true));
     private static RegistryEntry<EntityAttribute> register(String id, EntityAttribute attribute) {
         RegistryEntry<EntityAttribute> entry = Registry.registerReference(Registries.ATTRIBUTE, Dominatus.id(id), attribute);
         ENTRIES.add(entry);

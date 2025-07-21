@@ -89,6 +89,7 @@ public final class PlayerInfoScreen extends Screen {
         values.put("maxhp", client.player.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH));
         values.put("dp", armor + (2.0f + armorToughness / 4.0f));
         values.put("nhrg", client.player.getAttributeValue(ModEntityAttributes.HEALTH_REGEN));
+        values.put("hef", client.player.getAttributeValue(ModEntityAttributes.HEAL_EFFECTIVE));
         values.put("eva", client.player.getAttributeValue(ModEntityAttributes.EVASION)); // Updated this line
 
         // Updated stat retrieval using PlayerStatManager
@@ -101,8 +102,6 @@ public final class PlayerInfoScreen extends Screen {
 
         values.put("mdmg", client.player.getAttributeValue(ModEntityAttributes.MAGIC_ATTACK_DAMAGE));
         values.put("mresis", client.player.getAttributeValue(ModEntityAttributes.MAGIC_RESISTANCE) * 100f);
-        values.put("physis", client.player.getAttributeValue(ModEntityAttributes.PHYSICAL_RESISTANCE) * 100f);
-        values.put("projsis", client.player.getAttributeValue(ModEntityAttributes.PHYSICAL_RESISTANCE) * 100f);
         return values;
     }
 
@@ -142,6 +141,7 @@ public final class PlayerInfoScreen extends Screen {
         listElements.add(new ListElement(Text.translatable("dominatus.info.max_health")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.defense")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.nature_health_regen")));
+        listElements.add(new ListElement(Text.translatable("dominatus.info.heal_effective")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.evasion")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.header_4"), Identifier.ofVanilla("icon/accessibility")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.strength")));
@@ -152,8 +152,6 @@ public final class PlayerInfoScreen extends Screen {
         listElements.add(new ListElement(Text.translatable("dominatus.info.luck")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.header_5"), Dominatus.id("hud/container/icon_2")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.magic_resistance")));
-        listElements.add(new ListElement(Text.translatable("dominatus.info.physical_resistance")));
-        listElements.add(new ListElement(Text.translatable("dominatus.info.projectile_resistance")));
 
         return listElements;
     }

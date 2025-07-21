@@ -40,13 +40,10 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translator.add(key + "physical", "Physical: $phyd");
         translator.add(key + "melee_damage", "Melee Damage: $meleed");
         translator.add(key + "projectile_damage", "Projectile Damage: $projd");
-        translator.add(key + "attack_power", "Attack Power: $ap");
         translator.add(key + "attack_speed", "Attack Speed: $asp");
         translator.add(key + "accuracy", "Accuracy: $acc");
         translator.add(key + "critical_damage", "Critical Damage: $cdmg %");
         translator.add(key + "critical_chance", "Critical Chance: $ccn %");
-        translator.add(key + "pve_damage", "PVE Damage: $pve");
-        translator.add(key + "pvp_damage", "PVP Damage: $pvp");
 
         // MAGIC
         translator.add(key + "magic_damage", "Magic Damage: $mdmg");
@@ -56,6 +53,7 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translator.add(key + "max_health", "Max Health: $maxhp");
         translator.add(key + "defense", "Defense: $dp");
         translator.add(key + "nature_health_regen", "Nature Health Regen: $nhrg");
+        translator.add(key + "heal_effective", "Nature Health Regen: $hef");
         translator.add(key + "evasion", "Evasion: $eva");
 
         // STATS
@@ -68,8 +66,6 @@ public class ModLanguageProvider extends FabricLanguageProvider {
 
         // RESISTANCE
         translator.add(key + "magic_resistance", "Magic Resistance: $mresis %");
-        translator.add(key + "physical_resistance", "Physical Resistance: $physis %");
-        translator.add(key + "projectile_resistance", "Projectile Resistance: $projsis %");
     }
     private void generateConfigTranslations(TranslationBuilder translator) {
         String base = "text.autoconfig.dominatus";
