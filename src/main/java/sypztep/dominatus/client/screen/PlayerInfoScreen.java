@@ -72,19 +72,15 @@ public final class PlayerInfoScreen extends Screen {
 
     private Map<String, Object> createPlayerInfoKey(MinecraftClient client) {
         Map<String, Object> values = new HashMap<>();
-        // Remove the ItemStackHelper line since it doesn't exist in Dominatus
-//         Map<String, Double> attributeAmounts = ItemStackHelper.getAttributeAmounts(client.player, playerStats.getLivingStats().getStat(StatTypes.STRENGTH).getValue() * 0.02);
 
         assert client.player != null;
         double armor = client.player.getAttributeValue(EntityAttributes.GENERIC_ARMOR);
         double armorToughness = client.player.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
-        double attackDamage = client.player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE); // Simplified this line
         PlayerStatManager statManager = playerStats.getPlayerStatManager();
 
         values.put("phyd", client.player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
         values.put("meleed", client.player.getAttributeValue(ModEntityAttributes.MELEE_ATTACK_DAMAGE));
         values.put("projd", client.player.getAttributeValue(ModEntityAttributes.PROJECTILE_ATTACK_DAMAGE));
-        values.put("ap", attackDamage);
         values.put("asp", client.player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED));
         values.put("cdmg", client.player.getAttributeValue(ModEntityAttributes.CRIT_DAMAGE) * 100f);
         values.put("ccn", client.player.getAttributeValue(ModEntityAttributes.CRIT_CHANCE) * 100f);
@@ -135,13 +131,10 @@ public final class PlayerInfoScreen extends Screen {
         listElements.add(new ListElement(Text.translatable("dominatus.info.physical")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.melee_damage")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.projectile_damage")));
-        listElements.add(new ListElement(Text.translatable("dominatus.info.attack_power")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.attack_speed")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.accuracy")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.critical_damage")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.critical_chance")));
-//        listElements.add(new ListElement(Text.translatable("dominatus.info.pve_damage"))); // Keep this even if not in language provider
-//        listElements.add(new ListElement(Text.translatable("dominatus.info.pvp_damage"))); // Keep this even if not in language provider
         listElements.add(new ListElement(Text.translatable("dominatus.info.header_2"), Dominatus.id("hud/container/icon_0")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.magic_damage")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.header_3"), Identifier.ofVanilla("hud/heart/full")));

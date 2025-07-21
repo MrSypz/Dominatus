@@ -17,15 +17,6 @@ loom {
 
 repositories {
     maven {
-        name = "αccessories"
-        url = 'https://maven.wispforest.io/releases'
-    }
-
-    maven {
-        name = "My Library"
-        url = "https://jitpack.io"
-    }
-    maven {
         name = "Cloth Config"
         url = "https://maven.shedaniel.me/"
     }
@@ -44,13 +35,6 @@ repositories {
         url = "https://api.modrinth.com/maven"
         content {
             includeGroup 'maven.modrinth'
-        }
-    }
-    maven {
-        name = "Jade"
-        url = "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
         }
     }
 }
