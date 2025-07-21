@@ -1,7 +1,6 @@
 package sypztep.dominatus.common.system.stat.elements.core;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
@@ -17,7 +16,7 @@ public class StrengthStat extends Stat {
     protected static final Identifier SECONDARY_MODIFIER_ID = Dominatus.id("strength_secondary");
 
     protected static final double MELEE_DAMAGE_SCALING = 0.02; // 2% per point
-    protected static final double CRIT_CHANCE_SCALING = 0.005; // 0.5% per point
+    protected static final double BLOCK_BREAK_SPEED_SCALING = 0.001; // 0.1% per point
     protected static final double ATTACK_SPEED_SCALING = 0.002; // 0.2% per point
 
     public StrengthStat() {
@@ -37,9 +36,9 @@ public class StrengthStat extends Stat {
     public void applySecondaryEffect(LivingEntity entity) {
         List<AttributeModification> modifications = List.of(
                 AttributeModification.addValue(
-                        ModEntityAttributes.CRIT_CHANCE,
+                        EntityAttributes.PLAYER_BLOCK_BREAK_SPEED,
                         SECONDARY_MODIFIER_ID,
-                        baseValue -> (currentValue - this.baseValue) * CRIT_CHANCE_SCALING
+                        baseValue -> (currentValue - this.baseValue) * BLOCK_BREAK_SPEED_SCALING
                 ),
                 AttributeModification.addValue(
                         EntityAttributes.GENERIC_ATTACK_SPEED,
@@ -65,8 +64,8 @@ public class StrengthStat extends Stat {
         return (currentValue - baseValue) * MELEE_DAMAGE_SCALING;
     }
 
-    public static double calculateCritChanceBonus(int currentValue, int baseValue) {
-        return (currentValue - baseValue) * CRIT_CHANCE_SCALING;
+    public static double calculateBlockBreakSpeedBonus(int currentValue, int baseValue) {
+        return (currentValue - baseValue) * BLOCK_BREAK_SPEED_SCALING;
     }
 
     public static double calculateAttackSpeedBonus(int currentValue, int baseValue) {

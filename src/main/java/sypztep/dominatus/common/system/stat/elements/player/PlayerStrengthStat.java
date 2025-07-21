@@ -20,9 +20,9 @@ public class PlayerStrengthStat extends PlayerStat<StrengthStat> {
         double futureMeleeDamage = Math.max(0, StrengthStat.calculateMeleeDamageBonus(futureValue, getBaseValue()) * 100);
         double meleeDamageIncrease = futureMeleeDamage - currentMeleeDamage;
 
-        double currentCritChance = Math.max(0, StrengthStat.calculateCritChanceBonus(getValue(), getBaseValue()) * 100);
-        double futureCritChance = Math.max(0, StrengthStat.calculateCritChanceBonus(futureValue, getBaseValue()) * 100);
-        double critChanceIncrease = futureCritChance - currentCritChance;
+        double currentBlockBreakSpeed = Math.max(0, StrengthStat.calculateBlockBreakSpeedBonus(getValue(), getBaseValue()) * 100);
+        double futureBlockBreakSpeed = Math.max(0, StrengthStat.calculateBlockBreakSpeedBonus(futureValue, getBaseValue()) * 100);
+        double blockBreakSpeedIncrease = futureBlockBreakSpeed - currentBlockBreakSpeed;
 
         double currentAttackSpeed = Math.max(0, StrengthStat.calculateAttackSpeedBonus(getValue(), getBaseValue()) * 100);
         double futureAttackSpeed = Math.max(0, StrengthStat.calculateAttackSpeedBonus(futureValue, getBaseValue()) * 100);
@@ -47,9 +47,9 @@ public class PlayerStrengthStat extends PlayerStat<StrengthStat> {
                 Text.literal(""),
 
                 Text.literal("Secondary Effects").formatted(Formatting.GOLD),
-                Text.literal("  Critical Chance: ").formatted(Formatting.GRAY)
-                        .append(Text.literal(String.format("+%.1f%%", critChanceIncrease)).formatted(Formatting.GREEN))
-                        .append(Text.literal(String.format(" (%.1f%% → %.1f%%)", currentCritChance, futureCritChance)).formatted(Formatting.DARK_GRAY)),
+                Text.literal("  Block Break Speed: ").formatted(Formatting.GRAY)
+                        .append(Text.literal(String.format("+%.1f%%", blockBreakSpeedIncrease)).formatted(Formatting.GREEN))
+                        .append(Text.literal(String.format(" (%.1f%% → %.1f%%)", currentBlockBreakSpeed, futureBlockBreakSpeed)).formatted(Formatting.DARK_GRAY)),
 
                 Text.literal("  Attack Speed: ").formatted(Formatting.GRAY)
                         .append(Text.literal(String.format("+%.1f%%", attackSpeedIncrease)).formatted(Formatting.GREEN))
