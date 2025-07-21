@@ -15,9 +15,9 @@ public class VitalityStat extends Stat {
     protected static final Identifier PRIMARY_MODIFIER_ID = Dominatus.id("vitality_primary");
     protected static final Identifier SECONDARY_MODIFIER_ID = Dominatus.id("vitality_secondary");
 
-    protected static final double MAX_HEALTH_SCALING = 0.05; // 5% per point
+    protected static final double MAX_HEALTH_SCALING = 0.01; // 1% per point
     protected static final double HEALTH_REGEN_SCALING = 0.02; // 2% per point
-    protected static final double PHYSICAL_RESISTANCE_SCALING = 0.01; // 1% per point
+    protected static final double HEALTH_EFFECTIVE_SCALING = 0.02; // 2% per point
 
     public VitalityStat() {
         super(1); // Base VIT of 1
@@ -41,9 +41,9 @@ public class VitalityStat extends Stat {
                         baseValue -> (currentValue - this.baseValue) * HEALTH_REGEN_SCALING
                 ),
                 AttributeModification.addValue(
-                        ModEntityAttributes.PHYSICAL_RESISTANCE,
+                        ModEntityAttributes.HEAL_EFFECTIVE,
                         getSecondaryModifierId(),
-                        baseValue -> (currentValue - this.baseValue) * MAX_HEALTH_SCALING
+                        baseValue -> (currentValue - this.baseValue) * HEALTH_EFFECTIVE_SCALING
                 )
         );
         applyEffects(entity, modifications);
@@ -66,7 +66,7 @@ public class VitalityStat extends Stat {
     public static double calculateHealthRegenBonus(int currentValue, int baseValue) {
         return (currentValue - baseValue) * HEALTH_REGEN_SCALING;
     }
-    public static double calculatePhysicalResistanceBonus(int currentValue, int baseValue) {
-        return (currentValue - baseValue) * PHYSICAL_RESISTANCE_SCALING;
+    public static double calculateHealEffectiveBonus(int currentValue, int baseValue) {
+        return (currentValue - baseValue) * HEALTH_EFFECTIVE_SCALING;
     }
 }

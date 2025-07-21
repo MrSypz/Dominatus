@@ -27,9 +27,9 @@ public class PlayerVitalityStat extends PlayerStat<VitalityStat> {
         double futureHealthRegen = VitalityStat.calculateHealthRegenBonus(futureValue, getBaseValue()) * 100;
         double healthRegenIncrease = futureHealthRegen - currentHealthRegen;
 
-        double currentPhysicalRes = VitalityStat.calculatePhysicalResistanceBonus(getValue(), getBaseValue()) * 100;
-        double futurePhysicalRes = VitalityStat.calculatePhysicalResistanceBonus(futureValue, getBaseValue()) * 100;
-        double physicalResIncrease = futurePhysicalRes - currentPhysicalRes;
+        double currentHealEffective = VitalityStat.calculateHealEffectiveBonus(getValue(), getBaseValue()) * 100;
+        double futureHealEffective = VitalityStat.calculateHealEffectiveBonus(futureValue, getBaseValue()) * 100;
+        double healEffectiveIncrease = futureHealEffective - currentHealEffective;
 
         return List.of(
                 Text.literal("VITALITY").formatted(Formatting.WHITE, Formatting.BOLD)
@@ -54,9 +54,9 @@ public class PlayerVitalityStat extends PlayerStat<VitalityStat> {
                         .append(Text.literal(String.format("+%.1f%%", healthRegenIncrease)).formatted(Formatting.GREEN))
                         .append(Text.literal(String.format(" (%.1f%% → %.1f%%)", currentHealthRegen, futureHealthRegen)).formatted(Formatting.DARK_GRAY)),
 
-                Text.literal("  Physical Resistance: ").formatted(Formatting.GRAY)
-                        .append(Text.literal(String.format("+%.1f%%", physicalResIncrease)).formatted(Formatting.GREEN))
-                        .append(Text.literal(String.format(" (%.1f%% → %.1f%%)", currentPhysicalRes, futurePhysicalRes)).formatted(Formatting.DARK_GRAY))
+                Text.literal("  Heal Effective: ").formatted(Formatting.GRAY)
+                        .append(Text.literal(String.format("+%.1f%%", healEffectiveIncrease)).formatted(Formatting.GREEN))
+                        .append(Text.literal(String.format(" (%.1f%% → %.1f%%)", currentHealEffective, futureHealEffective)).formatted(Formatting.DARK_GRAY))
         );
     }
 }
