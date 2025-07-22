@@ -194,7 +194,7 @@ public class PassiveSkillManager {
         if (!unlockedForStat.isEmpty()) {
             tooltip.add(Text.literal("§6Unlocked Passives:"));
             for (PassiveAbility passive : unlockedForStat) {
-                tooltip.add(Text.literal("  §a✓ ").append(passive.getName()).append(Text.literal(" §7(Lv." + passive.getRequiredStatValue() + ")")));
+                tooltip.add(Text.literal("  §a✔ ").append(passive.getName()).append(Text.literal(" §7(Lv." + passive.getRequiredStatValue() + ")")));
             }
         }
 
