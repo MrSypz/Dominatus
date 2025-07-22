@@ -5,9 +5,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.payload.IncreaseStatPayloadC2S;
+import sypztep.dominatus.common.system.stat.PlayerStat;
 import sypztep.dominatus.common.system.stat.PlayerStatBehavior;
 import sypztep.dominatus.common.system.stat.PlayerStatManager;
-import sypztep.dominatus.common.system.stat.elements.player.PlayerStat;
+import sypztep.dominatus.common.system.stat.Stat;
 
 import java.util.List;
 
@@ -36,6 +37,11 @@ public final class IncreasePointButton extends ActionWidgetButton {
 
         if (stat == null) {
             sendErrorMessage("Invalid stat: " + statName);
+            return;
+        }
+
+        if (stat instanceof PlayerStat<?> playerStat && playerStat.getValue() >= Stat.MAX_STAT_VALUE) {
+            sendErrorMessage(String.format("%s is already at maximum level (%d)!", statName, Stat.MAX_STAT_VALUE));
             return;
         }
 
@@ -69,17 +75,43 @@ public final class IncreasePointButton extends ActionWidgetButton {
         if (stat != null) {
             this.requiredStatPoints = stat.calculateCost(pointsToIncrease);
 
-            tooltip.add(Text.of("§6§l" + stat.getStatName()));
-            tooltip.add(Text.literal("♣  ").formatted(Formatting.DARK_GREEN)
-                    .append(Text.literal("Current: ").formatted(Formatting.GRAY))
-                    .append(Text.literal(String.valueOf(((PlayerStat<?>)stat).getValue())).formatted(Formatting.WHITE)));
+            boolean isMaxed = stat instanceof PlayerStat<?> playerStat && playerStat.getValue() >= Stat.MAX_STAT_VALUE;
 
-            tooltip.add(Text.literal("♦  ").formatted(Formatting.RED)
-                    .append(Text.literal("Points spent: ").formatted(Formatting.GRAY))
-                    .append(Text.literal(String.valueOf(stat.getTotalPointsSpent())).formatted(Formatting.WHITE)));
+            if (isMaxed) {
+                tooltip.add(Text.of("§6§l" + stat.getStatName() + " §c§l(MAX)"));
+                tooltip.add(Text.literal("♦  ").formatted(Formatting.GOLD)
+                        .append(Text.literal("Current: ").formatted(Formatting.GRAY))
+                        .append(Text.literal(String.valueOf(Stat.MAX_STAT_VALUE)).formatted(Formatting.GOLD)));
 
-            List<Text> descriptions = stat.getEffectDescriptionWithCost(pointsToIncrease);
-            tooltip.addAll(descriptions);
+                tooltip.add(Text.literal("♠  ").formatted(Formatting.RED)
+                        .append(Text.literal("Points spent: ").formatted(Formatting.GRAY))
+                        .append(Text.literal(String.valueOf(stat.getTotalPointsSpent())).formatted(Formatting.WHITE)));
+
+                tooltip.add(Text.literal(""));
+                tooltip.add(Text.literal("§7This stat is at maximum level!"));
+
+                // Still show what the stat does, even when maxed
+                List<Text> descriptions = stat.getEffectDescriptionWithCost(0); // Show current effects
+                if (descriptions.size() > 2) { // Skip the header and cost lines
+                    tooltip.addAll(descriptions.subList(2, descriptions.size()));
+                }
+
+                this.requiredStatPoints = Integer.MAX_VALUE; // Disable button
+            } else {
+                tooltip.add(Text.of("§6§l" + stat.getStatName()));
+                tooltip.add(Text.literal("♣  ").formatted(Formatting.DARK_GREEN)
+                        .append(Text.literal("Current: ").formatted(Formatting.GRAY))
+                        .append(Text.literal(String.valueOf(((PlayerStat<?>)stat).getValue())).formatted(Formatting.WHITE))
+                        .append(Text.literal("/").formatted(Formatting.DARK_GRAY))
+                        .append(Text.literal(String.valueOf(Stat.MAX_STAT_VALUE)).formatted(Formatting.GRAY)));
+
+                tooltip.add(Text.literal("♦  ").formatted(Formatting.RED)
+                        .append(Text.literal("Points spent: ").formatted(Formatting.GRAY))
+                        .append(Text.literal(String.valueOf(stat.getTotalPointsSpent())).formatted(Formatting.WHITE)));
+
+                List<Text> descriptions = stat.getEffectDescriptionWithCost(pointsToIncrease);
+                tooltip.addAll(descriptions);
+            }
         } else {
             tooltip.add(Text.of("§cInvalid stat: " + statName));
             this.requiredStatPoints = 1;

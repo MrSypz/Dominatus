@@ -144,8 +144,9 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         if (!(target instanceof LivingEntity)) return true;
         if (!(projectile.getOwner() instanceof LivingEntity attacker)) return true;
 
+        TextParticleProvider missParticle = LivingEntityUtil.isPlayer(attacker) ? ModParticles.MISSING : ModParticles.MISSING_MONSTER;
         if (!isHit) {
-            ParticleHandler.sendToAll(target, attacker, ModParticles.MISSING);
+            ParticleHandler.sendToAll(target, attacker, missParticle);
             return false;
         }
         return true;

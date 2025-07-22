@@ -14,7 +14,7 @@ public final class ModCommands {
                     .then(BenefitsCommand.register())
                     .then(DebugCommand.register())
                     .then(MobStatsCommand.register())
-                    .then(StatsPlayerCommand.register())
+                    .then(PlayerStatsCommand.register())
             );
         });
     }

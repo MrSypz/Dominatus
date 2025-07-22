@@ -16,6 +16,9 @@ import java.util.List;
 public abstract class ActionWidgetButton extends ClickableWidget {
     private static final int HOVER_COLOR = 0xFF4D4D4D; // Example hover color
     private static final int DEFAULT_COLOR = 0xF0292929; // Default color
+    private static final int MAXED_COLOR = 0xFF8B4513; // Brown color for maxed stats
+    private static final int DISABLED_COLOR = 0xFF333333; // Dark gray for disabled
+
     protected final List<Text> tooltip = new ArrayList<>();
     private float transitionProgress = 0.0f; // 0.0 to 1.0
     private static final float TRANSITION_SPEED = 0.1f; // Speed of the transition
@@ -34,10 +37,28 @@ public abstract class ActionWidgetButton extends ClickableWidget {
         // Use the correct method from LivingLevelComponent
         localStatPoints = stats.getAvailableBenefits(); // Changed from getStatPoints()
 
-        boolean hovered = isHovered() && localStatPoints >= requiredStatPoints; // Check against required points
-        int lineColor = (localStatPoints >= requiredStatPoints) ? 0xFFFFFFFF : 0xFF888888; // Dim color if not enough points
+        boolean isMaxedStat = requiredStatPoints == Integer.MAX_VALUE; // Special value for maxed stats
+        boolean hasEnoughPoints = localStatPoints >= requiredStatPoints;
+        boolean canInteract = hasEnoughPoints && !isMaxedStat;
+        boolean isHovering = isHovered(); // Separate hover detection from interaction
+        boolean hovered = isHovering && canInteract; // Only for visual effects
 
-        int targetColor = hovered ? HOVER_COLOR : DEFAULT_COLOR;
+        // Determine colors based on state
+        int baseColor;
+        int lineColor;
+
+        if (isMaxedStat) {
+            baseColor = MAXED_COLOR;
+            lineColor = 0xFFFFD700; // Gold color for maxed stats
+        } else if (!hasEnoughPoints) {
+            baseColor = DISABLED_COLOR;
+            lineColor = 0xFF666666; // Dim gray for insufficient points
+        } else {
+            baseColor = DEFAULT_COLOR;
+            lineColor = 0xFFFFFFFF; // White for normal state
+        }
+
+        int targetColor = hovered ? HOVER_COLOR : baseColor;
 
         // Clamp transition progress to the range [0, 1]
         transitionProgress = Math.min(Math.max(transitionProgress, 0.0f), 1.0f);
@@ -46,18 +67,24 @@ public abstract class ActionWidgetButton extends ClickableWidget {
         float easedProgress = easeOutCubic(transitionProgress);
 
         // Smoothly transition color based on eased progress
-        int currentColor = ColorUtils.interpolateColor(DEFAULT_COLOR, targetColor, easedProgress);
+        int currentColor = ColorUtils.interpolateColor(baseColor, targetColor, easedProgress);
 
-        // Draw the widget with the current color
         DrawContextUtils.drawRect(context, getX(), getY(), getWidth(), getHeight(), currentColor);
 
-        // Draw lines with conditional dimming based on available points
-        DrawContextUtils.renderHorizontalLine(context, getX() + 4, getY() + getHeight() / 2, 9, 1, 400, lineColor);
-        DrawContextUtils.renderVerticalLine(context, getX() + getWidth() / 2, getY() + 4, 9, 1, 400, lineColor);
+        if (isMaxedStat) {
+            DrawContextUtils.renderHorizontalLine(context, getX() + 3, getY() + getHeight() / 2 - 1, 10, 1, 400, lineColor);
+            DrawContextUtils.renderHorizontalLine(context, getX() + 3, getY() + getHeight() / 2 + 1, 10, 1, 400, lineColor);
+        } else {
+            DrawContextUtils.renderHorizontalLine(context, getX() + 4, getY() + getHeight() / 2, 9, 1, 400, lineColor);
+            DrawContextUtils.renderVerticalLine(context, getX() + getWidth() / 2, getY() + 4, 9, 1, 400, lineColor);
+        }
 
-        if (hovered) {
-            transitionProgress += TRANSITION_SPEED * delta;
-            if (ModConfig.tooltipinfo) // Assuming this config exists
+        // Show tooltip whenever hovering, regardless of interaction state
+        if (isHovering) {
+            if (canInteract) {
+                transitionProgress += TRANSITION_SPEED * delta;
+            }
+            if (ModConfig.tooltipinfo) // Always show tooltip when hovering
                 renderTooltip(context, mouseX, mouseY);
         } else {
             transitionProgress -= TRANSITION_SPEED * delta;
@@ -66,7 +93,9 @@ public abstract class ActionWidgetButton extends ClickableWidget {
 
     @Override
     protected boolean clicked(double mouseX, double mouseY) {
-        return super.clicked(mouseX, mouseY) && localStatPoints >= requiredStatPoints;
+        boolean isMaxedStat = requiredStatPoints == Integer.MAX_VALUE;
+        boolean hasEnoughPoints = localStatPoints >= requiredStatPoints;
+        return super.clicked(mouseX, mouseY) && hasEnoughPoints && !isMaxedStat;
     }
 
     private float easeOutCubic(float t) {

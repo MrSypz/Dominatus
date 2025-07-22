@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.stat.EntityStatManager;
+import sypztep.dominatus.common.system.stat.Stat;
 
 import java.util.Collection;
 
@@ -30,32 +31,32 @@ public class MobStatsCommand {
                 .then(CommandManager.literal("set")
                         .then(CommandManager.argument("entity", EntityArgumentType.entity())
                                 .then(CommandManager.literal("strength")
-                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1))
+                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1, Stat.MAX_STAT_VALUE))
                                                 .executes(ctx -> setMobStat(ctx, "strength"))
                                         )
                                 )
                                 .then(CommandManager.literal("agility")
-                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1))
+                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1, Stat.MAX_STAT_VALUE))
                                                 .executes(ctx -> setMobStat(ctx, "agility"))
                                         )
                                 )
                                 .then(CommandManager.literal("vitality")
-                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1))
+                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1, Stat.MAX_STAT_VALUE))
                                                 .executes(ctx -> setMobStat(ctx, "vitality"))
                                         )
                                 )
                                 .then(CommandManager.literal("intelligence")
-                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1))
+                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1, Stat.MAX_STAT_VALUE))
                                                 .executes(ctx -> setMobStat(ctx, "intelligence"))
                                         )
                                 )
                                 .then(CommandManager.literal("dexterity")
-                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1))
+                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1, Stat.MAX_STAT_VALUE))
                                                 .executes(ctx -> setMobStat(ctx, "dexterity"))
                                         )
                                 )
                                 .then(CommandManager.literal("luck")
-                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1))
+                                        .then(CommandManager.argument("value", IntegerArgumentType.integer(1, Stat.MAX_STAT_VALUE))
                                                 .executes(ctx -> setMobStat(ctx, "luck"))
                                         )
                                 )
@@ -87,6 +88,12 @@ public class MobStatsCommand {
             return 0;
         }
 
+        // Validate stat value is within bounds
+        if (value < 1 || value > Stat.MAX_STAT_VALUE) {
+            context.getSource().sendError(Text.literal(String.format("Stat value must be between 1 and %d", Stat.MAX_STAT_VALUE)));
+            return 0;
+        }
+
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(livingEntity);
         if (levelComponent == null) {
             context.getSource().sendError(Text.literal("No level component found for entity"));
@@ -110,8 +117,8 @@ public class MobStatsCommand {
             levelComponent.sync();
 
             Text message = Text.literal(String.format(
-                    "§6Set %s's %s to §f%d",
-                    livingEntity.getName().getString(), statName, value
+                    "§6Set %s's %s to §f%d §7(Max: %d)",
+                    livingEntity.getName().getString(), statName, value, Stat.MAX_STAT_VALUE
             ));
             context.getSource().sendFeedback(() -> message, true);
         } else {
@@ -184,13 +191,14 @@ public class MobStatsCommand {
                             "§7Level: §f%d\n" +
                             "§7Experience: §f%d\n" +
                             "§7Benefits: §f%d\n" +
-                            "§7Stats:\n" +
+                            "§7Stats (Max: %d):\n" +
                             "  §7STR: §f%d §7| AGI: §f%d §7| VIT: §f%d\n" +
                             "  §7INT: §f%d §7| DEX: §f%d §7| LUK: §f%d",
                     entity.getName().getString(),
                     levelComponent.getLevel(),
                     levelComponent.getExperience(),
                     levelComponent.getAvailableBenefits(),
+                    Stat.MAX_STAT_VALUE,
                     statManager.getStrength() != null ? statManager.getStrength().getValue() : 0,
                     statManager.getAgility() != null ? statManager.getAgility().getValue() : 0,
                     statManager.getVitality() != null ? statManager.getVitality().getValue() : 0,
@@ -204,12 +212,13 @@ public class MobStatsCommand {
                         "§6=== MOB STATS: %s ===\n" +
                                 "§7Level: §f%d\n" +
                                 "§7Experience: §f%d\n" +
-                                "§7Stats:\n" +
+                                "§7Stats (Max: %d):\n" +
                                 "  §7STR: §f%d §7| AGI: §f%d §7| VIT: §f%d\n" +
                                 "  §7INT: §f%d §7| DEX: §f%d §7| LUK: §f%d",
                         entity.getName().getString(),
                         levelComponent.getLevel(),
                         levelComponent.getExperience(),
+                        Stat.MAX_STAT_VALUE,
                         statManager.getStrength() != null ? statManager.getStrength().getValue() : 0,
                         statManager.getAgility() != null ? statManager.getAgility().getValue() : 0,
                         statManager.getVitality() != null ? statManager.getVitality().getValue() : 0,

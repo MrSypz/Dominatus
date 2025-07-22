@@ -2,6 +2,7 @@ package sypztep.dominatus.common.system.stat.elements.player;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import sypztep.dominatus.common.system.stat.PlayerStat;
 import sypztep.dominatus.common.system.stat.elements.core.StrengthStat;
 
 import java.util.List;

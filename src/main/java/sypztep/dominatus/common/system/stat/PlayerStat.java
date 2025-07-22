@@ -1,14 +1,13 @@
-package sypztep.dominatus.common.system.stat.elements.player;
+package sypztep.dominatus.common.system.stat;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import sypztep.dominatus.client.payload.SendToastPayloadS2C;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.level.core.LevelData;
-import sypztep.dominatus.common.system.stat.PlayerStatBehavior;
-import sypztep.dominatus.common.system.stat.Stat;
 
 import java.util.List;
 
@@ -67,6 +66,27 @@ public abstract class PlayerStat<T extends Stat> implements PlayerStatBehavior {
     @Override
     public boolean increaseWithPoints(ServerPlayerEntity player, int points) {
         if (points <= 0) return false;
+
+        // Check if stat is already maxed
+        if (coreStat.isMaxed()) {
+            SendToastPayloadS2C.sendError(player, String.format("%s is already at maximum level (%d)!",
+                    statDisplayName, Stat.MAX_STAT_VALUE));
+            return false;
+        }
+
+        // Check if increasing would exceed the cap
+        int currentValue = getValue();
+        int maxIncrease = Stat.MAX_STAT_VALUE - currentValue;
+        if (points > maxIncrease) {
+            if (maxIncrease > 0) {
+                SendToastPayloadS2C.sendError(player, String.format("Can only increase %s by %d more points (max: %d)!",
+                        statDisplayName, maxIncrease, Stat.MAX_STAT_VALUE));
+            } else {
+                SendToastPayloadS2C.sendError(player, String.format("%s is already at maximum level (%d)!",
+                        statDisplayName, Stat.MAX_STAT_VALUE));
+            }
+            return false;
+        }
 
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(player);
         LevelData levelData = levelComponent.getLevelData();

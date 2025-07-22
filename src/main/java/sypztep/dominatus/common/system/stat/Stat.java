@@ -19,6 +19,7 @@ import java.util.function.ToDoubleFunction;
 public abstract class Stat implements StatEffect {
     protected final int baseValue;
     protected int currentValue;
+    public static final int MAX_STAT_VALUE = 99; // Stat cap
 
     public Stat(int baseValue) {
         this.baseValue = baseValue;
@@ -41,14 +42,14 @@ public abstract class Stat implements StatEffect {
      * Direct stat setting (for monsters, admin commands, or equipment bonuses)
      */
     public void setValue(int value) {
-        this.currentValue = Math.max(baseValue, value);
+        this.currentValue = Math.max(baseValue, Math.min(value, MAX_STAT_VALUE));
     }
 
     /**
      * Add to current value (for temporary bonuses, level scaling, etc.)
      */
     public void addValue(int bonus) {
-        this.currentValue += bonus;
+        setValue(currentValue + bonus);
     }
 
     /**
@@ -58,12 +59,19 @@ public abstract class Stat implements StatEffect {
         this.currentValue = baseValue;
     }
 
+    /**
+     * Check if stat is at maximum value
+     */
+    public boolean isMaxed() {
+        return currentValue >= MAX_STAT_VALUE;
+    }
+
     // ====================
     // NBT PERSISTENCE (Simple)
     // ====================
 
     public void readFromNbt(NbtCompound tag) {
-        this.currentValue = tag.getInt("CurrentValue");
+        this.currentValue = Math.min(tag.getInt("CurrentValue"), MAX_STAT_VALUE);
     }
 
     public void writeToNbt(NbtCompound tag) {
