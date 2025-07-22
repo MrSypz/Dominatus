@@ -1,4 +1,4 @@
-package sypztep.dominatus.mixin.vanilla;
+package sypztep.dominatus.mixin.vanilla.vitalitybonus;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

@@ -30,25 +30,25 @@ public class ModMobDataGenerator implements DataProvider {
         CompletableFuture<?>[] futures = new CompletableFuture[]{
                 // === HOSTILE MOBS (Level 5-15) ===
                 // Basic undead (warrior type)
-                createMobExpFile(writer, EntityType.ZOMBIE, MobExpEntry.warrior(5, 8)),
-                createMobExpFile(writer, EntityType.ZOMBIE_VILLAGER, MobExpEntry.warrior(6, 8)),
-                createMobExpFile(writer, EntityType.HUSK, MobExpEntry.warrior(6, 9)),
-                createMobExpFile(writer, EntityType.DROWNED, MobExpEntry.warrior(7, 10)),
+                createMobExpFile(writer, EntityType.ZOMBIE, MobExpEntry.warrior(50, 5)),
+                createMobExpFile(writer, EntityType.ZOMBIE_VILLAGER, MobExpEntry.warrior(50, 5)),
+                createMobExpFile(writer, EntityType.HUSK, MobExpEntry.warrior(120, 15)),
+                createMobExpFile(writer, EntityType.DROWNED, MobExpEntry.warrior(70, 12)),
 
                 // Ranged attackers (archer type)
-                createMobExpFile(writer, EntityType.SKELETON, MobExpEntry.archer(5, 8)),
-                createMobExpFile(writer, EntityType.STRAY, MobExpEntry.archer(6, 9)),
+                createMobExpFile(writer, EntityType.SKELETON, MobExpEntry.archer(220, 15)),
+                createMobExpFile(writer, EntityType.STRAY, MobExpEntry.archer(250, 18)),
 
                 // Agile mobs
-                createMobExpFile(writer, EntityType.SPIDER, MobExpEntry.archer(5, 7)),
-                createMobExpFile(writer, EntityType.CAVE_SPIDER, MobExpEntry.archer(6, 6)),
+                createMobExpFile(writer, EntityType.SPIDER, MobExpEntry.archer(150, 8)),
+                createMobExpFile(writer, EntityType.CAVE_SPIDER, MobExpEntry.archer(120, 6)),
 
                 // Explosive/special
-                createMobExpFile(writer, EntityType.CREEPER, MobExpEntry.withLevelStats(8, 10)),
+                createMobExpFile(writer, EntityType.CREEPER, MobExpEntry.withLevelStats(350, 20)),
 
                 // Magic users
-                createMobExpFile(writer, EntityType.WITCH, MobExpEntry.mage(12, 15)),
-                createMobExpEntry(writer, EntityType.ENDERMAN, 15, 20, 18, 25, 15, 30, 18, 22), // Teleporting entity
+                createMobExpEntry(writer, EntityType.WITCH, 1100, 30,5,15,30,45,40,20),
+                createMobExpEntry(writer, EntityType.ENDERMAN, 1750, 15, 18, 25, 15, 30, 18, 22), // Teleporting entity
 
                 // === NETHER MOBS (Level 15-25) ===
                 createMobExpFile(writer, EntityType.ZOMBIFIED_PIGLIN, MobExpEntry.warrior(8, 15)),

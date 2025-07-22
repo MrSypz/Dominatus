@@ -6,14 +6,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import sypztep.dominatus.client.util.TextParticleProvider;
 import sypztep.dominatus.common.api.entity.DominatusLivingEntityEvents;
 import sypztep.dominatus.common.api.entity.DominatusPlayerEntityEvents;
+import sypztep.dominatus.common.api.entity.DominatusProjectileEvents;
 import sypztep.dominatus.common.component.living.DamageTrackerComponent;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityAttributes;
@@ -27,7 +30,11 @@ import sypztep.dominatus.common.util.level.ExpUtil;
 import java.util.Map;
 import java.util.UUID;
 
-public final class LivingEntityEvent implements DominatusLivingEntityEvents.PostArmorDamage, ServerLivingEntityEvents.AllowDamage, ServerLivingEntityEvents.AfterDeath, ServerEntityEvents.Load {
+public final class LivingEntityEvent implements DominatusLivingEntityEvents.PostArmorDamage,
+        ServerLivingEntityEvents.AllowDamage,
+        ServerLivingEntityEvents.AfterDeath,
+        DominatusProjectileEvents.AllowProjectileHit,
+        ServerEntityEvents.Load {
     private static final LivingEntityEvent INSTANCE = new LivingEntityEvent();
 
     public static void register() {
@@ -35,13 +42,17 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         DominatusLivingEntityEvents.POST_ARMOR_DAMAGE.register(INSTANCE);
         ServerEntityEvents.ENTITY_LOAD.register(INSTANCE);
         ServerLivingEntityEvents.AFTER_DEATH.register(INSTANCE);
+        DominatusProjectileEvents.ALLOW_PROJECTILE_HIT.register(INSTANCE);
     }
+    private boolean isHit;
 
     @Override
     public boolean allowDamage(LivingEntity target, DamageSource source, float amount) {
         if (!(source.getAttacker() instanceof LivingEntity attacker)) return true;
         if (!LivingEntityUtil.isHitable(target, source)) return false;
-        if (LivingEntityUtil.hitCheck(attacker, target)) return true;
+        isHit = LivingEntityUtil.hitCheck(attacker, target);
+        if (isHit) return true;
+
 
         TextParticleProvider missParticle = LivingEntityUtil.isPlayer(attacker) ? ModParticles.MISSING : ModParticles.MISSING_MONSTER;
 
@@ -128,7 +139,17 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         });
         tracker.clearDamage();
     }
+    @Override
+    public boolean allowHit(ProjectileEntity projectile, Entity target, EntityHitResult hitResult) {
+        if (!(target instanceof LivingEntity)) return true;
+        if (!(projectile.getOwner() instanceof LivingEntity attacker)) return true;
 
+        if (!isHit) {
+            ParticleHandler.sendToAll(target, attacker, ModParticles.MISSING);
+            return false;
+        }
+        return true;
+    }
     @Override
     public void onLoad(Entity entity, ServerWorld serverWorld) {
         if (!(entity instanceof LivingEntity livingEntity) || livingEntity instanceof PlayerEntity) return;

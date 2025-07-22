@@ -42,23 +42,23 @@ public record MobExpEntry(
 
         // Constructor for specialized mob types
         public static MobStats warrior(int level) {
-            return new MobStats(level + 2, level, level + 1, level - 1, level, level);
+            return new MobStats(level + 2, level, level + 5, level - 5, level, level + 5);
         }
 
         public static MobStats archer(int level) {
-            return new MobStats(level, level + 2, level, level, level + 2, level + 1);
+            return new MobStats(level, level + 8, level, level, level + 5, level + 8);
         }
 
         public static MobStats mage(int level) {
-            return new MobStats(level - 1, level, level, level + 3, level, level + 1);
+            return new MobStats(level - 1, level, level, level + 8, level, level + 10);
         }
 
         public static MobStats tank(int level) {
-            return new MobStats(level + 1, level - 1, level + 3, level, level, level);
+            return new MobStats(level + 1, level - 5, level + 8, level, level, level + 2);
         }
 
         public static MobStats boss(int level) {
-            return new MobStats(level + 5, level + 3, level + 5, level + 3, level + 3, level + 3);
+            return new MobStats(level + 15, level + 13, level + 15, level + 13, level + 13, level + 13);
         }
 
         @Override

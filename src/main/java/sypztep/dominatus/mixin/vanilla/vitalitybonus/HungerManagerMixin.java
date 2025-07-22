@@ -1,4 +1,4 @@
-package sypztep.dominatus.mixin.vanilla;
+package sypztep.dominatus.mixin.vanilla.vitalitybonus;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.entity.player.HungerManager;

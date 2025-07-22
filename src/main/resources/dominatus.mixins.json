@@ -7,8 +7,13 @@
     "api.event.LivingEntityMixin",
     "api.event.PlayerEntityMixin",
     "core.registry.attribute.LivingEntityMixin",
-    "vanilla.HungerManagerMixin",
-    "vanilla.LivingEntityMixin"
+    "vanilla.projectileclip.EggEntityMixin",
+    "vanilla.projectileclip.PersistentProjectileEntityMixin",
+    "vanilla.projectileclip.SmallFireballEntityMixin",
+    "vanilla.projectileclip.SnowballEntityMixin",
+    "vanilla.projectileclip.TridentEntityMixin",
+    "vanilla.vitalitybonus.HungerManagerMixin",
+    "vanilla.vitalitybonus.LivingEntityMixin"
   ],
   "client": [
   ],
