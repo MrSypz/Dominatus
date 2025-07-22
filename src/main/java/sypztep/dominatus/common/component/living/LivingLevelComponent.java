@@ -10,6 +10,7 @@ import sypztep.dominatus.common.system.level.config.LevelConfigs;
 import sypztep.dominatus.common.system.level.core.EntityLevelData;
 import sypztep.dominatus.common.system.level.core.LevelData;
 import sypztep.dominatus.common.system.level.core.PlayerLevelData;
+import sypztep.dominatus.common.system.skill.PassiveSkillManager;
 import sypztep.dominatus.common.system.stat.EntityStatManager;
 import sypztep.dominatus.common.system.stat.PlayerStatManager;
 
@@ -20,6 +21,10 @@ public class LivingLevelComponent implements AutoSyncedComponent {
     // Separate stat managers for different entity types
     private final EntityStatManager entityStatManager;
     private final PlayerStatManager playerStatManager;
+
+    // Passive skill system (only for players)
+    private final PassiveSkillManager passiveSkillManager;
+
     private final boolean isPlayer;
 
     public LivingLevelComponent(LivingEntity living) {
@@ -30,10 +35,12 @@ public class LivingLevelComponent implements AutoSyncedComponent {
             this.levelData = new PlayerLevelData(LevelConfigs.CHARACTER);
             this.playerStatManager = new PlayerStatManager();
             this.entityStatManager = null;
+            this.passiveSkillManager = new PassiveSkillManager();
         } else {
             this.levelData = new EntityLevelData(LevelConfigs.CHARACTER);
             this.entityStatManager = new EntityStatManager();
             this.playerStatManager = null;
+            this.passiveSkillManager = null;
         }
     }
 
@@ -81,11 +88,42 @@ public class LivingLevelComponent implements AutoSyncedComponent {
         return playerStatManager;
     }
 
+    // ====================
+    // PASSIVE SKILL SYSTEM ACCESS
+    // ====================
+
+    public PassiveSkillManager getPassiveSkillManager() {
+        return passiveSkillManager;
+    }
+
+    /**
+     * Check for new passive unlocks when a stat changes
+     */
+    public void checkPassiveUnlocks(String statType, int newStatValue) {
+        if (isPlayer && passiveSkillManager != null) {
+            passiveSkillManager.checkForNewUnlocks(living, statType, newStatValue);
+        }
+    }
+
     public void applyAllStatEffects() {
         if (isPlayer && playerStatManager != null) {
             playerStatManager.applyAllEffects(living);
+
+            // Apply passive abilities
+            if (passiveSkillManager != null) {
+                passiveSkillManager.applyAllPassives(living);
+            }
         } else if (!isPlayer && entityStatManager != null) {
             entityStatManager.applyAllEffects(living);
+        }
+    }
+
+    /**
+     * Remove all stat effects (for respawn, etc.)
+     */
+    public void removeAllStatEffects() {
+        if (isPlayer && passiveSkillManager != null) {
+            passiveSkillManager.removeAllPassives(living);
         }
     }
 
@@ -110,6 +148,11 @@ public class LivingLevelComponent implements AutoSyncedComponent {
 
         if (isPlayer && playerStatManager != null) {
             playerStatManager.readFromNbt(nbtCompound);
+
+            // Load passive skills
+            if (passiveSkillManager != null) {
+                passiveSkillManager.readFromNbt(nbtCompound);
+            }
         } else if (!isPlayer && entityStatManager != null) {
             entityStatManager.readFromNbt(nbtCompound);
         }
@@ -121,6 +164,11 @@ public class LivingLevelComponent implements AutoSyncedComponent {
 
         if (isPlayer && playerStatManager != null) {
             playerStatManager.writeToNbt(nbtCompound);
+
+            // Save passive skills
+            if (passiveSkillManager != null) {
+                passiveSkillManager.writeToNbt(nbtCompound);
+            }
         } else if (!isPlayer && entityStatManager != null) {
             entityStatManager.writeToNbt(nbtCompound);
         }

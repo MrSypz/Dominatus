@@ -96,13 +96,33 @@ public abstract class PlayerStat<T extends Stat> implements PlayerStatBehavior {
             return false;
         }
 
+        int oldValue = getValue();
         setValue(getValue() + points);
         this.totalPointsSpent += cost;
 
         applyPrimaryEffect(player);
         applySecondaryEffect(player);
 
+        // Check for new passive skill unlocks
+        String statType = getStatTypeFromDisplayName(statDisplayName);
+        levelComponent.checkPassiveUnlocks(statType, getValue());
+
         return true;
+    }
+
+    /**
+     * Convert display name to stat type for passive skill system
+     */
+    private String getStatTypeFromDisplayName(String displayName) {
+        return switch (displayName.toLowerCase()) {
+            case "strength" -> "strength";
+            case "agility" -> "agility";
+            case "vitality" -> "vitality";
+            case "intelligence" -> "intelligence";
+            case "dexterity" -> "dexterity";
+            case "luck" -> "luck";
+            default -> displayName.toLowerCase();
+        };
     }
 
     @Override

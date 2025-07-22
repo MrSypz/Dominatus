@@ -40,6 +40,7 @@ public final class IncreasePointButton extends ActionWidgetButton {
             return;
         }
 
+        // Check if stat is maxed
         if (stat instanceof PlayerStat<?> playerStat && playerStat.getValue() >= Stat.MAX_STAT_VALUE) {
             sendErrorMessage(String.format("%s is already at maximum level (%d)!", statName, Stat.MAX_STAT_VALUE));
             return;
@@ -112,9 +113,31 @@ public final class IncreasePointButton extends ActionWidgetButton {
                 List<Text> descriptions = stat.getEffectDescriptionWithCost(pointsToIncrease);
                 tooltip.addAll(descriptions);
             }
+
+            // Add passive skill progression information
+            addPassiveSkillTooltip(statName, ((PlayerStat<?>)stat).getValue());
+
         } else {
             tooltip.add(Text.of("§cInvalid stat: " + statName));
             this.requiredStatPoints = 1;
+        }
+    }
+
+    /**
+     * Add passive skill progression information to tooltip
+     */
+    private void addPassiveSkillTooltip(String statName, int currentStatValue) {
+        if (stats == null || stats.getPassiveSkillManager() == null) {
+            return;
+        }
+
+        List<Text> passiveTooltip = stats.getPassiveSkillManager()
+                .createStatProgressionTooltip(statName, currentStatValue);
+
+        if (!passiveTooltip.isEmpty()) {
+            tooltip.add(Text.literal(""));
+            tooltip.add(Text.literal("§5§l⚡ PASSIVE ABILITIES ⚡"));
+            tooltip.addAll(passiveTooltip);
         }
     }
 

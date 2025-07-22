@@ -44,14 +44,12 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         ServerLivingEntityEvents.AFTER_DEATH.register(INSTANCE);
         DominatusProjectileEvents.ALLOW_PROJECTILE_HIT.register(INSTANCE);
     }
-    private boolean isHit;
 
     @Override
     public boolean allowDamage(LivingEntity target, DamageSource source, float amount) {
         if (!(source.getAttacker() instanceof LivingEntity attacker)) return true;
         if (!LivingEntityUtil.isHitable(target, source)) return false;
-        isHit = LivingEntityUtil.hitCheck(attacker, target);
-        if (isHit) return true;
+        if (LivingEntityUtil.hitCheck(attacker, target)) return true;
 
 
         TextParticleProvider missParticle = LivingEntityUtil.isPlayer(attacker) ? ModParticles.MISSING : ModParticles.MISSING_MONSTER;
@@ -141,11 +139,11 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
     }
     @Override
     public boolean allowHit(ProjectileEntity projectile, Entity target, EntityHitResult hitResult) {
-        if (!(target instanceof LivingEntity)) return true;
+        if (!(target instanceof LivingEntity livingTarget)) return true;
         if (!(projectile.getOwner() instanceof LivingEntity attacker)) return true;
 
         TextParticleProvider missParticle = LivingEntityUtil.isPlayer(attacker) ? ModParticles.MISSING : ModParticles.MISSING_MONSTER;
-        if (!isHit) {
+        if (!LivingEntityUtil.hitCheck(attacker, livingTarget)) {
             ParticleHandler.sendToAll(target, attacker, missParticle);
             return false;
         }
