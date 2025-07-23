@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ToastRenderer {
-
-    // Constants
     private static final int TOAST_PADDING = 8;
     private static final int TOAST_SPACING = 2;
     private static final int MIN_TOAST_WIDTH = 200;
@@ -39,8 +37,7 @@ public final class ToastRenderer {
     /**
      * Render a list of toasts with proper scaling and positioning
      */
-    private static void renderToastList(DrawContext context, TextRenderer textRenderer,
-                                        List<ToastNotification> toasts, int screenWidth) {
+    private static void renderToastList(DrawContext context, TextRenderer textRenderer, List<ToastNotification> toasts, int screenWidth) {
 
         float toastScale = ModConfig.toastScale / 100.0f;
         int currentY = ModConfig.toastYOffset;
@@ -74,25 +71,14 @@ public final class ToastRenderer {
         float scaledMargin = ModConfig.toastMargin / scale;
         float scaledSlideOffset = slideOffset / scale;
 
-        return ModConfig.toastPositionLeft
-                ? (int) (scaledMargin - scaledSlideOffset)
-                : (int) (scaledScreenWidth - toastWidth - scaledMargin + scaledSlideOffset);
+        return ModConfig.toastPositionLeft ? (int) (scaledMargin - scaledSlideOffset) : (int) (scaledScreenWidth - toastWidth - scaledMargin + scaledSlideOffset);
     }
 
     /**
      * Render a single toast notification
      */
-    private static void renderSingleToast(DrawContext context, TextRenderer textRenderer,
-                                          ToastNotification toast, int x, int y, ToastDimensions dimensions) {
-
-        // Extract colors using pattern matching (Java 21 feature)
-        ToastColors colors = new ToastColors(
-                toast.getBackgroundColor(),
-                toast.getBorderColor(),
-                toast.getTextColor(),
-                toast.getProgressBarColor(),
-                toast.getProgressBarBackgroundColor()
-        );
+    private static void renderSingleToast(DrawContext context, TextRenderer textRenderer, ToastNotification toast, int x, int y, ToastDimensions dimensions) {
+        ToastColors colors = new ToastColors(toast.getBackgroundColor(), toast.getBorderColor(), toast.getTextColor(), toast.getProgressBarColor(), toast.getProgressBarBackgroundColor());
 
         // Render background
         context.fill(x, y, x + dimensions.width(), y + dimensions.height(), colors.background());
@@ -111,18 +97,15 @@ public final class ToastRenderer {
      * Render toast border based on position configuration
      */
     private static void renderBorder(DrawContext context, int x, int y, ToastDimensions dimensions, int borderColor) {
-        if (ModConfig.toastPositionLeft) {
-            context.fill(x + dimensions.width() - BORDER_SIZE, y, x + dimensions.width(), y + dimensions.height(), borderColor);
-        } else {
-            context.fill(x, y, x + BORDER_SIZE, y + dimensions.height(), borderColor);
-        }
+        if (ModConfig.toastPositionLeft) context.fill(x + dimensions.width() - BORDER_SIZE, y, x + dimensions.width(), y + dimensions.height(), borderColor);
+
+         else context.fill(x, y, x + BORDER_SIZE, y + dimensions.height(), borderColor);
     }
 
     /**
      * Render progress bar at bottom of toast
      */
-    private static void renderProgressBar(DrawContext context, int x, int y, ToastDimensions dimensions,
-                                          float remainingProgress, ToastColors colors) {
+    private static void renderProgressBar(DrawContext context, int x, int y, ToastDimensions dimensions, float remainingProgress, ToastColors colors) {
         int progressBarY = y + dimensions.height() - PROGRESS_BAR_HEIGHT;
 
         // Background
@@ -136,8 +119,7 @@ public final class ToastRenderer {
     /**
      * Render text with word wrapping and proper line spacing
      */
-    private static void renderToastText(DrawContext context, TextRenderer textRenderer, Text message,
-                                        int x, int y, ToastDimensions dimensions, int textColor) {
+    private static void renderToastText(DrawContext context, TextRenderer textRenderer, Text message, int x, int y, ToastDimensions dimensions, int textColor) {
         List<String> lines = dimensions.lines();
 
         int currentY = y + TOAST_PADDING;
@@ -154,13 +136,9 @@ public final class ToastRenderer {
         String text = message.getString();
         int availableWidth = MAX_TOAST_WIDTH - (TOAST_PADDING * 2);
 
-        // Calculate wrapped text dimensions
         List<String> lines = wrapText(textRenderer, text, availableWidth);
 
-        int contentWidth = lines.stream()
-                .mapToInt(textRenderer::getWidth)
-                .max()
-                .orElse(0);
+        int contentWidth = lines.stream().mapToInt(textRenderer::getWidth).max().orElse(0);
 
         int contentHeight = lines.size() * textRenderer.fontHeight + (lines.size() - 1) * 2; // 2px line spacing
 
@@ -191,33 +169,23 @@ public final class ToastRenderer {
             for (String word : words) {
                 String testLine = currentLine.isEmpty() ? word : currentLine + " " + word;
 
-                if (textRenderer.getWidth(testLine) <= maxWidth) {
-                    currentLine = new StringBuilder(testLine);
-                } else {
+                if (textRenderer.getWidth(testLine) <= maxWidth) currentLine = new StringBuilder(testLine);
+                else {
                     if (!currentLine.isEmpty()) {
                         lines.add(currentLine.toString());
                         currentLine = new StringBuilder(word);
-                    } else {
-                        lines.add(word);
-                    }
+                    } else lines.add(word);
                 }
             }
 
-            if (!currentLine.isEmpty()) {
-                lines.add(currentLine.toString());
-            }
+            if (!currentLine.isEmpty()) lines.add(currentLine.toString());
+
         }
 
         return lines;
     }
 
-    public record ToastDimensions(int width, int height, int contentWidth, int contentHeight, List<String> lines) {}
+    public record ToastDimensions(int width, int height, int contentWidth, int contentHeight, List<String> lines) {    }
 
-    private record ToastColors(
-            int background,
-            int border,
-            int text,
-            int progressBar,
-            int progressBarBg
-    ) {}
+    private record ToastColors(int background, int border, int text, int progressBar, int progressBarBg) {    }
 }
