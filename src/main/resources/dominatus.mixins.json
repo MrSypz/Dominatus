@@ -7,6 +7,8 @@
     "api.event.LivingEntityMixin",
     "api.event.PlayerEntityMixin",
     "core.registry.attribute.LivingEntityMixin",
+    "passive.shadowstep.PlayerEntityMixin",
+    "passive.windwalker.LivingEntityMixin",
     "vanilla.projectileclip.EggEntityMixin",
     "vanilla.projectileclip.PersistentProjectileEntityMixin",
     "vanilla.projectileclip.SmallFireballEntityMixin",
