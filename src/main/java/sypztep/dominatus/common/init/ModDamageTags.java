@@ -5,7 +5,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import sypztep.dominatus.Dominatus;
 
-public class ModDamageTags {
+public final class ModDamageTags {
     public static final TagKey<DamageType> PHYSICAL_DAMAGE = TagKey.of(RegistryKeys.DAMAGE_TYPE, Dominatus.id("physical_damage"));
     public static final TagKey<DamageType> MELEE_DAMAGE = TagKey.of(RegistryKeys.DAMAGE_TYPE, Dominatus.id("melee_damage"));
     public static final TagKey<DamageType> MAGIC_DAMAGE = TagKey.of(RegistryKeys.DAMAGE_TYPE, Dominatus.id("magic_damage"));

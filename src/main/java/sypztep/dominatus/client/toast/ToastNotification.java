@@ -4,7 +4,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 import sypztep.dominatus.ModConfig;
 
-public class ToastNotification {
+public final class ToastNotification {
     // Animation states
     public enum AnimationState {
         SLIDING_IN,

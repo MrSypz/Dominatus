@@ -14,7 +14,8 @@ import sypztep.dominatus.common.component.living.DamageTrackerComponent;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModEntityComponents;
-import sypztep.dominatus.common.init.ModParticles;
+import sypztep.dominatus.common.init.ModCustomParticles;
+import sypztep.dominatus.common.system.skill.PassiveSkillManager;
 import sypztep.dominatus.common.util.LivingEntityUtil;
 import sypztep.dominatus.common.util.ParticleHandler;
 
@@ -44,7 +45,7 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
         if (!LivingEntityUtil.isHitable(livingTarget, damageSource)) return false;
 
         if (!LivingEntityUtil.hitCheck(player, livingTarget)) {
-            ParticleHandler.sendToAll(target, player, ModParticles.MISSING);
+            ParticleHandler.sendToAll(target, player, ModCustomParticles.MISSING);
             target.getWorld().playSound(null, target.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_NODAMAGE, target.getSoundCategory());
             return false;
         }
@@ -54,7 +55,7 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
     @Override
     public boolean modifyCondition(PlayerEntity player, Entity target, boolean vanillaCrit) {
         boolean isCrit = LivingEntityUtil.critCheck(player);
-        if (isCrit) ParticleHandler.sendToAll(target, player, ModParticles.CRITICAL);
+        if (isCrit) ParticleHandler.sendToAll(target, player, ModCustomParticles.CRITICAL);
         return isCrit;
     }
 
@@ -94,6 +95,14 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
     @Override
     public void afterRespawn(ServerPlayerEntity oldPlayer, ServerPlayerEntity newPlayer, boolean alive) {
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(newPlayer);
+
+        PassiveSkillManager passiveManager = levelComponent.getPassiveSkillManager();
+        if (passiveManager != null) {
+            levelComponent.removeAllStatEffects();
+            levelComponent.applyAllStatEffects();
+        }
+
+        // Apply stat effects
         levelComponent.applyAllStatEffects();
         levelComponent.sync();
         newPlayer.setHealth(newPlayer.getMaxHealth());

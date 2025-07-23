@@ -6,7 +6,7 @@ import sypztep.dominatus.ModConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ToastManager {
+public final class ToastManager {
     private static final ToastManager INSTANCE = new ToastManager();
 
     private static final int MAX_TOASTS = 5;
