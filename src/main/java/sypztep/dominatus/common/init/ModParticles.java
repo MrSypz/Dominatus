@@ -1,23 +1,16 @@
 package sypztep.dominatus.common.init;
 
-import net.minecraft.text.Text;
-import sypztep.dominatus.ModConfig;
-import sypztep.dominatus.client.util.TextParticleProvider;
+import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import sypztep.dominatus.Dominatus;
 
-import java.awt.Color;
-
-public final class ModParticles {
-    public ModParticles() {
+public class ModParticles {
+    public static final SimpleParticleType AIRHIKE = add("airhike");
+    public static void init() {
     }
-
-    public static TextParticleProvider CRITICAL;
-    public static TextParticleProvider MISSING;
-    public static TextParticleProvider MISSING_MONSTER;
-    public static TextParticleProvider BACKATTACK;
-    static {
-        CRITICAL = TextParticleProvider.register(Text.translatable("dominatus.text.critical"), new Color(ModConfig.critDamageColor), -0.055f, -0.045F, () -> ModConfig.damageCritIndicator);
-        MISSING = TextParticleProvider.register(Text.translatable("dominatus.text.missing"), new Color(1f, 1f, 1f), -0.045f, -0.085F, () -> ModConfig.missingIndicator);
-        MISSING_MONSTER = TextParticleProvider.register(Text.translatable("dominatus.text.missing"), new Color(255,  28, 28),-0.045F,-0.085F, () -> ModConfig.missingIndicator);
-        BACKATTACK = TextParticleProvider.register(Text.translatable("dominatus.text.back"), new Color(1f,1f,1f),-0.035f,0.3f, () -> ModConfig.damageCritIndicator);
+    private static SimpleParticleType add(String name) {
+        return Registry.register(Registries.PARTICLE_TYPE, Dominatus.id(name), FabricParticleTypes.simple());
     }
 }
