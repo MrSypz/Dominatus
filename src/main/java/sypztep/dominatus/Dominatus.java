@@ -25,7 +25,7 @@ public class Dominatus implements ModInitializer {
     public void onInitialize() {
         ModPayloads.init();
         ModCommands.init();
-
+        ModParticles.init();
 
         LivingEntityEvent.register();
         PlayerEntityEvent.register();
