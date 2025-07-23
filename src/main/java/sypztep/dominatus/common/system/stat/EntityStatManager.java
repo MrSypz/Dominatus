@@ -19,10 +19,6 @@ public class EntityStatManager {
         stats.put("luck", new LuckStat());
     }
 
-    public Stat getStat(String name) {
-        return stats.get(name);
-    }
-
     // Convenience getters
     public StrengthStat getStrength() { return (StrengthStat) stats.get("strength"); }
     public AgilityStat getAgility() { return (AgilityStat) stats.get("agility"); }
