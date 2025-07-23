@@ -9,7 +9,7 @@ import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.system.skill.passives.BaseAttributePassive;
 
 /**
- * AGI 99 - Phantom Speed: +50% Movement Speed
+ * AGI 99 - Phantom Speed: +50% Movement Speed and 2 More time Jump
  */
 public class PhantomSpeedPassive extends BaseAttributePassive {
     private static final Identifier MODIFIER_ID = Dominatus.id("passive_phantom_speed");
@@ -18,7 +18,7 @@ public class PhantomSpeedPassive extends BaseAttributePassive {
         super(
                 Dominatus.id("phantom_speed"),
                 Text.literal("§a§lPhantom Speed"),
-                Text.literal("Your legendary agility grants massive movement speed"),
+                Text.literal("Your legendary agility grants +50% movement speed, And 2 more time Jump"),
                 "agility",
                 99,
                 6
