@@ -25,13 +25,6 @@ public class DebugCommand {
                         .then(CommandManager.argument("player", EntityArgumentType.players())
                                 .executes(DebugCommand::debugPlayer)
                         )
-                )
-                // /dominatus debug sync [player]
-                .then(CommandManager.literal("sync")
-                        .executes(DebugCommand::syncSelf)
-                        .then(CommandManager.argument("player", EntityArgumentType.players())
-                                .executes(DebugCommand::syncPlayer)
-                        )
                 );
     }
 
@@ -45,21 +38,6 @@ public class DebugCommand {
 
         for (ServerPlayerEntity player : players) {
             showDebugInfo(context.getSource(), player);
-        }
-
-        return players.size();
-    }
-
-    private static int syncSelf(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
-        return forceSync(context.getSource(), player);
-    }
-
-    private static int syncPlayer(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "player");
-
-        for (ServerPlayerEntity player : players) {
-            forceSync(context.getSource(), player);
         }
 
         return players.size();
@@ -96,19 +74,6 @@ public class DebugCommand {
         ));
 
         source.sendFeedback(() -> message, false);
-        return 1;
-    }
-
-    private static int forceSync(ServerCommandSource source, ServerPlayerEntity player) {
-        LivingLevelComponent component = ModEntityComponents.LIVINGLEVEL.get(player);
-        component.sync();
-
-        Text message = Text.literal(String.format(
-                "§6Forced sync for %s's level component",
-                player.getName().getString()
-        ));
-
-        source.sendFeedback(() -> message, true);
         return 1;
     }
 }

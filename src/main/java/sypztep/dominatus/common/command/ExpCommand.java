@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
+import sypztep.dominatus.common.util.NumberUtil;
 import sypztep.dominatus.common.util.level.ExpUtil;
 
 import java.util.Collection;
@@ -109,7 +110,7 @@ public class ExpCommand {
 
         Text message = Text.literal(String.format(
                 "§6Added §f%s §6experience to %s",
-                formatNumber(amount), player.getName().getString()
+                NumberUtil.formatNumber(amount), player.getName().getString()
         ));
 
         source.sendFeedback(() -> message, true);
@@ -124,14 +125,14 @@ public class ExpCommand {
 
         Text message = Text.literal(String.format(
                 "§6Set %s's experience from §f%s §6to §f%s",
-                player.getName().getString(), formatNumber(oldExp), formatNumber(amount)
+                player.getName().getString(), NumberUtil.formatNumber(oldExp), NumberUtil.formatNumber(amount)
         ));
 
         source.sendFeedback(() -> message, true);
 
         player.sendMessage(Text.literal(String.format(
                 "§6Your experience has been set to §f%s §6by an administrator",
-                formatNumber(amount)
+                NumberUtil.formatNumber(amount)
         )).formatted(Formatting.GOLD), false);
 
         return 1;
@@ -146,29 +147,17 @@ public class ExpCommand {
 
         Text message = Text.literal(String.format(
                 "§6Removed §f%s §6experience from %s (§f%s §6→ §f%s§6)",
-                formatNumber(amount), player.getName().getString(),
-                formatNumber(oldExp), formatNumber(newExp)
+                NumberUtil.formatNumber(amount), player.getName().getString(),
+                NumberUtil.formatNumber(oldExp), NumberUtil.formatNumber(newExp)
         ));
 
         source.sendFeedback(() -> message, true);
 
         player.sendMessage(Text.literal(String.format(
                 "§c%s experience has been removed by an administrator",
-                formatNumber(Math.min(amount, oldExp))
+                NumberUtil.formatNumber(Math.min(amount, oldExp))
         )).formatted(Formatting.RED), false);
 
         return 1;
-    }
-
-    private static String formatNumber(long number) {
-        if (number >= 1_000_000_000L) {
-            return String.format("%.1fB", number / 1_000_000_000.0);
-        } else if (number >= 1_000_000L) {
-            return String.format("%.1fM", number / 1_000_000.0);
-        } else if (number >= 1_000L) {
-            return String.format("%.1fK", number / 1_000.0);
-        } else {
-            return String.valueOf(number);
-        }
     }
 }

@@ -4,12 +4,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.Identifier;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.level.config.LevelConfigs;
 import sypztep.dominatus.common.system.level.core.EntityLevelData;
 import sypztep.dominatus.common.system.level.core.LevelData;
 import sypztep.dominatus.common.system.level.core.PlayerLevelData;
+import sypztep.dominatus.common.system.skill.PassiveAbility;
 import sypztep.dominatus.common.system.skill.PassiveSkillManager;
 import sypztep.dominatus.common.system.stat.EntityStatManager;
 import sypztep.dominatus.common.system.stat.PlayerStatManager;
@@ -44,15 +46,28 @@ public class LivingLevelComponent implements AutoSyncedComponent {
         }
     }
 
-    // ====================
-    // UNIFIED ACCESS METHODS
-    // ====================
-
+    // Read-only methods (no sync needed)
     public int getLevel() { return levelData.getLevel(); }
-    public void setLevel(int level) { levelData.setLevel(level); sync(); }
-
     public long getExperience() { return levelData.getExperience(); }
-    public void setExperience(long experience) { levelData.setExperience(experience); sync(); }
+    public long getExperienceToNextLevel() { return levelData.getExperienceToNextLevel(); }
+    public double getExperiencePercentage() { return levelData.getExperiencePercentage(); }
+    public boolean isMaxLevel() { return levelData.isMaxLevel(); }
+    public int getMaxLevel() { return levelData.getMaxLevel(); }
+    public int getAvailableBenefits() { return levelData.getAvailableBenefits(); }
+    public boolean isPlayer() { return levelData.isPlayer(); }
+    public LevelData getLevelData() { return levelData; }
+    @Deprecated
+    public int getStatPoints() { return getAvailableBenefits(); }
+
+    public void setLevel(int level) {
+        levelData.setLevel(level);
+        sync();
+    }
+
+    public void setExperience(long experience) {
+        levelData.setExperience(experience);
+        sync();
+    }
 
     public int addExperience(long amount) {
         int levelsGained = levelData.addExperience(amount);
@@ -60,21 +75,21 @@ public class LivingLevelComponent implements AutoSyncedComponent {
         return levelsGained;
     }
 
-    public long getExperienceToNextLevel() { return levelData.getExperienceToNextLevel(); }
-    public double getExperiencePercentage() { return levelData.getExperiencePercentage(); }
-    public boolean isMaxLevel() { return levelData.isMaxLevel(); }
-    public int getMaxLevel() { return levelData.getMaxLevel(); }
-
-    public int getAvailableBenefits() { return levelData.getAvailableBenefits(); }
     public boolean spendBenefits(int amount) {
         boolean success = levelData.spendBenefits(amount);
         if (success) sync();
         return success;
     }
-    public void addBenefits(int amount) { levelData.addBenefits(amount); sync(); }
-    public void setBenefits(int amount) { levelData.setBenefits(amount); sync(); }
 
-    public boolean isPlayer() { return levelData.isPlayer(); }
+    public void addBenefits(int amount) {
+        levelData.addBenefits(amount);
+        sync();
+    }
+
+    public void setBenefits(int amount) {
+        levelData.setBenefits(amount);
+        sync();
+    }
 
     // ====================
     // STAT MANAGER ACCESS
@@ -89,7 +104,7 @@ public class LivingLevelComponent implements AutoSyncedComponent {
     }
 
     // ====================
-    // PASSIVE SKILL SYSTEM ACCESS
+    // PASSIVE SKILL SYSTEM ACCESS WITH AUTO-SYNC
     // ====================
 
     public PassiveSkillManager getPassiveSkillManager() {
@@ -97,19 +112,89 @@ public class LivingLevelComponent implements AutoSyncedComponent {
     }
 
     /**
-     * Check for new passive unlocks when a stat changes
+     * Check for new passive unlocks when a stat changes - AUTO-SYNC
      */
     public void checkPassiveUnlocks(String statType, int newStatValue) {
         if (isPlayer && passiveSkillManager != null) {
             passiveSkillManager.checkForNewUnlocks(living, statType, newStatValue);
         }
+        sync();
+    }
+
+    /**
+     * Unlock a new passive ability - AUTO-SYNC
+     */
+    public boolean unlockPassive(PassiveAbility passive) {
+        if (!isPlayer || passiveSkillManager == null) return false;
+
+        boolean success = passiveSkillManager.unlockPassive(living, passive);
+        if (success) sync();
+        return success;
     }
 
     public void applyAllStatEffects() {
         if (isPlayer && playerStatManager != null) {
             playerStatManager.applyAllEffects(living);
 
-            // Apply passive abilities
+            if (passiveSkillManager != null) {
+                passiveSkillManager.applyAllPassives(living);
+            }
+        } else if (!isPlayer && entityStatManager != null) {
+            entityStatManager.applyAllEffects(living);
+        }
+        sync();
+    }
+
+    /**
+     * Reset all passive skills - AUTO-SYNC
+     */
+    public void resetAllPassiveSkills() {
+        if (isPlayer && passiveSkillManager != null) {
+            passiveSkillManager.removeAllPassives(living);
+            passiveSkillManager.getUnlockedPassives().clear();
+            if (playerStatManager != null) {
+                playerStatManager.applyAllEffects(living);
+            }
+        }
+        sync();
+    }
+
+    // ====================
+    // BATCH OPERATIONS (SINGLE SYNC)
+    // ====================
+
+    public void performBatchUpdate(Runnable updates) {
+        updates.run();
+        sync();
+    }
+
+    /**
+     * Level up and refresh all effects in one operation
+     */
+    public void levelUpAndRefresh(int newLevel) {
+        performBatchUpdate(() -> {
+            levelData.setLevel(newLevel);
+            refreshAllStatEffectsInternal();
+        });
+    }
+
+    public void handleRespawn() {
+        performBatchUpdate(this::refreshAllStatEffectsInternal);
+    }
+
+    // ====================
+    // INTERNAL METHODS (NO SYNC) - for batch operations
+    // ====================
+
+    public void refreshAllStatEffectsInternal() {
+        if (isPlayer && passiveSkillManager != null) {
+            passiveSkillManager.removeAllPassives(living);
+        }
+
+        // Apply effects
+        if (isPlayer && playerStatManager != null) {
+            playerStatManager.applyAllEffects(living);
+
             if (passiveSkillManager != null) {
                 passiveSkillManager.applyAllPassives(living);
             }
@@ -117,30 +202,6 @@ public class LivingLevelComponent implements AutoSyncedComponent {
             entityStatManager.applyAllEffects(living);
         }
     }
-
-    /**
-     * Remove all stat effects (for respawn, etc.)
-     */
-    public void removeAllStatEffects() {
-        if (isPlayer && passiveSkillManager != null) {
-            passiveSkillManager.removeAllPassives(living);
-        }
-    }
-
-    // ====================
-    // DIRECT ACCESS TO LEVEL DATA
-    // ====================
-
-    public LevelData getLevelData() {
-        return levelData;
-    }
-
-    @Deprecated
-    public int getStatPoints() { return getAvailableBenefits(); }
-
-    // ====================
-    // COMPONENT LIFECYCLE
-    // ====================
 
     @Override
     public void readFromNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
@@ -165,7 +226,6 @@ public class LivingLevelComponent implements AutoSyncedComponent {
         if (isPlayer && playerStatManager != null) {
             playerStatManager.writeToNbt(nbtCompound);
 
-            // Save passive skills
             if (passiveSkillManager != null) {
                 passiveSkillManager.writeToNbt(nbtCompound);
             }

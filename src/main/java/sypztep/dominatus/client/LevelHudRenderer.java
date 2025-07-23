@@ -9,6 +9,7 @@ import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.level.core.LevelData;
+import sypztep.dominatus.common.util.NumberUtil;
 
 public class LevelHudRenderer implements HudRenderCallback {
     // Position settings
@@ -56,9 +57,8 @@ public class LevelHudRenderer implements HudRenderCallback {
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(client.player);
         LevelData levelData = levelComponent.getLevelData();
 
-        if (!levelData.isPlayer()) {
-            return;
-        }
+        if (!levelData.isPlayer()) return;
+
 
         // Get current values
         int level = levelData.getLevel();
@@ -81,9 +81,7 @@ public class LevelHudRenderer implements HudRenderCallback {
         int currentHudX = calculateHudX();
 
         // Only render if HUD is at least partially visible
-        if (slideOffset < 1.0f) {
-            renderLevelHud(drawContext, client, levelData, currentHudX);
-        }
+        if (slideOffset < 1.0f) renderLevelHud(drawContext, client, levelData, currentHudX);
 
         // Update last values
         lastXp = currentXp;
@@ -99,17 +97,14 @@ public class LevelHudRenderer implements HudRenderCallback {
         // XP gain glow timer countdown
         if (xpGainGlowTimer > 0) {
             xpGainGlowTimer -= deltaTime;
-            if (xpGainGlowTimer < 0) {
-                xpGainGlowTimer = 0;
-            }
+            if (xpGainGlowTimer < 0) xpGainGlowTimer = 0;
+
         }
 
         // Handle auto-hide functionality
         if (hideTimer > 0) {
             hideTimer -= deltaTime;
-            if (hideTimer <= 0) {
-                shouldBeVisible = false;
-            }
+            if (hideTimer <= 0) shouldBeVisible = false;
         }
 
         // Calculate target slide offset
@@ -122,11 +117,8 @@ public class LevelHudRenderer implements HudRenderCallback {
             slideOffset += direction * slideSpeed * deltaTime;
 
             // Clamp to target
-            if (direction > 0 && slideOffset > targetSlideOffset) {
-                slideOffset = targetSlideOffset;
-            } else if (direction < 0 && slideOffset < targetSlideOffset) {
-                slideOffset = targetSlideOffset;
-            }
+            if (direction > 0 && slideOffset > targetSlideOffset) slideOffset = targetSlideOffset;
+             else if (direction < 0 && slideOffset < targetSlideOffset) slideOffset = targetSlideOffset;
         }
     }
 
@@ -209,7 +201,7 @@ public class LevelHudRenderer implements HudRenderCallback {
         if (isMaxLevel) {
             xpText = "MAX LEVEL";
         } else {
-            xpText = formatNumber(currentXp) + "/" + formatNumber(xpToNext);
+            xpText = NumberUtil.formatNumber(currentXp) + "/" + NumberUtil.formatNumber(xpToNext);
         }
 
         drawContext.drawTextWithShadow(textRenderer, xpText, hudX, currentY, TEXT_COLOR);
@@ -256,19 +248,6 @@ public class LevelHudRenderer implements HudRenderCallback {
             return 1.0f + p * p * p / 2.0f;
         }
     }
-
-    private String formatNumber(long number) {
-        if (number >= 1_000_000_000L) {
-            return String.format("%.1fB", number / 1_000_000_000.0);
-        } else if (number >= 1_000_000L) {
-            return String.format("%.1fM", number / 1_000_000.0);
-        } else if (number >= 1_000L) {
-            return String.format("%.1fK", number / 1_000.0);
-        } else {
-            return String.valueOf(number);
-        }
-    }
-
     public static void register() {
         HudRenderCallback.EVENT.register(new LevelHudRenderer());
     }

@@ -61,6 +61,30 @@ public class MobStatsCommand {
                                         )
                                 )
                         )
+                )
+                // /dominatus mobstats reset <entity> [stat]
+                .then(CommandManager.literal("reset")
+                        .then(CommandManager.argument("entity", EntityArgumentType.entity())
+                                .executes(MobStatsCommand::resetAllMobStats)
+                                .then(CommandManager.literal("strength")
+                                        .executes(ctx -> resetMobStat(ctx, "strength"))
+                                )
+                                .then(CommandManager.literal("agility")
+                                        .executes(ctx -> resetMobStat(ctx, "agility"))
+                                )
+                                .then(CommandManager.literal("vitality")
+                                        .executes(ctx -> resetMobStat(ctx, "vitality"))
+                                )
+                                .then(CommandManager.literal("intelligence")
+                                        .executes(ctx -> resetMobStat(ctx, "intelligence"))
+                                )
+                                .then(CommandManager.literal("dexterity")
+                                        .executes(ctx -> resetMobStat(ctx, "dexterity"))
+                                )
+                                .then(CommandManager.literal("luck")
+                                        .executes(ctx -> resetMobStat(ctx, "luck"))
+                                )
+                        )
                 );
     }
 
@@ -111,11 +135,16 @@ public class MobStatsCommand {
             return 0;
         }
 
-        boolean success = setStatValue(statManager, statName, value);
-        if (success) {
-            levelComponent.applyAllStatEffects();
-            levelComponent.sync();
+        // Use batch operation to set stat and apply effects with single sync
+        final boolean[] success = {false};
+        levelComponent.performBatchUpdate(() -> {
+            success[0] = setStatValue(statManager, statName, value);
+            if (success[0]) {
+                levelComponent.refreshAllStatEffectsInternal(); // Apply effects without sync
+            }
+        });
 
+        if (success[0]) {
             Text message = Text.literal(String.format(
                     "§6Set %s's %s to §f%d §7(Max: %d)",
                     livingEntity.getName().getString(), statName, value, Stat.MAX_STAT_VALUE
@@ -125,7 +154,102 @@ public class MobStatsCommand {
             context.getSource().sendError(Text.literal("Failed to set stat: " + statName));
         }
 
-        return success ? 1 : 0;
+        return success[0] ? 1 : 0;
+    }
+
+    private static int resetMobStat(CommandContext<ServerCommandSource> context, String statName) throws CommandSyntaxException {
+        net.minecraft.entity.Entity entity = EntityArgumentType.getEntity(context, "entity");
+
+        if (!(entity instanceof LivingEntity livingEntity)) {
+            context.getSource().sendError(Text.literal("Target is not a living entity"));
+            return 0;
+        }
+
+        LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(livingEntity);
+        if (levelComponent == null) {
+            context.getSource().sendError(Text.literal("No level component found for entity"));
+            return 0;
+        }
+
+        if (levelComponent.isPlayer()) {
+            context.getSource().sendError(Text.literal("Cannot modify player stats with this command. Use the player stat commands instead."));
+            return 0;
+        }
+
+        EntityStatManager statManager = levelComponent.getEntityStatManager();
+        if (statManager == null) {
+            context.getSource().sendError(Text.literal("No stat manager found for entity"));
+            return 0;
+        }
+
+        // Use batch operation to reset stat and apply effects with single sync
+        final boolean[] success = {false};
+        levelComponent.performBatchUpdate(() -> {
+            success[0] = setStatValue(statManager, statName, 1); // Reset to base value of 1
+            if (success[0]) {
+                levelComponent.refreshAllStatEffectsInternal();
+            }
+        });
+
+        if (success[0]) {
+            Text message = Text.literal(String.format(
+                    "§6Reset %s's %s to §f1",
+                    livingEntity.getName().getString(), statName
+            ));
+            context.getSource().sendFeedback(() -> message, true);
+        } else {
+            context.getSource().sendError(Text.literal("Failed to reset stat: " + statName));
+        }
+
+        return success[0] ? 1 : 0;
+    }
+
+    private static int resetAllMobStats(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        net.minecraft.entity.Entity entity = EntityArgumentType.getEntity(context, "entity");
+
+        if (!(entity instanceof LivingEntity livingEntity)) {
+            context.getSource().sendError(Text.literal("Target is not a living entity"));
+            return 0;
+        }
+
+        LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(livingEntity);
+        if (levelComponent == null) {
+            context.getSource().sendError(Text.literal("No level component found for entity"));
+            return 0;
+        }
+
+        if (levelComponent.isPlayer()) {
+            context.getSource().sendError(Text.literal("Cannot modify player stats with this command. Use the player stat commands instead."));
+            return 0;
+        }
+
+        EntityStatManager statManager = levelComponent.getEntityStatManager();
+        if (statManager == null) {
+            context.getSource().sendError(Text.literal("No stat manager found for entity"));
+            return 0;
+        }
+
+        // Use batch operation to reset all stats and apply effects with single sync
+        levelComponent.performBatchUpdate(() -> {
+            // Reset all stats to base value of 1
+            setStatValue(statManager, "strength", 1);
+            setStatValue(statManager, "agility", 1);
+            setStatValue(statManager, "vitality", 1);
+            setStatValue(statManager, "intelligence", 1);
+            setStatValue(statManager, "dexterity", 1);
+            setStatValue(statManager, "luck", 1);
+
+            // Apply effects after all stats are reset
+            levelComponent.refreshAllStatEffectsInternal();
+        });
+
+        Text message = Text.literal(String.format(
+                "§6Reset all stats for %s to base values",
+                livingEntity.getName().getString()
+        ));
+        context.getSource().sendFeedback(() -> message, true);
+
+        return 1;
     }
 
     private static boolean setStatValue(EntityStatManager statManager, String statName, int value) {
@@ -183,8 +307,10 @@ public class MobStatsCommand {
             source.sendError(Text.literal("No level component found for " + entity.getName().getString()));
             return;
         }
+
         EntityStatManager statManager = levelComponent.getEntityStatManager();
         Text message;
+
         if (levelComponent.isPlayer()) {
             message = Text.literal(String.format(
                     "§6=== PLAYER STATS: %s ===\n" +
@@ -193,18 +319,19 @@ public class MobStatsCommand {
                             "§7Benefits: §f%d\n" +
                             "§7Stats (Max: %d):\n" +
                             "  §7STR: §f%d §7| AGI: §f%d §7| VIT: §f%d\n" +
-                            "  §7INT: §f%d §7| DEX: §f%d §7| LUK: §f%d",
+                            "  §7INT: §f%d §7| DEX: §f%d §7| LUK: §f%d\n" +
+                            "§c⚠ Use '/dominatus stats' commands for players!",
                     entity.getName().getString(),
                     levelComponent.getLevel(),
                     levelComponent.getExperience(),
                     levelComponent.getAvailableBenefits(),
                     Stat.MAX_STAT_VALUE,
-                    statManager.getStrength() != null ? statManager.getStrength().getValue() : 0,
-                    statManager.getAgility() != null ? statManager.getAgility().getValue() : 0,
-                    statManager.getVitality() != null ? statManager.getVitality().getValue() : 0,
-                    statManager.getIntelligence() != null ? statManager.getIntelligence().getValue() : 0,
-                    statManager.getDexterity() != null ? statManager.getDexterity().getValue() : 0,
-                    statManager.getLuck() != null ? statManager.getLuck().getValue() : 0
+                    statManager != null && statManager.getStrength() != null ? statManager.getStrength().getValue() : 0,
+                    statManager != null && statManager.getAgility() != null ? statManager.getAgility().getValue() : 0,
+                    statManager != null && statManager.getVitality() != null ? statManager.getVitality().getValue() : 0,
+                    statManager != null && statManager.getIntelligence() != null ? statManager.getIntelligence().getValue() : 0,
+                    statManager != null && statManager.getDexterity() != null ? statManager.getDexterity().getValue() : 0,
+                    statManager != null && statManager.getLuck() != null ? statManager.getLuck().getValue() : 0
             ));
         } else {
             if (statManager != null) {

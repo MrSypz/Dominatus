@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.toast.ToastManager;
 import sypztep.dominatus.client.toast.ToastNotification;
+import sypztep.dominatus.common.util.NumberUtil;
 
 public record SendToastPayloadS2C(String message, int toastTypeOrdinal) implements CustomPayload {
     public static final Id<SendToastPayloadS2C> ID = new Id<>(Dominatus.id("show_toast"));
@@ -27,11 +28,10 @@ public record SendToastPayloadS2C(String message, int toastTypeOrdinal) implemen
         return ID;
     }
 
-    // Static methods to send different types of toasts
     public static void sendExperience(ServerPlayerEntity player, long amount, String source) {
         String message = source != null ?
-                String.format("§l§6⚡ EXPERIENCE GAINED ⚡§r\n§e+%s EXP §8• §7%s", formatNumber(amount), source) :
-                String.format("§l§6⚡ EXPERIENCE GAINED ⚡§r\n§e+%s EXP", formatNumber(amount));
+                String.format("§l§6⚡ EXPERIENCE GAINED ⚡§r\n§e+%s EXP §8• §7%s", NumberUtil.formatNumber(amount), source) :
+                String.format("§l§6⚡ EXPERIENCE GAINED ⚡§r\n§e+%s EXP", NumberUtil.formatNumber(amount));
 
         send(player, message, ToastNotification.ToastType.EXPERIENCE);
     }
@@ -42,7 +42,7 @@ public record SendToastPayloadS2C(String message, int toastTypeOrdinal) implemen
     }
 
     public static void sendDeathPenalty(ServerPlayerEntity player, long expLost, String killerName) {
-        String formattedPenalty = formatNumber(expLost);
+        String formattedPenalty = NumberUtil.formatNumber(expLost);
         String message = killerName != null ?
                 String.format("§l§8☠ DEATH PENALTY ☠§r\n§7Lost §c%s EXP §8• §7%s", formattedPenalty, killerName) :
                 String.format("§l§8☠ DEATH PENALTY ☠§r\n§7Lost §c%s EXP", formattedPenalty);
@@ -84,19 +84,6 @@ public record SendToastPayloadS2C(String message, int toastTypeOrdinal) implemen
         ServerPlayNetworking.send(player, new SendToastPayloadS2C(message, type.ordinal()));
     }
 
-    // Utility method to format numbers
-    private static String formatNumber(long number) {
-        if (number >= 1_000_000_000L) {
-            return String.format("%.1fB", number / 1_000_000_000.0);
-        } else if (number >= 1_000_000L) {
-            return String.format("%.1fM", number / 1_000_000.0);
-        } else if (number >= 1_000L) {
-            return String.format("%.1fK", number / 1_000.0);
-        } else {
-            return String.valueOf(number);
-        }
-    }
-
     public static class Receiver implements ClientPlayNetworking.PlayPayloadHandler<SendToastPayloadS2C> {
         @Override
         public void receive(SendToastPayloadS2C payload, ClientPlayNetworking.Context context) {
@@ -109,7 +96,6 @@ public record SendToastPayloadS2C(String message, int toastTypeOrdinal) implemen
             ToastNotification.ToastType type = types[payload.toastTypeOrdinal];
             Text message = Text.literal(payload.message);
 
-            // Add toast to manager
             ToastManager.getInstance().addToast(new ToastNotification(message, type));
         }
     }

@@ -80,13 +80,8 @@ public record IncreaseStatPayloadC2S(String statName, int points) implements Cus
 
             if (success) {
                 levelComponent.applyAllStatEffects();
-
-                levelComponent.sync();
-
                 Dominatus.LOGGER.debug("Player {} increased {} by {} points", player.getName().getString(), payload.statName, payload.points);
-            } else {
-                Dominatus.LOGGER.debug("Player {} failed to increase {} by {} points (insufficient benefits)", player.getName().getString(), payload.statName, payload.points);
-            }
+            } else Dominatus.LOGGER.debug("Player {} failed to increase {} by {} points (insufficient benefits)", player.getName().getString(), payload.statName, payload.points);
         }
     }
 }

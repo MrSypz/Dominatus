@@ -22,6 +22,7 @@ import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.stat.PlayerStatBehavior;
 import sypztep.dominatus.common.system.stat.PlayerStatManager;
+import sypztep.dominatus.common.util.ItemStackHelper;
 
 import java.util.*;
 
@@ -74,11 +75,12 @@ public final class PlayerInfoScreen extends Screen {
         Map<String, Object> values = new HashMap<>();
 
         assert client.player != null;
-        double armor = client.player.getAttributeValue(EntityAttributes.GENERIC_ARMOR);
-        double armorToughness = client.player.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
         PlayerStatManager statManager = playerStats.getPlayerStatManager();
+        Map<String, Double> attributeAmounts = ItemStackHelper.getAttributeAmounts(client.player, 0);
+        double attackDamage = attributeAmounts.getOrDefault("attribute.name.generic.attack_damage", client.player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)); // IDK why it not sync wtih server but who care :)
 
-        values.put("phyd", client.player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+
+        values.put("phyd",client.player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
         values.put("meleed", client.player.getAttributeValue(ModEntityAttributes.MELEE_ATTACK_DAMAGE));
         values.put("projd", client.player.getAttributeValue(ModEntityAttributes.PROJECTILE_ATTACK_DAMAGE));
         values.put("asp", client.player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED));
@@ -88,7 +90,7 @@ public final class PlayerInfoScreen extends Screen {
         values.put("acc", client.player.getAttributeValue(ModEntityAttributes.ACCURACY)); // Updated this line
         values.put("hp", client.player.getHealth());
         values.put("maxhp", client.player.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH));
-        values.put("dp", armor + (2.0f + armorToughness / 4.0f));
+        values.put("dp", client.player.getAttributeValue(EntityAttributes.GENERIC_ARMOR));
         values.put("nhrg", client.player.getAttributeValue(ModEntityAttributes.HEALTH_REGEN));
         values.put("hef", client.player.getAttributeValue(ModEntityAttributes.HEAL_EFFECTIVE));
         values.put("eva", client.player.getAttributeValue(ModEntityAttributes.EVASION)); // Updated this line

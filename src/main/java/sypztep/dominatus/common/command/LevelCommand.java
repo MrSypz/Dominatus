@@ -10,9 +10,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.level.core.LevelData;
+import sypztep.dominatus.common.util.NumberUtil;
 
 import java.util.Collection;
 
@@ -131,8 +133,8 @@ public class LevelCommand {
                 player.getName().getString(),
                 levelData.getLevel(),
                 levelData.getMaxLevel(),
-                formatNumber(levelData.getExperience()),
-                formatNumber(levelData.getExperienceToNextLevel()),
+                NumberUtil.formatNumber(levelData.getExperience()),
+                NumberUtil.formatNumber(levelData.getExperienceToNextLevel()),
                 levelData.getExperiencePercentage(),
                 levelData.getAvailableBenefits()
         ));
@@ -152,7 +154,9 @@ public class LevelCommand {
         }
 
         int oldLevel = levelData.getLevel();
-        component.setLevel(level);
+
+        // Use the level up method that refreshes effects automatically
+        component.levelUpAndRefresh(level);
 
         Text message = Text.literal(String.format(
                 "§6Set %s's level from §f%d §6to §f%d",
@@ -178,24 +182,24 @@ public class LevelCommand {
         long oldExp = levelData.getExperience();
         int oldBenefits = levelData.getAvailableBenefits();
 
-        // Reset to starting values
-        component.setLevel(levelData.getStartingLevel());
-        component.setExperience(0);
+        // Use batch operation to reset everything with single sync
+        component.performBatchUpdate(() -> {
+            levelData.setLevel(levelData.getStartingLevel());
+            levelData.setExperience(0);
 
-        // Reset benefits if it's a player
-        if (levelData.isPlayer()) {
-            // Note: This would require adding a reset method to PlayerBenefitSystem
-            // For now, we'll mention it in the message
-        }
+            if (levelData.isPlayer()) levelData.setBenefits(ModConfig.startStatpoints);
+
+            component.refreshAllStatEffectsInternal();
+        });
 
         Text message = Text.literal(String.format(
                 "§6Reset %s's progress:\n" +
                         "§7Level: §f%d §7→ §f%d\n" +
                         "§7Experience: §f%s §7→ §f0\n" +
-                        "§7Benefits: §f%d §7→ §f0",
+                        "§7Benefits: §f%d §7→ §f48",
                 player.getName().getString(),
                 oldLevel, levelData.getStartingLevel(),
-                formatNumber(oldExp),
+                NumberUtil.formatNumber(oldExp),
                 oldBenefits
         ));
 
@@ -215,7 +219,8 @@ public class LevelCommand {
         int oldLevel = levelData.getLevel();
         int maxLevel = levelData.getMaxLevel();
 
-        component.setLevel(maxLevel);
+        // Use the level up method that refreshes effects automatically
+        component.levelUpAndRefresh(maxLevel);
 
         Text message = Text.literal(String.format(
                 "§6Set %s to maximum level (§f%d §6→ §f%d§6)",
@@ -229,17 +234,5 @@ public class LevelCommand {
         ).formatted(Formatting.GOLD), false);
 
         return 1;
-    }
-
-    private static String formatNumber(long number) {
-        if (number >= 1_000_000_000L) {
-            return String.format("%.1fB", number / 1_000_000_000.0);
-        } else if (number >= 1_000_000L) {
-            return String.format("%.1fM", number / 1_000_000.0);
-        } else if (number >= 1_000L) {
-            return String.format("%.1fK", number / 1_000.0);
-        } else {
-            return String.valueOf(number);
-        }
     }
 }

@@ -65,8 +65,7 @@ public class ExpUtil {
             int newLevel = levelData.getLevel();
 
             if (showMessage) {
-                if (levelgain > 0)
-                    SendToastPayloadS2C.sendLevelUp((ServerPlayerEntity) player,oldLevel,newLevel);
+                if (levelgain > 0) SendToastPayloadS2C.sendLevelUp((ServerPlayerEntity) player,oldLevel,newLevel);
                 SendToastPayloadS2C.sendExperience((ServerPlayerEntity) player, amount, source);
             }
         }
@@ -75,14 +74,6 @@ public class ExpUtil {
     // Convenience methods
     public static void awardExperience(PlayerEntity player, long amount, String source) {
         awardExperience(player, amount, source, true);
-    }
-
-    public static long getPlayerExperience(PlayerEntity player) {
-        LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.getNullable(player);
-        if (levelComponent != null) {
-            return levelComponent.getExperience(); // Unified access
-        }
-        return player.totalExperience;
     }
 
     // Keep existing level penalty calculation

@@ -15,7 +15,6 @@ import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.init.ModCustomParticles;
-import sypztep.dominatus.common.system.skill.PassiveSkillManager;
 import sypztep.dominatus.common.util.LivingEntityUtil;
 import sypztep.dominatus.common.util.ParticleHandler;
 
@@ -36,6 +35,7 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
         ServerLivingEntityEvents.AFTER_DEATH.register(INSTANCE);
         ServerPlayerEvents.AFTER_RESPAWN.register(INSTANCE);
     }
+
     @Override
     public boolean allowAttack(PlayerEntity player, Entity target) {
         if (!(target instanceof LivingEntity livingTarget)) return true;
@@ -79,6 +79,7 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
             tracker.addDamage(player, actualDamage);
         }
     }
+
     @Override
     public void afterDeath(LivingEntity entity, DamageSource damageSource) {
         if (!(entity instanceof ServerPlayerEntity player) || entity.getWorld().isClient()) return;
@@ -96,15 +97,8 @@ public final class PlayerEntityEvent implements DominatusPlayerEntityEvents.Modi
     public void afterRespawn(ServerPlayerEntity oldPlayer, ServerPlayerEntity newPlayer, boolean alive) {
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(newPlayer);
 
-        PassiveSkillManager passiveManager = levelComponent.getPassiveSkillManager();
-        if (passiveManager != null) {
-            levelComponent.removeAllStatEffects();
-            levelComponent.applyAllStatEffects();
-        }
+        levelComponent.handleRespawn();
 
-        // Apply stat effects
-        levelComponent.applyAllStatEffects();
-        levelComponent.sync();
         newPlayer.setHealth(newPlayer.getMaxHealth());
     }
 }

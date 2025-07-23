@@ -21,13 +21,8 @@ public class MobSpawnStatsEvent implements ServerEntityEvents.Load {
 
     @Override
     public void onLoad(Entity entity, ServerWorld world) {
-        // Only apply to living entities that are not players
         if (!(entity instanceof LivingEntity livingEntity) || entity instanceof PlayerEntity) return;
 
-//        if (!world.getRegistryKey().equals(DungeonDimension.DUNGEON_WORLD)) {
-//            return;
-//        }
-        // Check if we have mob data for this entity type
         MobExpEntry mobEntry = MobExpEntry.getEntry(livingEntity.getType());
         if (mobEntry == null) return;
 
@@ -54,8 +49,6 @@ public class MobSpawnStatsEvent implements ServerEntityEvents.Load {
                 entity.setHealth(entity.getMaxHealth());
             }
         }
-
-        levelComponent.sync();
     }
 
     /**

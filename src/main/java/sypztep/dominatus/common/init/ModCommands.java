@@ -15,7 +15,6 @@ public final class ModCommands {
                     .then(DebugCommand.register())
                     .then(MobStatsCommand.register())
                     .then(PlayerStatsCommand.register())
-                    .then(PassiveSkillsCommand.register())
             );
         });
     }

@@ -6,6 +6,7 @@
   "mixins": [
     "api.event.LivingEntityMixin",
     "api.event.PlayerEntityMixin",
+    "core.registry.attribute.EntityAttributesMixin",
     "core.registry.attribute.LivingEntityMixin",
     "passive.shadowstep.PlayerEntityMixin",
     "passive.windwalker.LivingEntityMixin",
