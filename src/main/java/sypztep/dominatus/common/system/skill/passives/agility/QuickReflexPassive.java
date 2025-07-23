@@ -9,7 +9,7 @@ import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.system.skill.passives.BaseAttributePassive;
 
 /**
- * AGI 20 - Quick Reflex: +5 Evasion
+ * AGI 20 - Quick Reflex: +15 Evasion
  */
 public class QuickReflexPassive extends BaseAttributePassive {
     private static final Identifier MODIFIER_ID = Dominatus.id("passive_quick_reflex");
@@ -18,7 +18,7 @@ public class QuickReflexPassive extends BaseAttributePassive {
         super(
                 Dominatus.id("quick_reflex"),
                 Text.literal("§aQuick Reflex"),
-                Text.literal("Your quick reflexes increase evasion by 5"),
+                Text.literal("Your quick reflexes increase evasion by 15"),
                 "agility",
                 20,
                 2
@@ -27,7 +27,7 @@ public class QuickReflexPassive extends BaseAttributePassive {
 
     @Override
     protected void applyAttributeModifiers(LivingEntity entity) {
-        applyAttributeModifier(entity, ModEntityAttributes.EVASION, MODIFIER_ID, 5.0, EntityAttributeModifier.Operation.ADD_VALUE);
+        applyAttributeModifier(entity, ModEntityAttributes.EVASION, MODIFIER_ID, 15.0, EntityAttributeModifier.Operation.ADD_VALUE);
     }
 
     @Override
