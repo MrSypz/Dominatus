@@ -1,117 +1,304 @@
 package sypztep.dominatus.client.screen.widget;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import sypztep.dominatus.ModConfig;
 import sypztep.dominatus.client.util.ColorUtils;
-import sypztep.dominatus.client.util.DrawContextUtils;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class ActionWidgetButton extends ClickableWidget {
-    private static final int HOVER_COLOR = 0xFF4D4D4D; // Example hover color
-    private static final int DEFAULT_COLOR = 0xF0292929; // Default color
-    private static final int MAXED_COLOR = 0xFF8B4513; // Brown color for maxed stats
-    private static final int DISABLED_COLOR = 0xFF333333; // Dark gray for disabled
+    protected static final int DEFAULT_BG_COLOR = 0xFF2C2C2C;
+    protected static final int DEFAULT_HOVER_COLOR = 0xFF3C3C3C;
+    protected static final int DEFAULT_PRESSED_COLOR = 0xFF1C1C1C;
+    protected static final int DEFAULT_DISABLED_COLOR = 0xFF1A1A1A;
 
-    protected final List<Text> tooltip = new ArrayList<>();
-    private float transitionProgress = 0.0f; // 0.0 to 1.0
-    private static final float TRANSITION_SPEED = 0.1f; // Speed of the transition
-    protected int requiredStatPoints;
-    protected LivingLevelComponent stats; // Changed from UniqueStatsComponent
-    protected int localStatPoints;
+    protected static final int DEFAULT_BORDER_COLOR = 0xFF555555;
+    protected static final int DEFAULT_HOVER_BORDER_COLOR = 0xFF777777;
+    protected static final int DEFAULT_DISABLED_BORDER_COLOR = 0xFF333333;
 
-    public ActionWidgetButton(int x, int y, int width, int height, Text message, LivingLevelComponent stats) {
+    protected static final int DEFAULT_TEXT_COLOR = 0xFFFFFFFF;
+    protected static final int DEFAULT_DISABLED_TEXT_COLOR = 0xFF888888;
+    protected static final int DEFAULT_HOVER_TEXT_COLOR = 0xFFFFFF00; // Yellow on hover
+
+    // Widget state
+    protected float hoverAnimation = 0f;
+    protected boolean wasHovered = false;
+    protected boolean isPressed = false;
+    protected final LivingLevelComponent stats;
+
+    protected MinecraftClient client;
+
+    public ActionWidgetButton(int x, int y, int width, int height, Text message, LivingLevelComponent stats, MinecraftClient client) {
         super(x, y, width, height, message);
-        this.requiredStatPoints = 1;
         this.stats = stats;
+        this.client = client;
     }
+
 
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        // Use the correct method from LivingLevelComponent
-        localStatPoints = stats.getAvailableBenefits(); // Changed from getStatPoints()
+        if (!visible) return;
 
-        boolean isMaxedStat = requiredStatPoints == Integer.MAX_VALUE; // Special value for maxed stats
-        boolean hasEnoughPoints = localStatPoints >= requiredStatPoints;
-        boolean canInteract = hasEnoughPoints && !isMaxedStat;
-        boolean isHovering = isHovered(); // Separate hover detection from interaction
-        boolean hovered = isHovering && canInteract; // Only for visual effects
+        updateAnimations(delta);
 
-        // Determine colors based on state
-        int baseColor;
-        int lineColor;
+        boolean isHovered = isMouseOver(mouseX, mouseY);
+        boolean isEnabled = active;
 
-        if (isMaxedStat) {
-            baseColor = MAXED_COLOR;
-            lineColor = 0xFFFFD700; // Gold color for maxed stats
-        } else if (!hasEnoughPoints) {
-            baseColor = DISABLED_COLOR;
-            lineColor = 0xFF666666; // Dim gray for insufficient points
-        } else {
-            baseColor = DEFAULT_COLOR;
-            lineColor = 0xFFFFFFFF; // White for normal state
-        }
+        // Get colors based on state
+        ButtonColors colors = getButtonColors(isHovered, isPressed, isEnabled);
 
-        int targetColor = hovered ? HOVER_COLOR : baseColor;
+        // Render button background
+        renderBackground(context, colors);
 
-        // Clamp transition progress to the range [0, 1]
-        transitionProgress = Math.min(Math.max(transitionProgress, 0.0f), 1.0f);
+        // Render button border
+        renderBorder(context, colors);
 
-        // Apply cubic ease-out function to transition progress
-        float easedProgress = easeOutCubic(transitionProgress);
+        // Render button text
+        renderText(context, colors);
 
-        // Smoothly transition color based on eased progress
-        int currentColor = ColorUtils.interpolateColor(baseColor, targetColor, easedProgress);
-
-        DrawContextUtils.drawRect(context, getX(), getY(), getWidth(), getHeight(), currentColor);
-
-        if (isMaxedStat) {
-            DrawContextUtils.renderHorizontalLine(context, getX() + 3, getY() + getHeight() / 2 - 1, 10, 1, 400, lineColor);
-            DrawContextUtils.renderHorizontalLine(context, getX() + 3, getY() + getHeight() / 2 + 1, 10, 1, 400, lineColor);
-        } else {
-            DrawContextUtils.renderHorizontalLine(context, getX() + 4, getY() + getHeight() / 2, 9, 1, 400, lineColor);
-            DrawContextUtils.renderVerticalLine(context, getX() + getWidth() / 2, getY() + 4, 9, 1, 400, lineColor);
-        }
-
-        // Show tooltip whenever hovering, regardless of interaction state
-        if (isHovering) {
-            if (canInteract) {
-                transitionProgress += TRANSITION_SPEED * delta;
-            }
-            if (ModConfig.tooltipinfo) // Always show tooltip when hovering
-                renderTooltip(context, mouseX, mouseY);
-        } else {
-            transitionProgress -= TRANSITION_SPEED * delta;
-        }
+        // Render additional overlays (for subclasses)
+        renderAdditionalOverlays(context, mouseX, mouseY, delta, isHovered, isPressed);
     }
 
     @Override
-    protected boolean clicked(double mouseX, double mouseY) {
-        boolean isMaxedStat = requiredStatPoints == Integer.MAX_VALUE;
-        boolean hasEnoughPoints = localStatPoints >= requiredStatPoints;
-        return super.clicked(mouseX, mouseY) && hasEnoughPoints && !isMaxedStat;
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!visible || !active) return false;
+
+        if (isMouseOver(mouseX, mouseY) && button == 0) { // Left click only
+            isPressed = true;
+            playClickSound();
+            onClick(mouseX, mouseY);
+            return true;
+        }
+
+        return false;
     }
 
-    private float easeOutCubic(float t) {
-        return 1 - (float) Math.pow(1 - t, 3);
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0) { // Left click
+            isPressed = false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return false; // No drag behavior by default
+    }
+
+    public abstract void onClick(double mouseX, double mouseY);
+
+    protected void updateAnimations(float delta) {
+        boolean isHovered = isHovered();
+
+        if (isHovered && !wasHovered) {
+            hoverAnimation = Math.min(1f, hoverAnimation + delta * 4f);
+        } else if (!isHovered && wasHovered) {
+            hoverAnimation = Math.max(0f, hoverAnimation - delta * 4f);
+        } else if (isHovered) {
+            hoverAnimation = Math.min(1f, hoverAnimation + delta * 4f);
+        } else {
+            hoverAnimation = Math.max(0f, hoverAnimation - delta * 4f);
+        }
+
+        wasHovered = isHovered;
+    }
+
+    /**
+     * Get button colors based on current state
+     */
+    protected ButtonColors getButtonColors(boolean isHovered, boolean isPressed, boolean isEnabled) {
+        int bgColor, borderColor, textColor;
+
+        if (!isEnabled) {
+            bgColor = getDisabledBackgroundColor();
+            borderColor = getDisabledBorderColor();
+            textColor = getDisabledTextColor();
+        } else if (isPressed) {
+            bgColor = getPressedBackgroundColor();
+            borderColor = getHoverBorderColor();
+            textColor = getHoverTextColor();
+        } else if (isHovered) {
+            // Interpolate hover colors
+            bgColor = ColorUtils.interpolateColor(getBackgroundColor(), getHoverBackgroundColor(), hoverAnimation);
+            borderColor = ColorUtils.interpolateColor(getBorderColor(), getHoverBorderColor(), hoverAnimation);
+            textColor = ColorUtils.interpolateColor(getTextColor(), getHoverTextColor(), hoverAnimation);
+        } else {
+            bgColor = getBackgroundColor();
+            borderColor = getBorderColor();
+            textColor = getTextColor();
+        }
+
+        return new ButtonColors(bgColor, borderColor, textColor);
+    }
+
+    protected void renderBackground(DrawContext context, ButtonColors colors) {
+        context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), colors.background());
+    }
+    protected void renderBorder(DrawContext context, ButtonColors colors) {
+        int borderThickness = getBorderThickness();
+
+        context.fill(getX(), getY(), getX() + getWidth(), getY() + borderThickness, colors.border());
+        context.fill(getX(), getY() + getHeight() - borderThickness, getX() + getWidth(), getY() + getHeight(), colors.border());
+        context.fill(getX(), getY(), getX() + borderThickness, getY() + getHeight(), colors.border());
+        context.fill(getX() + getWidth() - borderThickness, getY(), getX() + getWidth(), getY() + getHeight(), colors.border());
+    }
+
+    protected void renderText(DrawContext context, ButtonColors colors) {
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+
+        int textX = getX() + (getWidth() - textRenderer.getWidth(getMessage())) / 2;
+        int textY = getY() + (getHeight() - textRenderer.fontHeight) / 2;
+
+        if (isPressed) {
+            textX += getPressedOffsetX();
+            textY += getPressedOffsetY();
+        }
+
+        // Render text with shadow if enabled
+        if (hasTextShadow()) {
+            context.drawTextWithShadow(textRenderer, getMessage(), textX, textY, colors.text());
+        } else {
+            context.drawText(textRenderer, getMessage(), textX, textY, colors.text(), false);
+        }
     }
 
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+
     }
 
-    protected void renderTooltip(DrawContext context, int mouseX, int mouseY) {
-        if (!tooltip.isEmpty()) {
-            context.getMatrices().push();
-            context.getMatrices().translate(0, 0, 6); // Push z-index by 6
-            context.drawTooltip(MinecraftClient.getInstance().textRenderer, tooltip, mouseX, mouseY);
-            context.getMatrices().pop();
-        }
+    /**
+     * Override this method in subclasses for additional rendering
+     */
+    protected void renderAdditionalOverlays(DrawContext context, int mouseX, int mouseY, float delta, boolean isHovered, boolean isPressed) {
+        // Default: no additional overlays
+    }
+
+    /**
+     * Play click sound - can be overridden
+     */
+    protected void playClickSound() {
+        client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    }
+
+    @Override
+    public boolean isHovered() {
+        boolean currentlyHovered = super.isHovered();
+        if (currentlyHovered && !wasHovered && visible && active)
+            client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_NOTE_BLOCK_HAT, 1.8F));
+
+        return currentlyHovered;
+    }
+
+    protected int getBorderThickness() {
+        return 1;
+    }
+
+    protected int getPressedOffsetX() {
+        return 1;
+    }
+
+    protected int getPressedOffsetY() {
+        return 1;
+    }
+
+    protected boolean hasTextShadow() {
+        return false;
+    }
+
+    // Color getters (can be overridden by subclasses)
+    protected int getBackgroundColor() {
+        return DEFAULT_BG_COLOR;
+    }
+
+    protected int getHoverBackgroundColor() {
+        return DEFAULT_HOVER_COLOR;
+    }
+
+    protected int getPressedBackgroundColor() {
+        return DEFAULT_PRESSED_COLOR;
+    }
+
+    protected int getDisabledBackgroundColor() {
+        return DEFAULT_DISABLED_COLOR;
+    }
+
+    protected int getBorderColor() {
+        return DEFAULT_BORDER_COLOR;
+    }
+
+    protected int getHoverBorderColor() {
+        return DEFAULT_HOVER_BORDER_COLOR;
+    }
+
+    protected int getDisabledBorderColor() {
+        return DEFAULT_DISABLED_BORDER_COLOR;
+    }
+
+    protected int getTextColor() {
+        return DEFAULT_TEXT_COLOR;
+    }
+
+    protected int getHoverTextColor() {
+        return DEFAULT_HOVER_TEXT_COLOR;
+    }
+
+    protected int getDisabledTextColor() {
+        return DEFAULT_DISABLED_TEXT_COLOR;
+    }
+
+    // Getters for widget state
+    public boolean isPressed() {
+        return isPressed;
+    }
+
+    public float getHoverAnimation() {
+        return hoverAnimation;
+    }
+
+    public LivingLevelComponent getStats() {
+        return stats;
+    }
+
+    // Position and size methods from ClickableWidget
+    public void setPosition(int x, int y) {
+        this.setX(x);
+        this.setY(y);
+    }
+
+    public void setSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    // Enable/disable methods
+    public void setEnabled(boolean enabled) {
+        this.active = enabled;
+    }
+
+    public boolean isEnabled() {
+        return this.active;
+    }
+
+    // Visibility methods
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean isVisible() {
+        return this.visible;
+    }
+
+    /**
+     * Record for button color state
+     */
+    protected record ButtonColors(int background, int border, int text) {
     }
 }
