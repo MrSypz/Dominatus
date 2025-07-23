@@ -1,6 +1,5 @@
 package sypztep.dominatus.client.data.provider;
 
-import com.sun.java.accessibility.util.Translator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.registry.RegistryWrapper;
@@ -37,11 +36,12 @@ public class ModLanguageProvider extends FabricLanguageProvider {
         translator.add(key + "header_5", "RESISTANCE");
 
         // MELEE
-        translator.add(key + "physical", "Physical: $phyd");
+        translator.add(key + "physical", "Attack Power: $phyd");
         translator.add(key + "melee_damage", "Melee Damage: $meleed");
         translator.add(key + "projectile_damage", "Projectile Damage: $projd");
         translator.add(key + "attack_speed", "Attack Speed: $asp");
         translator.add(key + "accuracy", "Accuracy: $acc");
+        translator.add(key + "backattack_damage", "Back Damage: $bkdmg %");
         translator.add(key + "critical_damage", "Critical Damage: $cdmg %");
         translator.add(key + "critical_chance", "Critical Chance: $ccn %");
 
