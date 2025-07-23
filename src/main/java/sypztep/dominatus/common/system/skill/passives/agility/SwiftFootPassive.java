@@ -8,10 +8,6 @@ import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.common.system.skill.passives.BaseAttributePassive;
 
-// ====================
-// AGILITY PASSIVES
-// ====================
-
 /**
  * AGI 10 - Swift Foot: +10% Movement Speed
  */
