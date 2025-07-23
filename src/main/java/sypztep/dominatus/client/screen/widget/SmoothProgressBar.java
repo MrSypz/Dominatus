@@ -57,10 +57,6 @@ public final class SmoothProgressBar extends Animation {
         this.isCompleted = false; // Reset completion status
     }
 
-    public float getCurrentProgress() {
-        return currentProgress;
-    }
-
     public void render(DrawContext context, int x, int y) {
         if (ModConfig.renderStyle == ModConfig.RenderStyle.BAR) renderBar(context,x,y);
          else renderSlate(context,x,y);
