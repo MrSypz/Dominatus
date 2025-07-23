@@ -13,6 +13,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.Dominatus;
 import sypztep.dominatus.client.screen.widget.*;
+import sypztep.dominatus.client.toast.ToastRenderer;
 import sypztep.dominatus.client.util.AnimationUtils;
 import sypztep.dominatus.client.util.CyclingTextIcon;
 import sypztep.dominatus.client.util.DrawContextUtils;
@@ -21,7 +22,6 @@ import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.stat.PlayerStatBehavior;
 import sypztep.dominatus.common.system.stat.PlayerStatManager;
-import sypztep.dominatus.common.system.stat.elements.player.*;
 
 import java.util.*;
 
@@ -82,6 +82,7 @@ public final class PlayerInfoScreen extends Screen {
         values.put("meleed", client.player.getAttributeValue(ModEntityAttributes.MELEE_ATTACK_DAMAGE));
         values.put("projd", client.player.getAttributeValue(ModEntityAttributes.PROJECTILE_ATTACK_DAMAGE));
         values.put("asp", client.player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED));
+        values.put("bkdmg", client.player.getAttributeValue(ModEntityAttributes.BACK_ATTACK) * 100f);
         values.put("cdmg", client.player.getAttributeValue(ModEntityAttributes.CRIT_DAMAGE) * 100f);
         values.put("ccn", client.player.getAttributeValue(ModEntityAttributes.CRIT_CHANCE) * 100f);
         values.put("acc", client.player.getAttributeValue(ModEntityAttributes.ACCURACY)); // Updated this line
@@ -93,34 +94,16 @@ public final class PlayerInfoScreen extends Screen {
         values.put("eva", client.player.getAttributeValue(ModEntityAttributes.EVASION)); // Updated this line
 
         // Updated stat retrieval using PlayerStatManager
-        values.put("str", getStatValue(statManager.getStrength()));
-        values.put("agi", getStatValue(statManager.getAgility()));
-        values.put("vit", getStatValue(statManager.getVitality()));
-        values.put("int", getStatValue(statManager.getIntelligence()));
-        values.put("dex", getStatValue(statManager.getDexterity()));
-        values.put("luk", getStatValue(statManager.getLuck()));
+        values.put("str", statManager.getStatValueByName("strength"));
+        values.put("agi", statManager.getStatValueByName("agility"));
+        values.put("vit", statManager.getStatValueByName("vitality"));
+        values.put("int", statManager.getStatValueByName("intelligence"));
+        values.put("dex", statManager.getStatValueByName("dexterity"));
+        values.put("luk", statManager.getStatValueByName("luck"));
 
         values.put("mdmg", client.player.getAttributeValue(ModEntityAttributes.MAGIC_ATTACK_DAMAGE));
         values.put("mresis", client.player.getAttributeValue(ModEntityAttributes.MAGIC_RESISTANCE) * 100f);
         return values;
-    }
-
-    // Helper method to safely get stat values
-    private int getStatValue(PlayerStatBehavior stat) {
-        if (stat instanceof PlayerStrengthStat strengthStat) {
-            return strengthStat.getValue();
-        } else if (stat instanceof PlayerAgilityStat agilityStat) {
-            return agilityStat.getValue();
-        } else if (stat instanceof PlayerVitalityStat vitalityStat) {
-            return vitalityStat.getValue();
-        } else if (stat instanceof PlayerIntelligenceStat intelligenceStat) {
-            return intelligenceStat.getValue();
-        } else if (stat instanceof PlayerDexterityStat dexterityStat) {
-            return dexterityStat.getValue();
-        } else if (stat instanceof PlayerLuckStat luckStat) {
-            return luckStat.getValue();
-        }
-        return 1; // fallback
     }
 
     private List<ListElement> createListItems() {
@@ -132,6 +115,7 @@ public final class PlayerInfoScreen extends Screen {
         listElements.add(new ListElement(Text.translatable("dominatus.info.projectile_damage")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.attack_speed")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.accuracy")));
+        listElements.add(new ListElement(Text.translatable("dominatus.info.backattack_damage")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.critical_damage")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.critical_chance")));
         listElements.add(new ListElement(Text.translatable("dominatus.info.header_2"), Dominatus.id("hud/container/icon_0")));
@@ -223,8 +207,13 @@ public final class PlayerInfoScreen extends Screen {
         // Draw header section - updated translation keys
         drawHeaderSection(context, xOffset + 100, yOffset, fadeAnimation.getProgress(), "dominatus.gui.player_info.header");
         drawHeaderSection(context, (int) (screenWidth * 0.025f) + 80, yOffset, fadeAnimation.getProgress(), "dominatus.gui.player_info.header_level");
-    }
 
+        renderToastsOverScreen(context, delta);
+    }
+    private void renderToastsOverScreen(DrawContext context, float delta) {
+        float deltaTime = delta / 20.0f;
+        ToastRenderer.renderToasts(context, this.width, deltaTime);
+    }
     private void drawStatsSection(DrawContext context, int xOffset, float yOffset, int contentWidth, int contentHeight, float deltatick) {
         this.playerInfo.render(context, this.textRenderer, xOffset + 25, (int) (yOffset + 55), contentWidth, contentHeight, 0.5f, 1f, AnimationUtils.getAlpha(fadeAnimation.getProgress()), deltatick);
     }
