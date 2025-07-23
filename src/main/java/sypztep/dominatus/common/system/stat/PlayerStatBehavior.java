@@ -10,7 +10,9 @@ import java.util.List;
  * Interface for player-specific stat behaviors (point tracking, cost calculation)
  * Extends StatUI to provide display capabilities
  */
-public interface PlayerStatBehavior extends StatUI , StatEffect {
+public interface PlayerStatBehavior extends StatUI, StatEffect {
+
+    int getValue();
 
     int getTotalPointsSpent();
 

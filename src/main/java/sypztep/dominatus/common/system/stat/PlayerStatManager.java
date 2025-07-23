@@ -4,10 +4,8 @@ package sypztep.dominatus.common.system.stat;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import sypztep.dominatus.common.system.stat.elements.core.*;
 import sypztep.dominatus.common.system.stat.elements.player.*;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,10 +21,7 @@ public class PlayerStatManager {
         stats.put("luck", new PlayerLuckStat());
     }
 
-    public PlayerStatBehavior getStat(String name) {
-        return stats.get(name);
-    }
-
+    public PlayerStatBehavior getStat(String name) { return stats.get(name); }
     public PlayerStatBehavior getStrength() { return stats.get("strength"); }
     public PlayerStatBehavior getAgility() { return stats.get("agility"); }
     public PlayerStatBehavior getVitality() { return stats.get("vitality"); }
@@ -34,12 +29,33 @@ public class PlayerStatManager {
     public PlayerStatBehavior getDexterity() { return stats.get("dexterity"); }
     public PlayerStatBehavior getLuck() { return stats.get("luck"); }
 
+    // NEW: Direct value getter methods
+    public int getStrengthValue() { return getStatValue(getStrength()); }
+    public int getAgilityValue() { return getStatValue(getAgility()); }
+    public int getVitalityValue() { return getStatValue(getVitality()); }
+    public int getIntelligenceValue() { return getStatValue(getIntelligence()); }
+    public int getDexterityValue() { return getStatValue(getDexterity()); }
+    public int getLuckValue() { return getStatValue(getLuck()); }
+
+    // Helper method
+    private int getStatValue(PlayerStatBehavior stat) {
+        return stat != null ? stat.getValue() : 1;
+    }
+
+    // Generic method to get any stat value by name
+    public int getStatValueByName(String statName) {
+        PlayerStatBehavior stat = getStatByName(statName);
+        return stat != null ? stat.getValue() : 1;
+    }
+
+    // Rest of your existing methods...
     public void applyAllEffects(LivingEntity entity) {
         for (PlayerStatBehavior stat : stats.values()) {
-            stat.applyPrimaryEffect(entity);    // No casting needed!
+            stat.applyPrimaryEffect(entity);
             stat.applySecondaryEffect(entity);
         }
     }
+
     public void resetAllStats(ServerPlayerEntity player) {
         for (PlayerStatBehavior stat : stats.values()) {
             stat.resetWithRefund(player);
@@ -51,6 +67,7 @@ public class PlayerStatManager {
                 .mapToInt(PlayerStatBehavior::getTotalPointsSpent)
                 .sum();
     }
+
     public PlayerStatBehavior getStatByName(String statName) {
         return switch (statName.toLowerCase()) {
             case "strength" -> getStrength();
@@ -67,7 +84,7 @@ public class PlayerStatManager {
         NbtCompound statsTag = new NbtCompound();
         for (Map.Entry<String, PlayerStatBehavior> entry : stats.entrySet()) {
             NbtCompound statTag = new NbtCompound();
-            entry.getValue().writeToNbt(statTag); // Use the complete writeToNbt
+            entry.getValue().writeToNbt(statTag);
             statsTag.put(entry.getKey(), statTag);
         }
         tag.put("Stats", statsTag);
@@ -80,7 +97,7 @@ public class PlayerStatManager {
                 String statName = entry.getKey();
                 if (statsTag.contains(statName)) {
                     NbtCompound statTag = statsTag.getCompound(statName);
-                    entry.getValue().readFromNbt(statTag); // Use the complete readFromNbt
+                    entry.getValue().readFromNbt(statTag);
                 }
             }
         }
