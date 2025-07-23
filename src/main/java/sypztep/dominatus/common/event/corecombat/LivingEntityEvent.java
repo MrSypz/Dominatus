@@ -19,9 +19,9 @@ import sypztep.dominatus.common.api.entity.DominatusPlayerEntityEvents;
 import sypztep.dominatus.common.api.entity.DominatusProjectileEvents;
 import sypztep.dominatus.common.component.living.DamageTrackerComponent;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
+import sypztep.dominatus.common.init.ModCustomParticles;
 import sypztep.dominatus.common.init.ModEntityAttributes;
 import sypztep.dominatus.common.init.ModEntityComponents;
-import sypztep.dominatus.common.init.ModParticles;
 import sypztep.dominatus.common.util.DamageTypeUtil;
 import sypztep.dominatus.common.util.LivingEntityUtil;
 import sypztep.dominatus.common.util.ParticleHandler;
@@ -52,7 +52,7 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         if (LivingEntityUtil.hitCheck(attacker, target)) return true;
 
 
-        TextParticleProvider missParticle = LivingEntityUtil.isPlayer(attacker) ? ModParticles.MISSING : ModParticles.MISSING_MONSTER;
+        TextParticleProvider missParticle = LivingEntityUtil.isPlayer(attacker) ? ModCustomParticles.MISSING : ModCustomParticles.MISSING_MONSTER;
 
         ParticleHandler.sendToAll(target, attacker, missParticle);
         return false;
@@ -66,7 +66,7 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
             // Crit check for NON-PLAYER attackers only
             if (!(LivingEntityUtil.isPlayer(attacker))) {
                 if (LivingEntityUtil.critCheck(attacker)) {
-                    ParticleHandler.sendToAll(entity, attacker, ModParticles.CRITICAL);
+                    ParticleHandler.sendToAll(entity, attacker, ModCustomParticles.CRITICAL);
                     ParticleHandler.sendToAll(entity, attacker, ParticleTypes.CRIT);
                     LivingEntityUtil.playCriticalSound(entity);
                     totalMultiplier += (float) attacker.getAttributeValue(ModEntityAttributes.CRIT_DAMAGE);
@@ -81,7 +81,7 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
             float angleDifference = Math.abs(MathHelper.subtractAngles(entity.getHeadYaw(), damageDirection));
 
             if (angleDifference >= 75) {
-                ParticleHandler.sendToAll(entity, attacker, ModParticles.BACKATTACK);
+                ParticleHandler.sendToAll(entity, attacker, ModCustomParticles.BACKATTACK);
                 totalMultiplier += (float) attacker.getAttributeValue(ModEntityAttributes.BACK_ATTACK);
             }
 
@@ -142,7 +142,7 @@ public final class LivingEntityEvent implements DominatusLivingEntityEvents.Post
         if (!(target instanceof LivingEntity livingTarget)) return true;
         if (!(projectile.getOwner() instanceof LivingEntity attacker)) return true;
 
-        TextParticleProvider missParticle = LivingEntityUtil.isPlayer(attacker) ? ModParticles.MISSING : ModParticles.MISSING_MONSTER;
+        TextParticleProvider missParticle = LivingEntityUtil.isPlayer(attacker) ? ModCustomParticles.MISSING : ModCustomParticles.MISSING_MONSTER;
         if (!LivingEntityUtil.hitCheck(attacker, livingTarget)) {
             ParticleHandler.sendToAll(target, attacker, missParticle);
             return false;
