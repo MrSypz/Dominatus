@@ -46,20 +46,6 @@ public abstract class Stat implements StatEffect {
     }
 
     /**
-     * Add to current value (for temporary bonuses, level scaling, etc.)
-     */
-    public void addValue(int bonus) {
-        setValue(currentValue + bonus);
-    }
-
-    /**
-     * Reset to base value (for monsters when they respawn, etc.)
-     */
-    public void resetToBase() {
-        this.currentValue = baseValue;
-    }
-
-    /**
      * Check if stat is at maximum value
      */
     public boolean isMaxed() {
