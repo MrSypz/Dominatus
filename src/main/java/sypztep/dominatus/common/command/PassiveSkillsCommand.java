@@ -246,8 +246,7 @@ public class PassiveSkillsCommand {
 
         int removedCount = passiveManager.getTotalUnlockedCount();
 
-        // Remove all passive effects and clear unlocked passives
-        passiveManager.removeAllPassives(player);
+        levelComponent.removeAllStatEffects(); // Fix
         passiveManager.getUnlockedPassives().clear();
 
         levelComponent.sync();
