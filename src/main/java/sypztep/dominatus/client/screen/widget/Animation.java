@@ -13,6 +13,12 @@ public class Animation {
         this.elapsedTime = 0.0f;
         this.isCompleted = false;
     }
+    public Animation(float duration) {
+        this.duration = duration;
+        this.isLooping = false;
+        this.elapsedTime = 0.0f;
+        this.isCompleted = false;
+    }
 
     // Update method to be called every frame
     public void update(float delta) {

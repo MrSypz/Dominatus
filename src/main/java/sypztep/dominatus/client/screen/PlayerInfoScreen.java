@@ -143,8 +143,8 @@ public final class PlayerInfoScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.verticalAnimation = new Animation(ANIMATION_DURATION, false); // Single play for vertical animation
-        this.fadeAnimation = new Animation(ANIMATION_DURATION, false); // Single play for fade animation
+        this.verticalAnimation = new Animation(ANIMATION_DURATION ); // Single play for vertical animation
+        this.fadeAnimation = new Animation(ANIMATION_DURATION); // Single play for fade animation
         this.progessBar = new SmoothProgressBar(ANIMATION_DURATION * 1.4f, false, 400, 2);
         increaseButtons = new ArrayList<>(); // Initialize the list to hold buttons
 
@@ -156,7 +156,7 @@ public final class PlayerInfoScreen extends Screen {
             int buttonX = startX + statLabelWidth + statValueWidth + 10; // Some spacing
             int buttonY = y;
             int buttonWidth = 16;
-            IncreasePointButton increaseButton = new IncreasePointButton(buttonX, buttonY, buttonWidth, buttonHeight, Text.of("+"), playerStats, statName, 1); // Updated constructor
+            IncreasePointButton increaseButton = new IncreasePointButton(buttonX, buttonY, buttonWidth, buttonHeight, Text.of("+"), playerStats, statName, 1,client); // Updated constructor
             this.addDrawableChild(increaseButton);
             increaseButtons.add(increaseButton);
 
