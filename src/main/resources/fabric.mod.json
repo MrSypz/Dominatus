@@ -40,7 +40,9 @@
     "cardinal-components": [
       "dominatus:livinglevel",
       "dominatus:dmgtracker",
-      "dominatus:phantomwalker"
+      "dominatus:phantomwalker",
+      "dominatus:playerclass",
+      "dominatus:playerskill"
     ]
   }
 }

@@ -7,8 +7,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.math.MathHelper;
 import sypztep.dominatus.common.component.living.LivingLevelComponent;
+import sypztep.dominatus.common.component.living.PlayerClassComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.level.core.LevelData;
+import sypztep.dominatus.common.system.playerclass.PlayerClass;
 import sypztep.dominatus.common.util.NumberUtil;
 
 public class LevelHudRenderer implements HudRenderCallback {
@@ -27,17 +29,23 @@ public class LevelHudRenderer implements HudRenderCallback {
     private static final int BACKGROUND_COLOR = 0xA0000000; // Semi-transparent black
     private static final int BORDER_COLOR = 0xFF444444; // Medium gray
     private static final int XP_BAR_COLOR = 0xFF00CC00; // Bright green
+    private static final int CLASS_XP_BAR_COLOR = 0xFF3366FF; // Blue for class XP
     private static final int XP_BAR_BG_COLOR = 0xFF222222; // Dark gray
     private static final int TEXT_COLOR = 0xFFFFFFFF; // White
     private static final int LEVEL_COLOR = 0xFFFFD700; // Gold
+    private static final int CLASS_COLOR = 0xFF66AAFF; // Light blue for class
     private static final int XP_GAIN_GLOW_COLOR = 0xFFFFFFFF; // White glow
     private static final int MAX_LEVEL_COLOR = 0xFFFF6600; // Orange for max level
 
     // Animation state
     private static float animatedXpProgress = 0.0f;
+    private static float animatedClassXpProgress = 0.0f;
     private static long lastXp = 0;
+    private static long lastClassXp = 0;
     private static int lastLevel = 1;
+    private static int lastClassLevel = 1;
     private static float xpGainGlowTimer = 0.0f;
+    private static float classXpGainGlowTimer = 0.0f;
 
     // Slide animation state
     private static float slideOffset = 0.0f;
@@ -53,18 +61,26 @@ public class LevelHudRenderer implements HudRenderCallback {
 
         if (client.player == null || client.getDebugHud().shouldShowDebugHud()) return;
 
-
         LivingLevelComponent levelComponent = ModEntityComponents.LIVINGLEVEL.get(client.player);
+        PlayerClassComponent classComponent = ModEntityComponents.PLAYERCLASS.get(client.player);
         LevelData levelData = levelComponent.getLevelData();
 
         if (!levelData.isPlayer()) return;
-
 
         // Get current values
         int level = levelData.getLevel();
         long currentXp = levelData.getExperience();
         long xpToNext = levelData.getExperienceToNextLevel();
         boolean isMaxLevel = levelData.isMaxLevel();
+        double charXpPercent = levelData.getExperiencePercentage();
+
+        // Get class values
+        int classLevel = classComponent.getClassLevel();
+        long currentClassXp = classComponent.getClassExperience();
+        long classXpToNext = classComponent.getClassExperienceToNextLevel();
+        boolean isMaxClassLevel = classComponent.isMaxClassLevel();
+        double classXpPercent = classComponent.getClassExperiencePercentage();
+        PlayerClass playerClass = classComponent.getCurrentClass();
 
         // Detect XP/Level changes
         if (currentXp > lastXp || level > lastLevel) {
@@ -73,32 +89,51 @@ public class LevelHudRenderer implements HudRenderCallback {
             hideTimer = AUTO_HIDE_DELAY;
         }
 
+        // Detect Class XP/Level changes
+        if (currentClassXp > lastClassXp || classLevel > lastClassLevel) {
+            classXpGainGlowTimer = XP_GLOW_DURATION;
+            shouldBeVisible = true;
+            hideTimer = AUTO_HIDE_DELAY;
+        }
+
         // Update animations
         float deltaTime = tickCounter.getTickDelta(false) / 20.0f;
-        updateAnimations(currentXp, xpToNext, isMaxLevel, deltaTime);
+        updateAnimations(charXpPercent, classXpPercent, isMaxLevel, isMaxClassLevel, deltaTime);
 
         // Calculate slide position
         int currentHudX = calculateHudX();
 
         // Only render if HUD is at least partially visible
-        if (slideOffset < 1.0f) renderLevelHud(drawContext, client, levelData, currentHudX);
+        if (slideOffset < 1.0f) renderLevelHud(drawContext, client, levelData, classComponent, currentHudX);
 
         // Update last values
         lastXp = currentXp;
+        lastClassXp = currentClassXp;
         lastLevel = level;
+        lastClassLevel = classLevel;
     }
 
-    private void updateAnimations(long currentXp, long xpToNext, boolean isMaxLevel, float deltaTime) {
-        // XP bar smooth animation
-        float targetProgress = isMaxLevel ? 1.0f : (float) ((double) currentXp / (double) xpToNext);
+    private void updateAnimations(double charXpPercent, double classXpPercent,
+                                  boolean isMaxLevel, boolean isMaxClassLevel, float deltaTime) {
+        // Character XP bar smooth animation
+        float targetProgress = isMaxLevel ? 1.0f : (float) (charXpPercent / 100.0);
         float lerpSpeed = 0.08f;
         animatedXpProgress = MathHelper.lerp(lerpSpeed, animatedXpProgress, targetProgress);
+
+        // Class XP bar smooth animation
+        float targetClassProgress = isMaxClassLevel ? 1.0f : (float) (classXpPercent / 100.0);
+        animatedClassXpProgress = MathHelper.lerp(lerpSpeed, animatedClassXpProgress, targetClassProgress);
 
         // XP gain glow timer countdown
         if (xpGainGlowTimer > 0) {
             xpGainGlowTimer -= deltaTime;
             if (xpGainGlowTimer < 0) xpGainGlowTimer = 0;
+        }
 
+        // Class XP gain glow timer countdown
+        if (classXpGainGlowTimer > 0) {
+            classXpGainGlowTimer -= deltaTime;
+            if (classXpGainGlowTimer < 0) classXpGainGlowTimer = 0;
         }
 
         // Handle auto-hide functionality
@@ -118,11 +153,12 @@ public class LevelHudRenderer implements HudRenderCallback {
 
             // Clamp to target
             if (direction > 0 && slideOffset > targetSlideOffset) slideOffset = targetSlideOffset;
-             else if (direction < 0 && slideOffset < targetSlideOffset) slideOffset = targetSlideOffset;
+            else if (direction < 0 && slideOffset < targetSlideOffset) slideOffset = targetSlideOffset;
         }
     }
 
-    private void renderLevelHud(DrawContext drawContext, MinecraftClient client, LevelData levelData, int hudX) {
+    private void renderLevelHud(DrawContext drawContext, MinecraftClient client, LevelData levelData,
+                                PlayerClassComponent classComponent, int hudX) {
         TextRenderer textRenderer = client.textRenderer;
 
         // Get values
@@ -133,16 +169,29 @@ public class LevelHudRenderer implements HudRenderCallback {
         int availableBenefits = levelData.getAvailableBenefits();
         boolean isMaxLevel = levelData.isMaxLevel();
 
+        // Get class values
+        PlayerClass playerClass = classComponent.getCurrentClass();
+        int classLevel = classComponent.getClassLevel();
+        long currentClassXp = classComponent.getClassExperience();
+        long classXpToNext = classComponent.getClassExperienceToNextLevel();
+        int classPoints = classComponent.getAvailableClassPoints();
+        boolean isMaxClassLevel = classComponent.isMaxClassLevel();
+
         // Calculate text elements
         String levelText = isMaxLevel ? "MAX" : "Lv." + level;
+        String classText = isMaxClassLevel ? "MAX" : playerClass.getDisplayName() + " Lv." + classLevel;
         int playerNameWidth = textRenderer.getWidth(playerName);
         int levelTextWidth = textRenderer.getWidth(levelText);
+        int classTextWidth = textRenderer.getWidth(classText);
 
         // Calculate dynamic HUD dimensions
         int minHudWidth = BAR_WIDTH + 3;
-        int requiredWidth = playerNameWidth + levelTextWidth + 20; // 20px spacing between name and level
+        int requiredWidth = Math.max(
+                playerNameWidth + levelTextWidth + 20, // Player name + level
+                classTextWidth + 20 // Class text
+        );
         int hudWidth = Math.max(minHudWidth, requiredWidth);
-        int hudHeight = 50; // Height for all content
+        int hudHeight = 85; // Height for all content (increased for class info)
 
         int currentY = HUD_Y;
 
@@ -158,45 +207,26 @@ public class LevelHudRenderer implements HudRenderCallback {
         int levelX = hudX + hudWidth - levelTextWidth - 6; // 6px padding from right edge
         drawContext.drawTextWithShadow(textRenderer, levelText, levelX, currentY, levelColor);
 
-        currentY += textRenderer.fontHeight + 3;
+        currentY += textRenderer.fontHeight + 2;
 
-        // XP Bar background
-        int barY = currentY;
-        drawContext.fill(hudX, barY, hudX + BAR_WIDTH, barY + BAR_HEIGHT, XP_BAR_BG_COLOR);
+        // Class name on the left
+        int classColor = playerClass.getColor().getColorValue() != null ?
+                playerClass.getColor().getColorValue() : CLASS_COLOR;
+        drawContext.drawTextWithShadow(textRenderer, classText, hudX, currentY, classColor);
 
-        // XP Bar progress with glow effect
-        int progressWidth;
-        if (isMaxLevel) {
-            progressWidth = BAR_WIDTH; // Always full width for max level
-        } else {
-            progressWidth = (int) (BAR_WIDTH * animatedXpProgress);
-        }
+        currentY += textRenderer.fontHeight + 4;
 
-        if (progressWidth > 0) {
-            // XP gain glow effect
-            if (xpGainGlowTimer > 0) {
-                float glowStrength = xpGainGlowTimer / XP_GLOW_DURATION;
-                float time = (XP_GLOW_DURATION - xpGainGlowTimer) * 3.0f;
-                float pulse = (float) (0.5f + 0.5f * Math.sin(time * Math.PI));
-                float finalGlow = glowStrength * (0.7f + 0.3f * pulse);
+        // Character XP Bar
+        renderXpBar(drawContext, hudX, currentY, animatedXpProgress, xpGainGlowTimer,
+                XP_BAR_COLOR, XP_GAIN_GLOW_COLOR, "Character XP");
+        currentY += BAR_HEIGHT + 2;
 
-                int glowAlpha = (int) (finalGlow * 130);
-                int xpGlowColor = (glowAlpha << 24) | (XP_GAIN_GLOW_COLOR & 0x00FFFFFF);
-
-                // Subtle glow layers
-                drawContext.fill(hudX - 2, barY - 2, hudX + progressWidth + 2, barY + BAR_HEIGHT + 2, xpGlowColor);
-                drawContext.fill(hudX - 1, barY - 1, hudX + progressWidth + 1, barY + BAR_HEIGHT + 1, xpGlowColor);
-            }
-
-            // Main XP bar
-            drawContext.fill(hudX, barY, hudX + progressWidth, barY + BAR_HEIGHT, XP_BAR_COLOR);
-        }
-
-        // XP Bar border
-        drawBorder(drawContext, hudX, barY, BAR_WIDTH, BAR_HEIGHT);
+        // Class XP Bar
+        renderXpBar(drawContext, hudX, currentY, animatedClassXpProgress, classXpGainGlowTimer,
+                CLASS_XP_BAR_COLOR, XP_GAIN_GLOW_COLOR, "Class XP");
         currentY += BAR_HEIGHT + 4;
 
-        // XP Text and Benefits
+        // Character XP Text and Benefits
         String xpText;
         if (isMaxLevel) {
             xpText = "MAX LEVEL";
@@ -207,16 +237,76 @@ public class LevelHudRenderer implements HudRenderCallback {
         drawContext.drawTextWithShadow(textRenderer, xpText, hudX, currentY, TEXT_COLOR);
 
         // Benefits text on the right
-        String benefitsText = "Benefits: " + availableBenefits;
+        String benefitsText = "Stat Pts: " + availableBenefits;
         int benefitsX = hudX + BAR_WIDTH - textRenderer.getWidth(benefitsText);
         drawContext.drawTextWithShadow(textRenderer, benefitsText, benefitsX, currentY, LEVEL_COLOR);
 
-        // XP Percentage (below on left)
-        if (!isMaxLevel) {
-            currentY += textRenderer.fontHeight + 1;
-            String percentText = String.format("%.1f%%", animatedXpProgress * 100);
-            drawContext.drawTextWithShadow(textRenderer, percentText, hudX, currentY, 0xFFAAAAAA);
+        currentY += textRenderer.fontHeight + 1;
+
+        // Class XP Text and Class Points
+        String classXpText;
+        if (isMaxClassLevel) {
+            classXpText = "MAX CLASS LEVEL";
+        } else {
+            classXpText = NumberUtil.formatNumber(currentClassXp) + "/" + NumberUtil.formatNumber(classXpToNext);
         }
+
+        drawContext.drawTextWithShadow(textRenderer, classXpText, hudX, currentY, TEXT_COLOR);
+
+        // Class points text on the right
+        String classPointsText = "Class Pts: " + classPoints;
+        int classPointsX = hudX + BAR_WIDTH - textRenderer.getWidth(classPointsText);
+        drawContext.drawTextWithShadow(textRenderer, classPointsText, classPointsX, currentY, classColor);
+
+        // Percentage displays
+        if (!isMaxLevel || !isMaxClassLevel) {
+            currentY += textRenderer.fontHeight + 1;
+
+            if (!isMaxLevel) {
+                double charPercent = levelData.getExperiencePercentage();
+                String percentText = String.format("Char: %.1f%%", charPercent);
+                drawContext.drawTextWithShadow(textRenderer, percentText, hudX, currentY, 0xFFAAAAAA);
+            }
+
+            if (!isMaxClassLevel) {
+                double classPercent = classComponent.getClassExperiencePercentage();
+                String classPercentText = String.format("Class: %.1f%%", classPercent);
+                int classPercentX = hudX + BAR_WIDTH - textRenderer.getWidth(classPercentText);
+                drawContext.drawTextWithShadow(textRenderer, classPercentText, classPercentX, currentY, 0xFFAAAAAA);
+            }
+        }
+    }
+
+    private void renderXpBar(DrawContext drawContext, int x, int y, float progress, float glowTimer,
+                             int barColor, int glowColor, String tooltip) {
+        // XP Bar background
+        drawContext.fill(x, y, x + BAR_WIDTH, y + BAR_HEIGHT, XP_BAR_BG_COLOR);
+
+        // XP Bar progress with glow effect
+        int progressWidth = (int) (BAR_WIDTH * progress);
+
+        if (progressWidth > 0) {
+            // XP gain glow effect
+            if (glowTimer > 0) {
+                float glowStrength = glowTimer / XP_GLOW_DURATION;
+                float time = (XP_GLOW_DURATION - glowTimer) * 3.0f;
+                float pulse = (float) (0.5f + 0.5f * Math.sin(time * Math.PI));
+                float finalGlow = glowStrength * (0.7f + 0.3f * pulse);
+
+                int glowAlpha = (int) (finalGlow * 130);
+                int xpGlowColor = (glowAlpha << 24) | (glowColor & 0x00FFFFFF);
+
+                // Subtle glow layers
+                drawContext.fill(x - 2, y - 2, x + progressWidth + 2, y + BAR_HEIGHT + 2, xpGlowColor);
+                drawContext.fill(x - 1, y - 1, x + progressWidth + 1, y + BAR_HEIGHT + 1, xpGlowColor);
+            }
+
+            // Main XP bar
+            drawContext.fill(x, y, x + progressWidth, y + BAR_HEIGHT, barColor);
+        }
+
+        // XP Bar border
+        drawBorder(drawContext, x, y, BAR_WIDTH, BAR_HEIGHT);
     }
 
     private void drawBorder(DrawContext drawContext, int x, int y, int width, int height) {
@@ -248,6 +338,7 @@ public class LevelHudRenderer implements HudRenderCallback {
             return 1.0f + p * p * p / 2.0f;
         }
     }
+
     public static void register() {
         HudRenderCallback.EVENT.register(new LevelHudRenderer());
     }

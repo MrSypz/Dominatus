@@ -96,7 +96,6 @@ public abstract class PlayerStat<T extends Stat> implements PlayerStatBehavior {
             return false;
         }
 
-        int oldValue = getValue();
         setValue(getValue() + points);
         this.totalPointsSpent += cost;
 

@@ -17,5 +17,6 @@ public final class ModCommands {
                     .then(PlayerStatsCommand.register())
             );
         });
+        CommandRegistrationCallback.EVENT.register(ClassCommand::register);
     }
 }

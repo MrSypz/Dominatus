@@ -4,7 +4,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Identifier;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.level.config.LevelConfigs;
