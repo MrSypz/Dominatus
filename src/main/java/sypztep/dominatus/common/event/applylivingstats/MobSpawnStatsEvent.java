@@ -9,7 +9,6 @@ import sypztep.dominatus.common.component.living.LivingLevelComponent;
 import sypztep.dominatus.common.data.MobExpEntry;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.stat.EntityStatManager;
-import sypztep.dominatus.common.world.DungeonDimension;
 
 public class MobSpawnStatsEvent implements ServerEntityEvents.Load {
 
