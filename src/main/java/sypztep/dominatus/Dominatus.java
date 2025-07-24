@@ -4,8 +4,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sypztep.dominatus.common.event.applylivingstats.MobSpawnStatsEvent;
 import sypztep.dominatus.common.event.corecombat.LivingEntityEvent;
 import sypztep.dominatus.common.event.corecombat.PlayerEntityEvent;
@@ -14,7 +14,7 @@ import sypztep.dominatus.common.reloadlistener.DominatusMobExpReloadListener;
 
 public class Dominatus implements ModInitializer {
     public static final String MODID = "dominatus";
-    public static final Logger LOGGER = LogManager.getLogger(MODID);
+    public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
     public static Identifier id(String path) {
         return Identifier.of(MODID, path);
