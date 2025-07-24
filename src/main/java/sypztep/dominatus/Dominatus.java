@@ -11,7 +11,6 @@ import sypztep.dominatus.common.event.corecombat.LivingEntityEvent;
 import sypztep.dominatus.common.event.corecombat.PlayerEntityEvent;
 import sypztep.dominatus.common.init.*;
 import sypztep.dominatus.common.reloadlistener.DominatusMobExpReloadListener;
-import sypztep.dominatus.common.world.DungeonDimension;
 
 public class Dominatus implements ModInitializer {
     public static final String MODID = "dominatus";
@@ -31,7 +30,6 @@ public class Dominatus implements ModInitializer {
         PlayerEntityEvent.register();
         MobSpawnStatsEvent.register();
 
-        DungeonDimension.init();
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusMobExpReloadListener());
     }

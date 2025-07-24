@@ -1,6 +1,6 @@
 package sypztep.dominatus.common.util;
 
-public class NumberUtil {
+public final class NumberUtil {
     public static String formatNumber(long number) {
         if (number >= 1_000_000_000L) {
             return String.format("%.1fB", number / 1_000_000_000.0);

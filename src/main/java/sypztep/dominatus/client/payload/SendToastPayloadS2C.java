@@ -88,10 +88,7 @@ public record SendToastPayloadS2C(String message, int toastTypeOrdinal) implemen
         @Override
         public void receive(SendToastPayloadS2C payload, ClientPlayNetworking.Context context) {
             ToastNotification.ToastType[] types = ToastNotification.ToastType.values();
-            if (payload.toastTypeOrdinal < 0 || payload.toastTypeOrdinal >= types.length) {
-                Dominatus.LOGGER.warn("Received invalid toast type ordinal: {}", payload.toastTypeOrdinal);
-                return;
-            }
+            if (payload.toastTypeOrdinal < 0 || payload.toastTypeOrdinal >= types.length) return;
 
             ToastNotification.ToastType type = types[payload.toastTypeOrdinal];
             Text message = Text.literal(payload.message);
