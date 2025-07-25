@@ -4,9 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import sypztep.dominatus.client.payload.*;
 import sypztep.dominatus.common.payload.AirHikePayloadC2S;
-import sypztep.dominatus.common.payload.AssignSkillPayloadC2S;
 import sypztep.dominatus.common.payload.IncreaseStatPayloadC2S;
-import sypztep.dominatus.common.payload.UseSkillPayloadC2S;
 
 public final class ModPayloads {
     public ModPayloads() {
@@ -20,15 +18,11 @@ public final class ModPayloads {
 
         PayloadTypeRegistry.playC2S().register(IncreaseStatPayloadC2S.ID, IncreaseStatPayloadC2S.CODEC); // Client to Server
         PayloadTypeRegistry.playC2S().register(AirHikePayloadC2S.ID, AirHikePayloadC2S.CODEC); // Client to Server
-        PayloadTypeRegistry.playC2S().register(UseSkillPayloadC2S.ID, UseSkillPayloadC2S.CODEC);
-        PayloadTypeRegistry.playC2S().register(AssignSkillPayloadC2S.ID, AssignSkillPayloadC2S.CODEC);
 
         registerPayloads();
     }
     private static void registerPayloads() {
         ServerPlayNetworking.registerGlobalReceiver(IncreaseStatPayloadC2S.ID, new IncreaseStatPayloadC2S.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(AirHikePayloadC2S.ID, new AirHikePayloadC2S.Receiver());
-        ServerPlayNetworking.registerGlobalReceiver(UseSkillPayloadC2S.ID, new UseSkillPayloadC2S.Receiver());
-        ServerPlayNetworking.registerGlobalReceiver(AssignSkillPayloadC2S.ID, new AssignSkillPayloadC2S.Receiver());
     }
 }

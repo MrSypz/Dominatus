@@ -4,8 +4,6 @@ public class LevelConfigs {
     // Character/Combat leveling
     public static final LevelConfiguration CHARACTER = new CharacterLevelConfig();
 
-    public static final LevelConfiguration CLASS_LEVEL = new ClassLevelConfig();
-
     // Skill configurations
 //    public static final LevelConfiguration LUMBER_SKILL = new SkillLevelConfig(100, 100L, 1.15);
 //    public static final LevelConfiguration MINING_SKILL = new SkillLevelConfig(100, 120L, 1.12);

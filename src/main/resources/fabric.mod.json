@@ -41,8 +41,7 @@
       "dominatus:livinglevel",
       "dominatus:dmgtracker",
       "dominatus:phantomwalker",
-      "dominatus:playerclass",
-      "dominatus:playerskill"
+      "dominatus:playerclass"
     ]
   }
 }

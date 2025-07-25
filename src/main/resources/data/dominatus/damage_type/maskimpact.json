@@ -1,7 +1,0 @@
-{
-  "message_id": "maskimpact",
-  "exhaustion": 0.1,
-  "scaling": "when_caused_by_living_non_player",
-  "bypasses_invulnerability": true,
-  "bypasses_cooldown": true
-}
