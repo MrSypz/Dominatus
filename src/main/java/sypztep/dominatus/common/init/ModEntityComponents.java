@@ -15,15 +15,11 @@ public final class ModEntityComponents implements EntityComponentInitializer {
     public static final ComponentKey<LivingLevelComponent> LIVINGLEVEL = ComponentRegistry.getOrCreate(Dominatus.id("livinglevel"), LivingLevelComponent.class);
     public static final ComponentKey<DamageTrackerComponent> DAMAGETRACKER = ComponentRegistry.getOrCreate(Dominatus.id("dmgtracker"), DamageTrackerComponent.class);
     public static final ComponentKey<PhantomWalkerComponent> PHANTOMWALKER = ComponentRegistry.getOrCreate(Dominatus.id("phantomwalker"), PhantomWalkerComponent.class);
-    public static final ComponentKey<PlayerClassComponent> PLAYERCLASS = ComponentRegistry.getOrCreate(Dominatus.id("playerclass"), PlayerClassComponent.class);
-    public static final ComponentKey<PlayerSkillComponent> PLAYERSKILL = ComponentRegistry.getOrCreate(Dominatus.id("playerskill"), PlayerSkillComponent.class);
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.beginRegistration(LivingEntity.class, LIVINGLEVEL).respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY).end(LivingLevelComponent::new);
         registry.registerFor(MobEntity.class, DAMAGETRACKER, entity -> new DamageTrackerComponent());
         registry.registerFor(PlayerEntity.class, PHANTOMWALKER, PhantomWalkerComponent::new);
-        registry.beginRegistration(PlayerEntity.class, PLAYERCLASS).respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY).end(PlayerClassComponent::new);
-        registry.beginRegistration(PlayerEntity.class, PLAYERSKILL).respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY).end(PlayerSkillComponent::new);
     }
 }
