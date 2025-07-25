@@ -37,14 +37,17 @@ public class NinjaStrike extends ActiveSkill {
     }
 
     @Override
-    protected void applyDamage(PlayerEntity caster, LivingEntity target) {
+    protected void applyDamageBypass(PlayerEntity caster, LivingEntity target) {
         float damage = baseDamage;
 
-        // 30% chance for critical hit (double damage)
-        if (Math.random() < 0.3) {
-            damage *= 2.0f;
-            // TODO: Add crit particle effects
+        // 25% chance for critical hit each strike
+        if (Math.random() < 0.25) {
+            damage *= 1.5f;
         }
+
+        // Reset immunity and apply damage
+        target.timeUntilRegen = 0;
+        target.hurtTime = 0;
 
         target.damage(caster.getDamageSources().playerAttack(caster), damage);
     }

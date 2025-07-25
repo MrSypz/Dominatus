@@ -2,13 +2,17 @@ package sypztep.dominatus.common.system.skill.active;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import sypztep.dominatus.common.component.living.PlayerClassComponent;
+import sypztep.dominatus.common.init.ModDamageSources;
 import sypztep.dominatus.common.init.ModEntityComponents;
 import sypztep.dominatus.common.system.playerclass.PlayerClass;
 import sypztep.dominatus.common.system.playerclass.ResourceType;
+import sypztep.dominatus.common.util.DelayedDamageScheduler;
+import sypztep.dominatus.common.util.SkillDamageSource;
 
 import java.util.List;
 
@@ -18,17 +22,26 @@ public abstract class ActiveSkill {
     protected final String description;
     protected final PlayerClass requiredClass;
     protected final int requiredClassLevel;
-    protected final int learnCost; // Class points needed to learn
+    protected final int learnCost;
     protected final ResourceType resourceType;
     protected final float resourceCost;
     protected final int cooldownTicks;
     protected final float baseDamage;
     protected final int hitCount;
+    protected final int hitDelayTicks;
 
     public ActiveSkill(Identifier id, String name, String description,
                        PlayerClass requiredClass, int requiredClassLevel, int learnCost,
                        ResourceType resourceType, float resourceCost, int cooldownTicks,
                        float baseDamage, int hitCount) {
+        this(id, name, description, requiredClass, requiredClassLevel, learnCost,
+                resourceType, resourceCost, cooldownTicks, baseDamage, hitCount, 5);
+    }
+
+    public ActiveSkill(Identifier id, String name, String description,
+                       PlayerClass requiredClass, int requiredClassLevel, int learnCost,
+                       ResourceType resourceType, float resourceCost, int cooldownTicks,
+                       float baseDamage, int hitCount, int hitDelayTicks) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -40,91 +53,90 @@ public abstract class ActiveSkill {
         this.cooldownTicks = cooldownTicks;
         this.baseDamage = baseDamage;
         this.hitCount = hitCount;
+        this.hitDelayTicks = hitDelayTicks;
     }
 
-    /**
-     * Check if player can learn this skill
-     */
     public boolean canLearn(PlayerEntity player) {
         PlayerClassComponent classComp = ModEntityComponents.PLAYERCLASS.get(player);
-
         return classComp.getCurrentClass() == requiredClass &&
                 classComp.getClassLevel() >= requiredClassLevel &&
                 classComp.hasClassPoints(learnCost);
     }
 
-    /**
-     * Check if player can use this skill (has resources, not on cooldown)
-     */
     public boolean canUse(PlayerEntity player) {
         PlayerClassComponent classComp = ModEntityComponents.PLAYERCLASS.get(player);
-
-        return classComp.hasResource(resourceCost) &&
-                !isOnCooldown(player);
+        return classComp.hasResource(resourceCost) && !isOnCooldown(player);
     }
 
     /**
-     * Execute the skill (override in subclasses for specific behavior)
+     * Execute the skill with delayed multi-hit damage
      */
     public SkillResult execute(PlayerEntity caster) {
         PlayerClassComponent classComp = ModEntityComponents.PLAYERCLASS.get(caster);
 
-        // Check if can use
         if (!canUse(caster)) {
             return SkillResult.failure("Cannot use skill");
         }
 
-        // Consume resources
         if (!classComp.consumeResource(resourceCost)) {
             return SkillResult.failure("Not enough " + resourceType.getDisplayName());
         }
 
-        // Apply cooldown (TODO: implement cooldown system)
-        // applyCooldown(caster);
-
-        // Execute skill-specific logic
         List<LivingEntity> targets = getTargets(caster);
         if (targets.isEmpty()) {
             return SkillResult.failure("No targets found");
         }
 
-        // Apply damage/effects
-        for (LivingEntity target : targets) {
-            for (int hit = 0; hit < hitCount; hit++) {
-                applyDamage(caster, target);
-                applyEffects(caster, target);
-            }
-        }
-
+        scheduleDelayedDamage(caster, targets);
         return SkillResult.success(targets.size() + " targets hit");
     }
 
     /**
-     * Get targets for this skill (override in subclasses)
+     * Schedule delayed damage for all hits
      */
-    protected abstract List<LivingEntity> getTargets(PlayerEntity caster);
+    private void scheduleDelayedDamage(PlayerEntity caster, List<LivingEntity> targets) {
+        if (!(caster.getWorld() instanceof ServerWorld serverWorld)) return;
 
-    /**
-     * Apply damage to a target
-     */
-    protected void applyDamage(PlayerEntity caster, LivingEntity target) {
-        // TODO: Add proper damage source and calculation
-        target.damage(caster.getDamageSources().playerAttack(caster), baseDamage);
+        DelayedDamageScheduler scheduler = DelayedDamageScheduler.getInstance();
+
+        for (LivingEntity target : targets) {
+            for (int hit = 0; hit < hitCount; hit++) {
+                int delay = hit * hitDelayTicks;
+
+                scheduler.scheduleDamage(serverWorld, delay, () -> {
+                    if (target.isAlive() && !target.isRemoved()) {
+                        applyDamageBypass(caster, target);
+                        applyEffects(caster, target);
+                    }
+                });
+            }
+        }
     }
 
     /**
-     * Apply additional effects (override in subclasses)
+     * Apply damage that bypasses immunity frames
      */
+    protected void applyDamageBypass(PlayerEntity caster, LivingEntity target) {
+        // Create skill damage source using existing player attack source
+        if (!(caster.getWorld() instanceof ServerWorld serverWorld)) return;
+
+
+        // Reset immunity to allow damage
+        target.timeUntilRegen = 0;
+        target.hurtTime = 0;
+
+        // Apply damage
+        target.damage(ModDamageSources.skillDamage(serverWorld, caster), baseDamage);
+    }
+
+    protected abstract List<LivingEntity> getTargets(PlayerEntity caster);
+
     protected void applyEffects(PlayerEntity caster, LivingEntity target) {
         // Default: no additional effects
     }
 
-    /**
-     * Check if skill is on cooldown (placeholder for now)
-     */
     protected boolean isOnCooldown(PlayerEntity player) {
-        // TODO: Implement proper cooldown system
-        return false;
+        return false; // Handled by PlayerSkillComponent
     }
 
     // Getters
@@ -139,6 +151,7 @@ public abstract class ActiveSkill {
     public int getCooldownTicks() { return cooldownTicks; }
     public float getBaseDamage() { return baseDamage; }
     public int getHitCount() { return hitCount; }
+    public int getHitDelayTicks() { return hitDelayTicks; }
 
     public Text getFormattedName() {
         return Text.literal(name).formatted(Formatting.YELLOW);

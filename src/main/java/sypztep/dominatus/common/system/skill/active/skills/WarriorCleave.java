@@ -27,7 +27,8 @@ public class WarriorCleave extends ActiveSkill {
                 5f, // Resource cost
                 15, // 3 second cooldown
                 2f, // Base damage
-                3 // Single hit
+                3, // Single hit
+                2 // DElay
         );
     }
 
@@ -37,9 +38,14 @@ public class WarriorCleave extends ActiveSkill {
     }
 
     @Override
-    protected void applyDamage(PlayerEntity caster, LivingEntity target) {
-        // Warrior cleave does 150% normal damage
-        float damage = baseDamage * 1.5f;
+    protected void applyDamageBypass(PlayerEntity caster, LivingEntity target) {
+        // Warrior cleave does 120% normal damage
+        float damage = baseDamage * 1.2f;
+
+        // Reset immunity and apply damage
+        target.timeUntilRegen = 0;
+        target.hurtTime = 0;
+
         target.damage(caster.getDamageSources().playerAttack(caster), damage);
     }
 }

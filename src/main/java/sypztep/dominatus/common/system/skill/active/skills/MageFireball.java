@@ -38,8 +38,9 @@ public class MageFireball extends ActiveSkill {
         return CollisionShapes.getCircleTargets(caster, 3.0); // 3 block radius
     }
 
+
     @Override
-    protected void applyDamage(PlayerEntity caster, LivingEntity target) {
+    protected void applyDamageBypass(PlayerEntity caster, LivingEntity target) {
         target.damage(caster.getDamageSources().magic(), baseDamage);
     }
 

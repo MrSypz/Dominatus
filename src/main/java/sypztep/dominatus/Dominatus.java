@@ -1,6 +1,7 @@
 package sypztep.dominatus;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -12,6 +13,7 @@ import sypztep.dominatus.common.event.corecombat.PlayerEntityEvent;
 import sypztep.dominatus.common.init.*;
 import sypztep.dominatus.common.reloadlistener.DominatusMobExpReloadListener;
 import sypztep.dominatus.common.system.skill.active.ActiveSkillRegistry;
+import sypztep.dominatus.common.util.DelayedDamageScheduler;
 
 public class Dominatus implements ModInitializer {
     public static final String MODID = "dominatus";
@@ -31,6 +33,10 @@ public class Dominatus implements ModInitializer {
         PlayerEntityEvent.register();
         MobSpawnStatsEvent.register();
         ActiveSkillRegistry.register();
+
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            DelayedDamageScheduler.getInstance().tick();
+        });
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DominatusMobExpReloadListener());
     }

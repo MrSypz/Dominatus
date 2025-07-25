@@ -57,8 +57,8 @@ public class SkillHotbarScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
         // Background
-        renderBackground(context, mouseX, mouseY, delta);
 
         // Title
         context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 20, 0xFFFFFFFF);
@@ -75,7 +75,7 @@ public class SkillHotbarScreen extends Screen {
         renderLearnedSkills(context, mouseX, mouseY);
 
         // Render widgets (buttons)
-        super.render(context, mouseX, mouseY, delta);
+
 
         // Render tooltips
         renderTooltips(context, mouseX, mouseY);
